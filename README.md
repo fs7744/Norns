@@ -179,7 +179,7 @@ public abstract class InterceptorBase : IInterceptor
         - nuget 包编译命令注入简单研究 （✔） [design/TestMSBuild](design/TestMSBuild)
         - 同步拦截器+代理类设计以及性能简单对比 （✔）[design/SyncInterceptor](design/SyncInterceptor)
         - 异步拦截器+代理类设计以及性能简单对比 （✔）[design/AsyncInterceptor](design/AsyncInterceptor)
-        - 拦截器上下文如何尽量避免类型转换，更加泛型设计探索 （✔）[design/DynamicContext](design/DynamicContext) vs [design/GenericContext](design/GenericContext) (object 看来依然是能想到的拦截器通用设计方式中 性能与友好性最好的方式)
+        - 拦截器上下文如何尽量避免类型转换，更加泛型设计探索 （✔）[design/DynamicContext](design/DynamicContext) vs [design/GenericContext](design/GenericContext) *(object 看来依然是能想到的拦截器通用设计方式中 性能与友好性最好的方式)*
         - IOC适配探索
         - roslyn 解析代码+解析dll探索
     - 实现 阶段
