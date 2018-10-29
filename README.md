@@ -1,1 +1,157 @@
 # Norns
+
+## 项目目的
+
+该项目核心目的为探索 dotnet core AOP静态编织 之路。
+
+次要目的提供一套可用的框架 （如果无人会使用，至少也希望可以成为AOP静态编织的可参考资料）。
+
+## 取名缘由
+
+Norns == 诺伦三女神 （北欧神话中的命运女神）
+
+大女儿乌尔德（Urd）司掌“过去”，二女儿薇儿丹蒂（Verthandi）司掌“现在”，小女儿诗蔻蒂（Skuld）司掌“未来”。
+
+所以借用该名希望该项目可以帮助大家 `自我掌控` 项目的“命运”。
+
+## 设计
+
+AOP静态编织 分为两条道路：
+
+* 使用预处理器添加源代码， 即 代码生成。
+* 使用后处理器在编译后的二进制代码上添加指令， dotnet 里面可以叫做 IL 重写。
+
+### 对比思考
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky"><b>代码生成</b></th>
+    <th class="tg-0pky"><b>IL 重写</b></th>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>代码可见</b></td>
+    <td class="tg-0pky">√</td>
+    <td class="tg-0pky">×</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>语法检查或优化</b></td>
+    <td class="tg-0pky">√ （ide或插件可以运用）</td>
+    <td class="tg-0pky">× （依赖框架实现者IL 功力）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>实现方式</b></td>
+    <td class="tg-0pky">√× （代理模式，避免影响用户源码，主要是目前编译器没c++那种创建宏之类的能力，只能替换）</td>
+    <td class="tg-0pky">√ （直接修改IL源码，不影响用户源码）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>static 支持</b></td>
+    <td class="tg-0pky">×  （避免影响用户源码）</td>
+    <td class="tg-0pky">√ </td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>aop 拦截器模式</b></td>
+    <td class="tg-0pky">√ （可用 中间件思路交由用户自我控制，框架实现要简单些，使用者学习成本低些）</td>
+    <td class="tg-0pky">√× （由于IL编写的复杂度以及对应优化等，通常拆分较细，框架实现内容要多些，使用者学习成本高些）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>async/await 支持</b></td>
+    <td class="tg-0pky">√ （较为简单）</td>
+    <td class="tg-0pky">√× （修改IL的状态机代码+添加aop逻辑还是挺复杂的）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>ioc 支持</b></td>
+    <td class="tg-0pky">√x （依赖ioc的实现类替换，不同ioc要进行适配，需要一点代码入侵）</td>
+    <td class="tg-0pky">√ （因直接修改il源码，对ioc毫不相干）</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky"><b>无源码，如只有dll的动态拦截支持</b></td>
+    <td class="tg-0pky">√x （使用ioc的情况，可以依赖ioc用代理类替换，需要一点代码入侵；不使用ioc，用户可以直接用代理类，无法使用的情况就毫无办法了）</td>
+    <td class="tg-0pky">√ （可以直接修改dll，不过一般不推荐这么做，因为部署方式差异，可能导致修改不了，或者修改了之后导致dll无法共用，其他程序出错，所以一般做运行时特殊处理）</td>
+  </tr>
+    <tr>
+    <td class="tg-0pky"><b>性能</b></td>
+    <td class="tg-0pky">√ （理论与IL重写应该相差不大，即使IL可以进一步优化，也应该在纳秒级别的差异）</td>
+    <td class="tg-0pky">√ </td>
+  </tr>
+</table>
+
+### 代码生成 设计
+
+由于上述对比中IL重写的复杂性以及理论上IL重写性能优势不明显，所以我们优先探索 代码生成 道路，将其做到尽可能完善之后，我们再看下有什么我们无法回避的问题。
+
+#### Context
+
+``` csharp
+public class Context
+{
+    public object[] Parameters { get; set; }
+
+    public object Result { get; set; }
+}
+```
+
+#### 代理类
+
+``` csharp
+public class XXProxy : ITestService
+{
+    private readonly IXXService realService;
+    private readonly ISyncInterceptor interceptor;
+
+    public XXProxy(IXXService realService, ISyncInterceptor interceptor)
+    {
+        this.realService = realService;
+        this.interceptor = interceptor;
+    }
+
+    private void XX(Context context)
+    {
+        var x = (XX)context.Parameters[0];
+        var y = (XX)context.Parameters[1];
+        context.Result = realService.XX(x, y);
+    }
+
+    public int XX(XX x, XX y)
+    {
+        var context = new Context()
+        {
+            Parameters = new object[] { x, y }
+        };
+        interceptor.OnInvokeSync(context, SumReal);
+        return (int)context.Result;
+    }
+}
+```
+
+#### 同步拦截器
+
+``` csharp
+public interface ISyncInterceptor
+{
+    void OnInvokeSync(Context context, Action<Context> next);
+}
+```
+
+## Roadmap
+
+- 代码生成 实现 （第 0 阶段） 
+    - 探索与设计 阶段
+        - nuget 包编译命令注入简单研究 （✔） [design/TestMSBuild](design/TestMSBuild)
+        - 同步拦截器+代理类设计以及性能简单对比 （✔）[design/SyncInterceptor](design/SyncInterceptor)
+        - 异步拦截器+代理类设计以及性能简单对比
+        - 拦截器上下文如何尽量避免类型转换，更加泛型设计探索
+        - roslyn 解析代码+解析dll探索
+    - 实现 阶段
+        - 同步拦截器+代理类 生成 编写
+        - 异步拦截器+代理类 生成 编写
+        - global tool + nuget 项目编译适配器 编写
+        - 示例 编写
+        - 文档 编写
+- IL 重写 实现 （第 1 阶段，PS：待定，如代码生成满足需求或IL 重写性能与代码生成方式没有优势，该阶段会放弃） 

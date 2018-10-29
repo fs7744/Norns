@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>SayHelloTasks</PackageId>
+    <AssemblyName>SayHelloTasks</AssemblyName>
+    <RootNamespace>SayHelloTasks</RootNamespace>
+    <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="build\SayHelloTasks.props" />
+    <None Remove="build\SayHelloTasks.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="build\SayHelloTasks.targets">
+      <PackagePath>build\</PackagePath>
+    </Content>
+    <Content Include="build\SayHelloTasks.props">
+      <PackagePath>build\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Tasks.Core" Version="15.8.166" />
+    <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>
