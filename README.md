@@ -164,6 +164,12 @@ public abstract class InterceptorBase : IInterceptor
         }).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }
+
+// PS:
+// Sync 和 Async 表明task 以及 async/await 大致有几十纳秒的消耗，
+// 这个消耗并不是特别大，对偷懒的同学，我们可以让偷懒的同学只实现异步拦截器
+// 同步拦截器调异步拦截器就好，
+// 关心性能的同学让其同时实现同步和异步拦截器
 ```
 
 ## Roadmap
