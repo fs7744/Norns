@@ -1,3 +1,5 @@
+# DynamicContext
+
 ``` ini
 
 BenchmarkDotNet=v0.11.1, OS=Windows 10.0.17134.345 (1803/April2018Update/Redstone4)
@@ -17,7 +19,31 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
 |  SyncMethod_NoParam_HandWritingInterceptor | 12.99 ns | 0.1591 ns | 0.1488 ns | 0.0384 ns | 12.81 ns | 12.88 ns | 12.93 ns | 13.14 ns | 13.25 ns | 76,991,278.7 |
 |     SyncMethod_NoParam_ProxyAndInterceptor | 26.88 ns | 0.2234 ns | 0.2090 ns | 0.0540 ns | 26.59 ns | 26.71 ns | 26.85 ns | 27.04 ns | 27.25 ns | 37,201,558.2 |
 
-SyncInterceptor 的结果为： 
+# ExpandoContext
+
+``` ini
+
+BenchmarkDotNet=v0.11.1, OS=Windows 10.0.17134.345 (1803/April2018Update/Redstone4)
+Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
+.NET Core SDK=2.1.403
+  [Host]     : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+  DefaultJob : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+
+
+```
+|                                     Method |        Mean |      Error |     StdDev |    StdErr |         Min |          Q1 |      Median |          Q3 |         Max |         Op/s |
+|------------------------------------------- |------------:|-----------:|-----------:|----------:|------------:|------------:|------------:|------------:|------------:|-------------:|
+|          SyncMethod_HasParam_NoInterceptor |    11.38 ns |  0.1417 ns |  0.1325 ns | 0.0342 ns |    11.21 ns |    11.27 ns |    11.35 ns |    11.46 ns |    11.69 ns | 87,840,205.4 |
+| SyncMethod_HasParam_HandWritingInterceptor |    13.36 ns |  0.2926 ns |  0.2594 ns | 0.0693 ns |    13.06 ns |    13.16 ns |    13.28 ns |    13.53 ns |    14.01 ns | 74,849,649.6 |
+|    SyncMethod_HasParam_ProxyAndInterceptor | 1,249.44 ns | 15.3168 ns | 13.5779 ns | 3.6288 ns | 1,231.37 ns | 1,237.32 ns | 1,250.90 ns | 1,255.73 ns | 1,276.93 ns |    800,359.0 |
+|           SyncMethod_NoParam_NoInterceptor |    19.83 ns |  0.2283 ns |  0.1906 ns | 0.0529 ns |    19.48 ns |    19.72 ns |    19.78 ns |    20.01 ns |    20.15 ns | 50,421,023.5 |
+|  SyncMethod_NoParam_HandWritingInterceptor |    13.16 ns |  0.1915 ns |  0.1697 ns | 0.0454 ns |    12.92 ns |    13.03 ns |    13.14 ns |    13.23 ns |    13.54 ns | 75,995,335.6 |
+|     SyncMethod_NoParam_ProxyAndInterceptor |    25.06 ns |  0.2796 ns |  0.2478 ns | 0.0662 ns |    24.63 ns |    24.89 ns |    25.09 ns |    25.19 ns |    25.47 ns | 39,906,412.0 |
+
+
+# SyncInterceptor 
+
+结果为： 
 
 |                                     Method |     Mean |     Error |    StdDev |    StdErr |      Min |       Q1 |   Median |       Q3 |      Max |         Op/s |
 |------------------------------------------- |---------:|----------:|----------:|----------:|---------:|---------:|---------:|---------:|---------:|-------------:|
