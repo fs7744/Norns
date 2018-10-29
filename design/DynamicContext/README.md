@@ -41,7 +41,7 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
 |     SyncMethod_NoParam_ProxyAndInterceptor |    25.06 ns |  0.2796 ns |  0.2478 ns | 0.0662 ns |    24.63 ns |    24.89 ns |    25.09 ns |    25.19 ns |    25.47 ns | 39,906,412.0 |
 
 
-# SyncInterceptor 
+# object convert test 
 
 结果为： 
 
