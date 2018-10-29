@@ -105,7 +105,7 @@ public class XXProxy : ITestService
         this.interceptor = interceptor;
     }
 
-    private void XX(Context context)
+    private void XXReal(Context context)
     {
         var x = (XX)context.Parameters[0];
         var y = (XX)context.Parameters[1];
@@ -118,18 +118,51 @@ public class XXProxy : ITestService
         {
             Parameters = new object[] { x, y }
         };
-        interceptor.OnInvokeSync(context, SumReal);
+        interceptor.OnInvokeSync(context, XXReal);
+        return (int)context.Result;
+    }
+
+    private async Task<int> XXRealAsync(Context context)
+    {
+        var x = (XX)context.Parameters[0];
+        var y = (XX)context.Parameters[1];
+        context.Result = await realService.XX(x, y);
+    }
+
+    public async Task<int> XXAsync(XX x, XX y)
+    {
+        var context = new Context()
+        {
+            Parameters = new object[] { x, y }
+        };
+        await interceptor.OnInvokeAsync(context, XXRealAsync);
         return (int)context.Result;
     }
 }
 ```
 
-#### 同步拦截器
+#### 拦截器
 
 ``` csharp
-public interface ISyncInterceptor
+public interface IInterceptor
 {
     void OnInvokeSync(Context context, Action<Context> next);
+
+    Task OnInvokeAsync(Context context, Func<Context, Task> next);
+}
+
+public abstract class InterceptorBase : IInterceptor
+{
+    public abstract Task OnInvokeAsync(Context context, Func<Context, Task> next);
+
+    public virtual void OnInvokeSync(Context context, Action<Context> next)
+    {
+        OnInvokeAsync(context, c =>
+        {
+            next(c);
+            return Task.CompletedTask;
+        }).ConfigureAwait(false).GetAwaiter().GetResult();
+    }
 }
 ```
 
@@ -139,7 +172,7 @@ public interface ISyncInterceptor
     - 探索与设计 阶段
         - nuget 包编译命令注入简单研究 （✔） [design/TestMSBuild](design/TestMSBuild)
         - 同步拦截器+代理类设计以及性能简单对比 （✔）[design/SyncInterceptor](design/SyncInterceptor)
-        - 异步拦截器+代理类设计以及性能简单对比
+        - 异步拦截器+代理类设计以及性能简单对比 （✔）[design/AsyncInterceptor](design/AsyncInterceptor)
         - 拦截器上下文如何尽量避免类型转换，更加泛型设计探索
         - roslyn 解析代码+解析dll探索
     - 实现 阶段
