@@ -11,6 +11,7 @@ namespace GenericContext
         private readonly ITestService handwritingInterceptor = new TestServiceHandWriting(new TestService());
         private readonly TestServiceProxy syncInterceptor = new TestServiceProxy(new TestService(), new TestInterceptor());
         private readonly TestServiceProxy syncTupleInterceptor = new TestServiceProxy(new TestService(), new TestTupleInterceptor());
+        private readonly TestServiceProxy syncTupleObjectInterceptor = new TestServiceProxy(new TestService(), new TestTupleObjectInterceptor());
         private readonly ITestService syncNoParamInterceptor = new TestServiceProxy(new TestService(), new TestNoParamInterceptor());
 
         [Benchmark]
@@ -35,6 +36,12 @@ namespace GenericContext
         public void SyncMethod_HasParam_Tuple_ProxyAndInterceptor()
         {
             syncTupleInterceptor.Sum(x, y);
+        }
+
+        [Benchmark]
+        public void SyncMethod_HasParam_TupleWithObjectConvert_ProxyAndInterceptor()
+        {
+            syncTupleObjectInterceptor.Sum(x, y);
         }
 
         [Benchmark]
