@@ -51,6 +51,11 @@ AOP静态编织 分为两条道路：
     <td class="tg-0pky">√ </td>
   </tr>
   <tr>
+    <td class="tg-0pky"><b>任意方法，属性 支持</b></td>
+    <td class="tg-0pky">×  （只支持重载的方法，属性，类等）</td>
+    <td class="tg-0pky">√ </td>
+  </tr>
+  <tr>
     <td class="tg-0pky"><b>aop 拦截器模式</b></td>
     <td class="tg-0pky">√ （可用 中间件思路交由用户自我控制，框架实现要简单些，使用者学习成本低些）</td>
     <td class="tg-0pky">√× （由于IL编写的复杂度以及对应优化等，通常拆分较细，框架实现内容要多些，使用者学习成本高些）</td>
@@ -181,7 +186,9 @@ public abstract class InterceptorBase : IInterceptor
         - 同步拦截器+代理类设计以及性能简单对比 （✔）[design/SyncInterceptor](design/SyncInterceptor)
         - 异步拦截器+代理类设计以及性能简单对比 （✔）[design/AsyncInterceptor](design/AsyncInterceptor)
         - 拦截器上下文如何尽量避免类型转换，更加泛型设计探索 （✔）[design/DynamicContext](design/DynamicContext) vs [design/GenericContext](design/GenericContext) *(object 看来依然是能想到的拦截器通用设计方式中 性能与友好性最好的方式)*
-        - IOC适配探索
+        - IOC适配探索 （✔）[design/TestIOC](design/TestIOC)
+        - asp.net core Controller 代理+IOC适配探索
+        - 全局拦截
         - roslyn 解析代码+解析dll探索
     - 实现 阶段
         - 同步拦截器+代理类 生成 编写
