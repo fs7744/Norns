@@ -33,6 +33,28 @@ namespace TestIOC
                 services.AddSingleton(item);
             }
 
+            var a = AppDomain.CurrentDomain.GetAssemblies()
+             .SelectMany(i =>
+             {
+                 try
+                 {
+                     return i.GetExportedTypes();
+                 }
+                 catch
+                 {
+                     return new Type[0];
+                 }
+             })
+             .Where(i => i.IsClass)
+             .SelectMany(i => i.GetCustomAttributes<ReplaceAttribute>()
+                 .SelectMany(j =>
+                     i.GetInterfaces().Select(x => (x, j.RealType, i))
+                     .Union(new (Type, Type, Type)[] { (i.BaseType, j.RealType, i), (i, j.RealType, i) })
+                 ))
+             .Where(i => i.Item1 != null && i.Item2 != null && i.Item1 != typeof(object))
+             .SelectMany(i => services.Where(j => j.ServiceType == i.Item1))
+              .ToArray();
+
             var types = AppDomain.CurrentDomain.GetAssemblies()
              .SelectMany(i =>
              {
