@@ -1,14 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Norns.AOP.Abstraction.Interceptors
+namespace Norns.AOP.Interceptors
 {
     public interface IInterceptor
     {
         int Order { get; }
 
-        void Intercept(InterceptContext context, Action<InterceptContext> next);
+        void Intercept(InterceptContext context, InterceptorDelegate next);
 
-        Task InterceptAsync(InterceptContext context, Func<InterceptContext, Task> nextAsync);
+        Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync);
     }
 }

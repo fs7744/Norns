@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace Norns.AOP.Abstraction.Interceptors
+namespace Norns.AOP.Interceptors
 {
     public class InterceptContext
     {

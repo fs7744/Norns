@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System.Reflection;
 
 namespace SyncInterceptor
 {
@@ -11,41 +12,67 @@ namespace SyncInterceptor
         private readonly ITestService handwritingInterceptor = new TestServiceHandWriting(new TestService());
         private readonly ITestService syncInterceptor = new TestServiceProxy(new TestService(), new TestInterceptor());
         private readonly ITestService syncNoParamInterceptor = new TestServiceProxy(new TestService(), new TestNoParamInterceptor());
+        private readonly MethodInfo cacheMethod;
 
-        [Benchmark]
-        public void SyncMethod_HasParam_NoInterceptor()
+        public TestSyncInterceptor()
         {
-            noInterceptor.Sum(x, y);
+            cacheMethod = typeof(TestSyncInterceptor).GetMethod("GetCurrentMethod");
         }
 
         [Benchmark]
-        public void SyncMethod_HasParam_HandWritingInterceptor()
+        public void GetCurrentMethod()
         {
-            handwritingInterceptor.Sum(x, y);
+            var c = new Context()
+            {
+                ServiceMethod = MethodBase.GetCurrentMethod(),
+                Parameters = new object[0]
+            };
         }
 
         [Benchmark]
-        public void SyncMethod_HasParam_ProxyAndInterceptor()
+        public void GetCacheMethod()
         {
-            syncInterceptor.Sum(x, y);
+            var c = new Context()
+            {
+                ServiceMethod = cacheMethod,
+                Parameters = new object[0]
+            };
         }
 
-        [Benchmark]
-        public void SyncMethod_NoParam_NoInterceptor()
-        {
-            noInterceptor.Sum();
-        }
+        //[Benchmark]
+        //public void SyncMethod_HasParam_NoInterceptor()
+        //{
+        //    noInterceptor.Sum(x, y);
+        //}
 
-        [Benchmark]
-        public void SyncMethod_NoParam_HandWritingInterceptor()
-        {
-            handwritingInterceptor.Sum();
-        }
+        //[Benchmark]
+        //public void SyncMethod_HasParam_HandWritingInterceptor()
+        //{
+        //    handwritingInterceptor.Sum(x, y);
+        //}
 
-        [Benchmark]
-        public void SyncMethod_NoParam_ProxyAndInterceptor()
-        {
-            syncNoParamInterceptor.Sum();
-        }
+        //[Benchmark]
+        //public void SyncMethod_HasParam_ProxyAndInterceptor()
+        //{
+        //    syncInterceptor.Sum(x, y);
+        //}
+
+        //[Benchmark]
+        //public void SyncMethod_NoParam_NoInterceptor()
+        //{
+        //    noInterceptor.Sum();
+        //}
+
+        //[Benchmark]
+        //public void SyncMethod_NoParam_HandWritingInterceptor()
+        //{
+        //    handwritingInterceptor.Sum();
+        //}
+
+        //[Benchmark]
+        //public void SyncMethod_NoParam_ProxyAndInterceptor()
+        //{
+        //    syncNoParamInterceptor.Sum();
+        //}
     }
 }

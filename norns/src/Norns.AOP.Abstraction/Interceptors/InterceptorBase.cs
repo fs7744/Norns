@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Norns.AOP.Attributes;
+using Norns.AOP.Utils;
 using System.Threading.Tasks;
 
-namespace Norns.AOP.Abstraction.Interceptors
+namespace Norns.AOP.Interceptors
 {
+    [NoIntercept]
     public abstract class InterceptorBase : IInterceptor
     {
         public int Order => 0;
 
-        public virtual void Intercept(InterceptContext context, Action<InterceptContext> next)
+        public virtual void Intercept(InterceptContext context, InterceptorDelegate next)
         {
-            InterceptAsync(context, c =>
+            NoSynchronizationContextScope.Run(InterceptAsync(context, c =>
             {
                 next(c);
                 return Task.CompletedTask;
-            }).ConfigureAwait(false).GetAwaiter().GetResult();
+            }));
         }
 
-        public abstract Task InterceptAsync(InterceptContext context, Func<InterceptContext, Task> nextAsync);
+        public abstract Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync);
     }
 }
