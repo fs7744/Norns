@@ -1,8 +1,10 @@
-﻿using Norns.AOP.Interceptors;
+﻿using Norns.AOP.Attributes;
+using Norns.AOP.Interceptors;
 using System;
 
 namespace Norns.AOP.Core.Configuration
 {
+    [NoIntercept]
     public class FuncInterceptorCreator<T> : InterceptorCreator where T : IInterceptor
     {
         private readonly Func<IServiceProvider, T> createFunc;

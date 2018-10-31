@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace Norns.AOP.Core.Configuration
 {
+    [NoIntercept]
     public class InterceptorAttributeConfigurationHandler : IInterceptorConfigurationHandler
     {
         private readonly Assembly[] assemblies;

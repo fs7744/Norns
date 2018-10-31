@@ -1,10 +1,12 @@
-﻿using Norns.AOP.Interceptors;
+﻿using Norns.AOP.Attributes;
+using Norns.AOP.Interceptors;
 using Norns.Extensions.Reflection;
 using System;
 using System.Linq;
 
 namespace Norns.AOP.Core.Configuration
 {
+    [NoIntercept]
     public class TypeInterceptorCreator : InterceptorCreator
     {
         public TypeInterceptorCreator(Type interceptorType,
