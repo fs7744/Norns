@@ -50,12 +50,16 @@ namespace Norns.Extensions.Reflection
         public static bool IsLegalExplicitVariantDelegateConversion(TypeInfo source, TypeInfo dest)
         {
             if (!IsDelegate(source) || !IsDelegate(dest) || !source.IsGenericType || !dest.IsGenericType)
+            {
                 return false;
+            }
 
             var genericDelegate = source.GetGenericTypeDefinition();
 
             if (dest.GetGenericTypeDefinition() != genericDelegate)
+            {
                 return false;
+            }
 
             var genericParameters = genericDelegate.GetTypeInfo().GetGenericArguments();
             var sourceArguments = source.GetGenericArguments();
@@ -141,7 +145,9 @@ namespace Norns.Extensions.Reflection
             }
             // Variant delegate conversion
             if (IsLegalExplicitVariantDelegateConversion(source, dest))
+            {
                 return true;
+            }
 
             // Object conversion
             if (source.AsType() == typeof(object) || dest.AsType() == typeof(object))
@@ -178,6 +184,7 @@ namespace Norns.Extensions.Reflection
                 case TypeCode.Double:
                 case TypeCode.Char:
                     return true;
+
                 default:
                     return false;
             }
@@ -194,6 +201,7 @@ namespace Norns.Extensions.Reflection
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
                     return true;
+
                 default:
                     return false;
             }
@@ -207,6 +215,7 @@ namespace Norns.Extensions.Reflection
                 case TypeCode.Single:
                 case TypeCode.Double:
                     return true;
+
                 default:
                     return false;
             }

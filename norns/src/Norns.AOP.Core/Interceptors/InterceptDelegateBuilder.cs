@@ -30,7 +30,7 @@ namespace Norns.AOP.Core.Interceptors
             {
                 var asyncFunc = func;
                 var builders = boxs.Where(i => i.Verifier(m))
-                    .Select( i=> i.Interceptor)
+                    .Select(i => i.Interceptor)
                     .OrderByDescending(i => i.Order)
                     .Select<IInterceptor, Func<AsyncInterceptDelegate, AsyncInterceptDelegate>>(i => next => async c => await i.InterceptAsync(c, next));
                 foreach (var builder in builders)

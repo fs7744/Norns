@@ -1,5 +1,5 @@
-﻿using Norns.AOP.Interceptors;
-using Norns.AOP.Utils;
+﻿using Norns.AOP.Extensions;
+using Norns.AOP.Interceptors;
 using System;
 using System.Threading.Tasks;
 

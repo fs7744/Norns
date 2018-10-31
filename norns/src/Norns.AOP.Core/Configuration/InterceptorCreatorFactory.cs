@@ -1,8 +1,8 @@
 ﻿using Norns.AOP.Attributes;
 using Norns.AOP.Configuration;
 using Norns.AOP.Core.Interceptors;
+using Norns.AOP.Extensions;
 using Norns.AOP.Interceptors;
-using Norns.AOP.Utils;
 using Norns.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ namespace Norns.AOP.Core.Configuration
     {
         private static readonly InterceptPredicate defaultBlacklists = m => m.GetReflector().IsDefined<NoInterceptAttribute>()
                 || m.DeclaringType.GetReflector().IsDefined<NoInterceptAttribute>();
+
         private static readonly InterceptPredicate defaultWhitelists = m => m.GetReflector().IsDefined<NoInterceptAttribute>()
                 || m.DeclaringType.GetReflector().IsDefined<NoInterceptAttribute>();
 
@@ -22,7 +23,7 @@ namespace Norns.AOP.Core.Configuration
         private readonly IEnumerable<IInterceptorConfigurationHandler> handlers;
         private readonly IServiceProvider serviceProvider;
 
-        public InterceptorCreatorFactory(IInterceptorConfiguration configuration, 
+        public InterceptorCreatorFactory(IInterceptorConfiguration configuration,
             IEnumerable<IInterceptorConfigurationHandler> handlers, IServiceProvider serviceProvider)
         {
             this.configuration = configuration;
@@ -47,7 +48,7 @@ namespace Norns.AOP.Core.Configuration
             }
         }
 
-        private IInterceptBox CreateBox(IGrouping<Type, IInterceptorCreator> group, 
+        private IInterceptBox CreateBox(IGrouping<Type, IInterceptorCreator> group,
             IEnumerable<InterceptPredicate> globalWhitelists,
             IEnumerable<InterceptPredicate> globalBlacklists)
         {
@@ -64,8 +65,8 @@ namespace Norns.AOP.Core.Configuration
             blacklists.Insert(0, defaultBlacklists);
             var white = whitelists.SkipNull().Aggregate((i, j) => m => i(m) && j(m));
             var black = blacklists.SkipNull().Aggregate((i, j) => m => i(m) || j(m));
-            return lastCreator == null 
-                ? null 
+            return lastCreator == null
+                ? null
                 : new InterceptBox(lastCreator.Create(serviceProvider), m => white(m) && !black(m));
         }
     }

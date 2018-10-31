@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Norns.AOP.Utils
+namespace Norns.AOP.Extensions
 {
     // synchronous method to avoid deadlock waiting on async method
     // See: https://stackoverflow.com/questions/28305968/use-task-run-in-synchronous-method-to-avoid-deadlock-waiting-on-async-method

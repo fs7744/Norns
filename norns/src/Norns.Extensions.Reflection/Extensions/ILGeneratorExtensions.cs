@@ -21,18 +21,29 @@ namespace Norns.Extensions.Reflection.Extensions
                 case 0:
                     ilGenerator.Emit(OpCodes.Ldarg_0);
                     break;
+
                 case 1:
                     ilGenerator.Emit(OpCodes.Ldarg_1);
                     break;
+
                 case 2:
                     ilGenerator.Emit(OpCodes.Ldarg_2);
                     break;
+
                 case 3:
                     ilGenerator.Emit(OpCodes.Ldarg_3);
                     break;
+
                 default:
-                    if (index <= byte.MaxValue) ilGenerator.Emit(OpCodes.Ldarg_S, (byte)index);
-                    else ilGenerator.Emit(OpCodes.Ldarg, index);
+                    if (index <= byte.MaxValue)
+                    {
+                        ilGenerator.Emit(OpCodes.Ldarg_S, (byte)index);
+                    }
+                    else
+                    {
+                        ilGenerator.Emit(OpCodes.Ldarg, index);
+                    }
+
                     break;
             }
         }
@@ -44,8 +55,14 @@ namespace Norns.Extensions.Reflection.Extensions
                 throw new ArgumentNullException(nameof(ilGenerator));
             }
 
-            if (index <= byte.MaxValue) ilGenerator.Emit(OpCodes.Ldarga_S, (byte)index);
-            else ilGenerator.Emit(OpCodes.Ldarga, index);
+            if (index <= byte.MaxValue)
+            {
+                ilGenerator.Emit(OpCodes.Ldarga_S, (byte)index);
+            }
+            else
+            {
+                ilGenerator.Emit(OpCodes.Ldarga, index);
+            }
         }
 
         public static void EmitConvertToObject(this ILGenerator ilGenerator, Type typeFrom)
@@ -490,33 +507,43 @@ namespace Norns.Extensions.Reflection.Extensions
                 case -1:
                     c = OpCodes.Ldc_I4_M1;
                     break;
+
                 case 0:
                     c = OpCodes.Ldc_I4_0;
                     break;
+
                 case 1:
                     c = OpCodes.Ldc_I4_1;
                     break;
+
                 case 2:
                     c = OpCodes.Ldc_I4_2;
                     break;
+
                 case 3:
                     c = OpCodes.Ldc_I4_3;
                     break;
+
                 case 4:
                     c = OpCodes.Ldc_I4_4;
                     break;
+
                 case 5:
                     c = OpCodes.Ldc_I4_5;
                     break;
+
                 case 6:
                     c = OpCodes.Ldc_I4_6;
                     break;
+
                 case 7:
                     c = OpCodes.Ldc_I4_7;
                     break;
+
                 case 8:
                     c = OpCodes.Ldc_I4_8;
                     break;
+
                 default:
                     if (value >= -128 && value <= 127)
                     {
@@ -593,25 +620,31 @@ namespace Norns.Extensions.Reflection.Extensions
                 case TypeCode.Byte:
                     ilGenerator.Emit(OpCodes.Stelem_I1);
                     break;
+
                 case TypeCode.Char:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                     ilGenerator.Emit(OpCodes.Stelem_I2);
                     break;
+
                 case TypeCode.Int32:
                 case TypeCode.UInt32:
                     ilGenerator.Emit(OpCodes.Stelem_I4);
                     break;
+
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
                     ilGenerator.Emit(OpCodes.Stelem_I8);
                     break;
+
                 case TypeCode.Single:
                     ilGenerator.Emit(OpCodes.Stelem_R4);
                     break;
+
                 case TypeCode.Double:
                     ilGenerator.Emit(OpCodes.Stelem_R8);
                     break;
+
                 default:
                     if (type.GetTypeInfo().IsValueType)
                     {
@@ -643,32 +676,41 @@ namespace Norns.Extensions.Reflection.Extensions
                     case TypeCode.SByte:
                         ilGenerator.Emit(OpCodes.Ldelem_I1);
                         break;
+
                     case TypeCode.Byte:
                         ilGenerator.Emit(OpCodes.Ldelem_U1);
                         break;
+
                     case TypeCode.Int16:
                         ilGenerator.Emit(OpCodes.Ldelem_I2);
                         break;
+
                     case TypeCode.Char:
                     case TypeCode.UInt16:
                         ilGenerator.Emit(OpCodes.Ldelem_U2);
                         break;
+
                     case TypeCode.Int32:
                         ilGenerator.Emit(OpCodes.Ldelem_I4);
                         break;
+
                     case TypeCode.UInt32:
                         ilGenerator.Emit(OpCodes.Ldelem_U4);
                         break;
+
                     case TypeCode.Int64:
                     case TypeCode.UInt64:
                         ilGenerator.Emit(OpCodes.Ldelem_I8);
                         break;
+
                     case TypeCode.Single:
                         ilGenerator.Emit(OpCodes.Ldelem_R4);
                         break;
+
                     case TypeCode.Double:
                         ilGenerator.Emit(OpCodes.Ldelem_R8);
                         break;
+
                     default:
                         ilGenerator.Emit(OpCodes.Ldelem, type);
                         break;
@@ -777,16 +819,23 @@ namespace Norns.Extensions.Reflection.Extensions
         }
 
         #region private
+
         private static void EmitNullableConversion(this ILGenerator ilGenerator, TypeInfo typeFrom, TypeInfo typeTo, bool isChecked)
         {
             bool isTypeFromNullable = TypeExtensions.IsNullableType(typeFrom);
             bool isTypeToNullable = TypeExtensions.IsNullableType(typeTo);
             if (isTypeFromNullable && isTypeToNullable)
+            {
                 ilGenerator.EmitNullableToNullableConversion(typeFrom, typeTo, isChecked);
+            }
             else if (isTypeFromNullable)
+            {
                 ilGenerator.EmitNullableToNonNullableConversion(typeFrom, typeTo, isChecked);
+            }
             else
+            {
                 ilGenerator.EmitNonNullableToNullableConversion(typeFrom, typeTo, isChecked);
+            }
         }
 
         private static void EmitNullableToNullableConversion(this ILGenerator ilGenerator, TypeInfo typeFrom, TypeInfo typeTo, bool isChecked)
@@ -825,9 +874,13 @@ namespace Norns.Extensions.Reflection.Extensions
         private static void EmitNullableToNonNullableConversion(this ILGenerator ilGenerator, TypeInfo typeFrom, TypeInfo typeTo, bool isChecked)
         {
             if (typeTo.IsValueType)
+            {
                 ilGenerator.EmitNullableToNonNullableStructConversion(typeFrom, typeTo, isChecked);
+            }
             else
+            {
                 ilGenerator.EmitNullableToReferenceConversion(typeFrom);
+            }
         }
 
         private static void EmitNullableToNonNullableStructConversion(this ILGenerator ilGenerator, TypeInfo typeFrom, TypeInfo typeTo, bool isChecked)
@@ -844,7 +897,7 @@ namespace Norns.Extensions.Reflection.Extensions
         private static void EmitNullableToReferenceConversion(this ILGenerator ilGenerator, TypeInfo typeFrom)
         {
             // We've got a conversion from nullable to Object, ValueType, Enum, etc.  Just box it so that
-            // we get the nullable semantics.  
+            // we get the nullable semantics.
             ilGenerator.Emit(OpCodes.Box, typeFrom.AsType());
         }
 
@@ -867,13 +920,19 @@ namespace Norns.Extensions.Reflection.Extensions
             if (typeTo.AsType() == typeof(Single))
             {
                 if (isFromUnsigned)
+                {
                     ilGenerator.Emit(OpCodes.Conv_R_Un);
+                }
+
                 ilGenerator.Emit(OpCodes.Conv_R4);
             }
             else if (typeTo.AsType() == typeof(Double))
             {
                 if (isFromUnsigned)
+                {
                     ilGenerator.Emit(OpCodes.Conv_R_Un);
+                }
+
                 ilGenerator.Emit(OpCodes.Conv_R8);
             }
             else
@@ -889,28 +948,36 @@ namespace Norns.Extensions.Reflection.Extensions
                             case TypeCode.SByte:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I1_Un);
                                 break;
+
                             case TypeCode.Int16:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I2_Un);
                                 break;
+
                             case TypeCode.Int32:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I4_Un);
                                 break;
+
                             case TypeCode.Int64:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I8_Un);
                                 break;
+
                             case TypeCode.Byte:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U1_Un);
                                 break;
+
                             case TypeCode.UInt16:
                             case TypeCode.Char:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U2_Un);
                                 break;
+
                             case TypeCode.UInt32:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U4_Un);
                                 break;
+
                             case TypeCode.UInt64:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U8_Un);
                                 break;
+
                             default:
                                 throw new InvalidCastException();
                         }
@@ -922,28 +989,36 @@ namespace Norns.Extensions.Reflection.Extensions
                             case TypeCode.SByte:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I1);
                                 break;
+
                             case TypeCode.Int16:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I2);
                                 break;
+
                             case TypeCode.Int32:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I4);
                                 break;
+
                             case TypeCode.Int64:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_I8);
                                 break;
+
                             case TypeCode.Byte:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U1);
                                 break;
+
                             case TypeCode.UInt16:
                             case TypeCode.Char:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U2);
                                 break;
+
                             case TypeCode.UInt32:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U4);
                                 break;
+
                             case TypeCode.UInt64:
                                 ilGenerator.Emit(OpCodes.Conv_Ovf_U8);
                                 break;
+
                             default:
                                 throw new InvalidCastException();
                         }
@@ -956,22 +1031,28 @@ namespace Norns.Extensions.Reflection.Extensions
                         case TypeCode.SByte:
                             ilGenerator.Emit(OpCodes.Conv_I1);
                             break;
+
                         case TypeCode.Byte:
                             ilGenerator.Emit(OpCodes.Conv_U1);
                             break;
+
                         case TypeCode.Int16:
                             ilGenerator.Emit(OpCodes.Conv_I2);
                             break;
+
                         case TypeCode.UInt16:
                         case TypeCode.Char:
                             ilGenerator.Emit(OpCodes.Conv_U2);
                             break;
+
                         case TypeCode.Int32:
                             ilGenerator.Emit(OpCodes.Conv_I4);
                             break;
+
                         case TypeCode.UInt32:
                             ilGenerator.Emit(OpCodes.Conv_U4);
                             break;
+
                         case TypeCode.Int64:
                             if (isFromUnsigned)
                             {
@@ -982,6 +1063,7 @@ namespace Norns.Extensions.Reflection.Extensions
                                 ilGenerator.Emit(OpCodes.Conv_I8);
                             }
                             break;
+
                         case TypeCode.UInt64:
                             if (isFromUnsigned || isFromFloatingPoint)
                             {
@@ -992,6 +1074,7 @@ namespace Norns.Extensions.Reflection.Extensions
                                 ilGenerator.Emit(OpCodes.Conv_I8);
                             }
                             break;
+
                         default:
                             throw new InvalidCastException();
                     }
@@ -1023,45 +1106,59 @@ namespace Norns.Extensions.Reflection.Extensions
                 case TypeCode.Boolean:
                     ilGenerator.EmitBoolean((bool)value);
                     return true;
+
                 case TypeCode.SByte:
                     ilGenerator.EmitSByte((sbyte)value);
                     return true;
+
                 case TypeCode.Int16:
                     ilGenerator.EmitShort((short)value);
                     return true;
+
                 case TypeCode.Int32:
                     ilGenerator.EmitInt((int)value);
                     return true;
+
                 case TypeCode.Int64:
                     ilGenerator.EmitLong((long)value);
                     return true;
+
                 case TypeCode.Single:
                     ilGenerator.EmitSingle((float)value);
                     return true;
+
                 case TypeCode.Double:
                     ilGenerator.EmitDouble((double)value);
                     return true;
+
                 case TypeCode.Char:
                     ilGenerator.EmitChar((char)value);
                     return true;
+
                 case TypeCode.Byte:
                     ilGenerator.EmitByte((byte)value);
                     return true;
+
                 case TypeCode.UInt16:
                     ilGenerator.EmitUShort((ushort)value);
                     return true;
+
                 case TypeCode.UInt32:
                     ilGenerator.EmitUInt((uint)value);
                     return true;
+
                 case TypeCode.UInt64:
                     ilGenerator.EmitULong((ulong)value);
                     return true;
+
                 case TypeCode.Decimal:
                     ilGenerator.EmitDecimal((decimal)value);
                     return true;
+
                 case TypeCode.String:
                     ilGenerator.EmitString((string)value);
                     return true;
+
                 default:
                     return false;
             }
@@ -1100,6 +1197,7 @@ namespace Norns.Extensions.Reflection.Extensions
             }
             return false;
         }
-        #endregion
+
+        #endregion private
     }
 }

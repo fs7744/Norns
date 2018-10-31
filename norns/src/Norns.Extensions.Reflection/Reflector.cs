@@ -5,13 +5,16 @@ using System.Reflection;
 
 namespace Norns.Extensions.Reflection
 {
-    public class Reflector<T> where T : MemberInfo
+    public class Reflector<T> where T : ICustomAttributeProvider
     {
-        private readonly CustomAttributeCreator[] customAttributeCreators;
+        public T Member { get; }
 
-        public Reflector(T member)
+        public CustomAttributeReflector[] CustomAttributeReflectors { get; }
+
+        public Reflector(T member, IEnumerable<CustomAttributeData> customAttributes)
         {
-            customAttributeCreators = member.CustomAttributes.Select(i => new CustomAttributeCreator(i)).ToArray();
+            CustomAttributeReflectors = customAttributes.Select(i => new CustomAttributeReflector(i)).ToArray();
+            Member = member;
         }
 
         public bool IsDefined<TAttribute>() where TAttribute : Attribute
@@ -22,7 +25,7 @@ namespace Norns.Extensions.Reflection
         public bool IsDefined(Type attributeType)
         {
             var attrToken = attributeType.TypeHandle;
-            return customAttributeCreators.Any(i => i.Tokens.Contains(attrToken));
+            return CustomAttributeReflectors.Any(i => i.Tokens.Contains(attrToken));
         }
 
         public IEnumerable<TAttribute> GetCustomAttributes<TAttribute>() where TAttribute : Attribute
@@ -33,8 +36,8 @@ namespace Norns.Extensions.Reflection
         public IEnumerable<Attribute> GetCustomAttributes(Type attributeType)
         {
             var attrToken = attributeType.TypeHandle;
-            return customAttributeCreators.Where(i => i.Tokens.Contains(attrToken))
-                .Select(i => i.Create());
+            return CustomAttributeReflectors.Where(i => i.Tokens.Contains(attrToken))
+                .Select(i => i.Invoke());
         }
 
         public TAttribute GetCustomAttribute<TAttribute>() where TAttribute : Attribute

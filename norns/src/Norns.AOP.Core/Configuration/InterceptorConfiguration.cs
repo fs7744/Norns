@@ -10,7 +10,7 @@ namespace Norns.AOP.Core.Configuration
     {
         public IList<InterceptPredicate> GlobalWhitelists { get; } = new List<InterceptPredicate>();
 
-        public IList<InterceptPredicate> GlobalBlacklists { get; } = new List<InterceptPredicate>();
+        public IList<InterceptPredicate> GlobalBlacklists { get; } = new List<InterceptPredicate>().AddDefaultBlacklists();
 
         public IList<IInterceptorCreator> Interceptors { get; } = new List<IInterceptorCreator>();
     }

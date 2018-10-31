@@ -16,6 +16,16 @@ namespace Norns.Extensions.Reflection
             return ReflectorCache<MethodInfo, MethodReflector>.GetOrAdd(method, t => new MethodReflector(t));
         }
 
+        public static ConstructorReflector GetReflector(this ConstructorInfo constructorInfo)
+        {
+            return ReflectorCache<ConstructorInfo, ConstructorReflector>.GetOrAdd(constructorInfo, t => new ConstructorReflector(t));
+        }
+
+        public static ParameterReflector GetReflector(this ParameterInfo parameterInfo)
+        {
+            return ReflectorCache<ParameterInfo, ParameterReflector>.GetOrAdd(parameterInfo, t => new ParameterReflector(t));
+        }
+
         public static MethodInfo GetMethod<T>(Expression<T> expression)
         {
             if (expression == null)

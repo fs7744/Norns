@@ -1,21 +1,21 @@
-﻿using System;
-using System.Linq;
+﻿using Norns.Extensions.Reflection.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using Norns.Extensions.Reflection.Extensions;
 
 namespace Norns.Extensions.Reflection
 {
-    internal class CustomAttributeCreator
+    public class CustomAttributeReflector
     {
         internal readonly HashSet<RuntimeTypeHandle> Tokens;
-        private readonly Func<Attribute> invoker;
+        public readonly Func<Attribute> Invoke;
 
-        public CustomAttributeCreator(CustomAttributeData customAttributeData)
+        public CustomAttributeReflector(CustomAttributeData customAttributeData)
         {
             Tokens = CreateTokens(customAttributeData.AttributeType);
-            invoker = CreateInvoker(customAttributeData);
+            Invoke = CreateInvoker(customAttributeData);
         }
 
         internal HashSet<RuntimeTypeHandle> CreateTokens(Type attributeType)
@@ -77,11 +77,6 @@ namespace Norns.Extensions.Reflection
             ilGen.Emit(OpCodes.Ldloc, attributeLocal);
             ilGen.Emit(OpCodes.Ret);
             return (Func<Attribute>)dynamicMethod.CreateDelegate(typeof(Func<Attribute>));
-        }
-
-        internal Attribute Create()
-        {
-            return invoker();
         }
     }
 }

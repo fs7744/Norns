@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Norns.AOP.Utils
+namespace Norns.AOP.Extensions
 {
     public static class EnumerableExtensions
     {
