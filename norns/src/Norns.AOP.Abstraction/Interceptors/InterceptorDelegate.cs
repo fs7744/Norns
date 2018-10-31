@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Norns.AOP.Interceptors
 {
-    public delegate void InterceptorDelegate(InterceptContext context);
+    public delegate void InterceptDelegate(InterceptContext context);
 
-    public delegate Task AsyncInterceptorDelegate(InterceptContext context);
+    public delegate Task AsyncInterceptDelegate(InterceptContext context);
+
+    public delegate bool InterceptPredicate(MethodInfo method);
 }

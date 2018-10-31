@@ -26,7 +26,7 @@ namespace Norns.Test.Interceptors
 
         public class AddOneAttribute : InterceptorBaseAttribute
         {
-            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync)
+            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptDelegate nextAsync)
             {
                 await nextAsync(context);
                 context.Result = (int)context.Result + 1;
@@ -35,7 +35,7 @@ namespace Norns.Test.Interceptors
 
         public class AddOne2Attribute : InterceptorBase
         {
-            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync)
+            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptDelegate nextAsync)
             {
                 await nextAsync(context);
                 context.Result = (int)context.Result + 1;
@@ -44,13 +44,13 @@ namespace Norns.Test.Interceptors
 
         public class AddOneSyncAttribute : InterceptorBaseAttribute
         {
-            public override void Intercept(InterceptContext context, InterceptorDelegate next)
+            public override void Intercept(InterceptContext context, InterceptDelegate next)
             {
                 next(context);
                 context.Result = (int)context.Result + 1;
             }
 
-            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync)
+            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptDelegate nextAsync)
             {
                 throw new NotImplementedException();
             }
@@ -58,13 +58,13 @@ namespace Norns.Test.Interceptors
 
         public class AddOneSync2Attribute : InterceptorBase
         {
-            public override void Intercept(InterceptContext context, InterceptorDelegate next)
+            public override void Intercept(InterceptContext context, InterceptDelegate next)
             {
                 next(context);
                 context.Result = (int)context.Result + 1;
             }
 
-            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync)
+            public override async Task InterceptAsync(InterceptContext context, AsyncInterceptDelegate nextAsync)
             {
                 throw new NotImplementedException();
             }
@@ -73,12 +73,12 @@ namespace Norns.Test.Interceptors
         public class TestSumServiceProxy : TestSumService
         {
             private readonly MethodInfo sumMethod;
-            private readonly InterceptorDelegate sumInterceptor;
+            private readonly InterceptDelegate sumInterceptor;
 
-            public TestSumServiceProxy(IInterceptorBuilder builder)
+            public TestSumServiceProxy(IInterceptDelegateBuilder builder)
             {
                 sumMethod = typeof(TestSumService).GetMethod("Sum", new Type[] { typeof(int), typeof(int) });
-                sumInterceptor = builder.BuildInterceptor(sumMethod, c =>
+                sumInterceptor = builder.BuildInterceptDelegate(sumMethod, c =>
                 {
                     c.Result = base.Sum((int)c.Parameters[0], (int)c.Parameters[1]);
                 });
@@ -99,28 +99,36 @@ namespace Norns.Test.Interceptors
         [Fact]
         public void WhenSum6And3ThenAddOneInterceptorShouldBe10()
         {
-            var result = new TestSumServiceProxy(new InterceptorBuilder(new IInterceptor[] { new AddOneAttribute() })).Sum(6, 3);
+            var verifiers = new IInterceptBox[]
+            { new InterceptBox(new AddOneAttribute(), m => true) };
+            var result = new TestSumServiceProxy(new InterceptDelegateBuilder(verifiers)).Sum(6, 3);
             Assert.Equal(10, result);
         }
 
         [Fact]
         public void WhenSum6And3ThenAddOneSyncInterceptorShouldBe10()
         {
-            var result = new TestSumServiceProxy(new InterceptorBuilder(new IInterceptor[] { new AddOneSyncAttribute() })).Sum(6, 3);
+            var verifiers = new IInterceptBox[]
+            { new InterceptBox(new AddOneSyncAttribute(), m => true) };
+            var result = new TestSumServiceProxy(new InterceptDelegateBuilder(verifiers)).Sum(6, 3);
             Assert.Equal(10, result);
         }
 
         [Fact]
         public void WhenSum6And3ThenAddOne2InterceptorShouldBe10()
         {
-            var result = new TestSumServiceProxy(new InterceptorBuilder(new IInterceptor[] { new AddOne2Attribute() })).Sum(6, 3);
+            var verifiers = new IInterceptBox[]
+            { new InterceptBox(new AddOne2Attribute(), m => true) };
+            var result = new TestSumServiceProxy(new InterceptDelegateBuilder(verifiers)).Sum(6, 3);
             Assert.Equal(10, result);
         }
 
         [Fact]
         public void WhenSum6And3ThenAddOneSync2InterceptorShouldBe10()
         {
-            var result = new TestSumServiceProxy(new InterceptorBuilder(new IInterceptor[] { new AddOneSync2Attribute() })).Sum(6, 3);
+            var verifiers = new IInterceptBox[]
+            { new InterceptBox(new AddOneSync2Attribute(), m => true) };
+            var result = new TestSumServiceProxy(new InterceptDelegateBuilder(verifiers)).Sum(6, 3);
             Assert.Equal(10, result);
         }
     }

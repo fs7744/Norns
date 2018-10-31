@@ -9,7 +9,7 @@ namespace Norns.AOP.Interceptors
     {
         public int Order => 0;
 
-        public virtual void Intercept(InterceptContext context, InterceptorDelegate next)
+        public virtual void Intercept(InterceptContext context, InterceptDelegate next)
         {
             NoSynchronizationContextScope.Run(InterceptAsync(context, c =>
             {
@@ -18,6 +18,6 @@ namespace Norns.AOP.Interceptors
             }));
         }
 
-        public abstract Task InterceptAsync(InterceptContext context, AsyncInterceptorDelegate nextAsync);
+        public abstract Task InterceptAsync(InterceptContext context, AsyncInterceptDelegate nextAsync);
     }
 }
