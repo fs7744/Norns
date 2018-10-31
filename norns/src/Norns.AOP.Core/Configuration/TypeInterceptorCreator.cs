@@ -10,6 +10,10 @@ namespace Norns.AOP.Core.Configuration
         public TypeInterceptorCreator(Type interceptorType,
             InterceptPredicate whitelists, InterceptPredicate blacklists) : base(interceptorType, whitelists, blacklists)
         {
+            if (!typeof(IInterceptor).IsAssignableFrom(interceptorType))
+            {
+                throw new ArgumentException("Not IInterceptor type.", interceptorType.FullName);
+            }
         }
 
         public override IInterceptor Create(IServiceProvider serviceProvider)

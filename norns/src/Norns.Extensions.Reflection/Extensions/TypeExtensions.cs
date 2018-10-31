@@ -89,12 +89,10 @@ namespace Norns.Extensions.Reflection
                         return false;
                     }
                 }
-                else if (IsContravariant(genericParameter))
+                else if (IsContravariant(genericParameter) 
+                    && (sourceArgument.IsValueType || destArgument.IsValueType))
                 {
-                    if (sourceArgument.IsValueType || destArgument.IsValueType)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
             return true;

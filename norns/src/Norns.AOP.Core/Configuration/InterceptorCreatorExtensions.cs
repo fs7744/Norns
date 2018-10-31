@@ -10,7 +10,13 @@ namespace Norns.AOP.Configuration
         public static IList<IInterceptorCreator> AddType<T>
             (this IList<IInterceptorCreator> interceptors, InterceptPredicate whitelists = null, InterceptPredicate blacklists = null) where T : IInterceptor
         {
-            interceptors.Add(new TypeInterceptorCreator(typeof(T), whitelists, blacklists));
+            return interceptors.AddType(typeof(T), whitelists, blacklists);
+        }
+
+        public static IList<IInterceptorCreator> AddType
+            (this IList<IInterceptorCreator> interceptors, Type interceptorType, InterceptPredicate whitelists = null, InterceptPredicate blacklists = null)
+        {
+            interceptors.Add(new TypeInterceptorCreator(interceptorType, whitelists, blacklists));
             return interceptors;
         }
 
