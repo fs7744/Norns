@@ -203,3 +203,8 @@ public abstract class InterceptorBase : IInterceptor
         - 示例 编写
         - 文档 编写
 - IL 重写 实现 （第 1 阶段，PS：待定，如代码生成满足需求或IL 重写性能与代码生成方式没有优势，该阶段会放弃） 
+
+
+# 鸣谢列表
+
+* [https://github.com/dotnetcore/AspectCore-Framework](https://github.com/dotnetcore/AspectCore-Framework) 从中学习(抄袭)了很多，感谢其优雅实现和代码，获益良多
