@@ -1,0 +1,7 @@
+﻿<Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
+  <PropertyGroup>
+    <TaskAssembly>$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\Norns.AOP.Codegen.MSBuild.dll</TaskAssembly>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Norns.AOP.Codegen.MSBuild.CodegenTask" AssemblyFile="$(TaskAssembly)" />
+</Project>

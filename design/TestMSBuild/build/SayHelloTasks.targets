@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <Target Name="Greet" BeforeTargets="PrepareForBuild">
-    <SayHelloTask />
+    <SayHelloTask MSBuildProjectDirectory="$(Configuration)" />
   </Target>
 
   <Target Name="Thank" AfterTargets="Build">
-    <SayHelloTask />
+    <SayHelloTask MSBuildProjectDirectory="$(MSBuildProjectDirectory)" />
   </Target>
   
 </Project>
