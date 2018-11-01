@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Norns.Test.Reflections
 {
-    [NoIntercept]
+    [Norns.AOP.Attributes.NoIntercept]
     [TestCustom("a", B = "b")]
     public class CustomAttributeTest
     {
@@ -44,5 +44,10 @@ namespace Norns.Test.Reflections
             Assert.Equal("b3", test.B);
             Assert.Null(typeof(CustomAttributeTest).GetMethod("WhenType").GetReflector().GetCustomAttribute<TestCustomAttribute>());
         }
+    }
+
+    public static class A
+    {
+
     }
 }

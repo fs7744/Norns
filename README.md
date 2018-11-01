@@ -189,7 +189,7 @@ public abstract class InterceptorBase : IInterceptor
         - IOC适配探索 （✔）[design/TestIOC](design/TestIOC)
         - asp.net core Controller 代理+IOC适配探索 （✔）[design/TestIOC](design/TestIOC) *(asp.net core框架必须特殊适配，但任何框架都可能有类似的特殊处理导致替换机制无法适用，全部适配代价太大)*
         - 全局拦截器 （✔）*(只有通过ioc才能统一掌控所有实例的创建，才能做到动态添加代理类，这样才能动态创建全局拦截器，微软或者其他的ioc实现并不一定包含aop所需功能，综合来看必须做个ioc实现)*
-        - roslyn 解析代码+解析dll探索
+        - roslyn 解析代码 （✔）*(无法准确完整识别继承关系)*
     - 实现 阶段
         - 拦截器（同步+异步） 编写 （✔）
         - 拦截器筛选机制 编写 （✔）
