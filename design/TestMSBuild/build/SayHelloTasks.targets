@@ -7,12 +7,69 @@
     <TaskAssembly>$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\SayHelloTasks.dll</TaskAssembly>
   </PropertyGroup>
 
+   <PropertyGroup>
+    <CoreCompileDependsOn Condition="'$(BuildingInsideVisualStudio)' == 'true' ">
+      Greet;
+      $(CoreCompileDependsOn)
+    </CoreCompileDependsOn>
+  </PropertyGroup> 
+
+  <PropertyGroup>
+    <NornsProxyGenCodeFileNames >$(MSBuildProjectFile).NornsProxyFileListAbsolute.txt</NornsProxyGenCodeFileNames>
+    <FileList >$(MSBuildProjectFile).FileListAbsolute.txt</FileList>
+  </PropertyGroup>
+
+  <Target Name="NornsReadGeneratedFileList">
+  
+    <!-- <ReadLinesFromFile File="$(MSBuildProjectDirectory)\obj\Program.cs">
+      <Output TaskParameter="Lines" ItemName="testProgramContent"/>
+    </ReadLinesFromFile>
+      <WriteLinesToFile
+      File="$(IntermediateOutputPath)Program.cs"
+      Lines="@(testProgramContent)"
+      Overwrite="true"/>
+      <WriteLinesToFile
+      File="$(IntermediateOutputPath)$(NornsProxyGenCodeFileNames)"
+      Lines="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Program.cs"
+      Overwrite="true"/> -->
+    <ReadLinesFromFile File="$(NornsProxyGenCodeFileNames)">
+      <Output TaskParameter="Lines" ItemName="NornsProxyOutputCodeFilesList"/>
+    </ReadLinesFromFile>
+  </Target>
+<!-- 
+    <Target Name="NornsAddGeneratedFileList">
+  
+    <ReadLinesFromFile File="$(NornsProxyGenCodeFileNames)">
+      <Output TaskParameter="Lines" ItemName="NornsProxyOutputCodeFilesList"/>
+    </ReadLinesFromFile>
+      <WriteLinesToFile
+      File="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)$(FileList)"
+      Lines="@(NornsProxyOutputCodeFilesList)"/>
+  </Target> -->
+
   <Target Name="Greet" BeforeTargets="PrepareForBuild">
-    <SayHelloTask MSBuildProjectDirectory="$(Configuration)" />
+    <!-- <ItemGroup>
+      <NornsGeneratedCodeFiles Condition="'@(NornsGeneratedCodeFiles)' == ''" Include="@(NornsProxyOutputCodeFilesList)" />
+    </ItemGroup> -->
+        <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\obj\ss.cs;" />
+    </ItemGroup>
+    <ItemGroup>
+    <Compile Include="$(MSBuildProjectDirectory)\obj\ss.cs" />
+    <!-- <_GeneratedCodeFiles Include="$(MSBuildProjectDirectory)\obj\Program.cs" /> -->
+  </ItemGroup>
+  <SayHelloTask MSBuildProjectDirectory="$(MSBuildProjectDirectory)\$(IntermediateOutputPath)Program.cs" />
   </Target>
 
   <Target Name="Thank" AfterTargets="Build">
     <SayHelloTask MSBuildProjectDirectory="$(MSBuildProjectDirectory)" />
+    <ItemGroup>
+    <Compile Include="$(MSBuildProjectDirectory)\obj\ss.cs" />
+    <!-- <_GeneratedCodeFiles Include="$(MSBuildProjectDirectory)\obj\Program.cs" /> -->
+  </ItemGroup>
   </Target>
+  <!-- <ItemGroup>
+    <Compile Include="$(MSBuildProjectDirectory)/obj/Program.cs" />
+  </ItemGroup> -->
   
 </Project>
