@@ -36,7 +36,15 @@ namespace Norns.AOP.Codegen
                 && !node.Modifiers.Any(i => i.Text == "static" || i.Text == "sealed" || i.Text == "abstract" || i.Text == "partial")
                 && !node.AttributeLists.SelectMany(i => i.Attributes).Any(i => i.Name.ToString().EndsWith("NoIntercept"))
                 && (node.BaseList == null 
-                    || !node.BaseList.Types.Select(i => i.Type).Any(i => i.ToString().EndsWith("InterceptorBase"))))
+                    || !node.BaseList.Types.Select(i => i.Type).Any(i => i.ToString().EndsWith("InterceptorBase")))
+                && node.Members.Any(i => 
+                {
+                    return i is MethodDeclarationSyntax dec
+                    && dec.Modifiers.Any(x => x.Text == "public")
+                    && dec.Modifiers.Any(x => x.Text == "virtual" || x.Text == "override")
+                    && !dec.Modifiers.Any(x => x.Text == "static")
+                    && !dec.AttributeLists.SelectMany(x => x.Attributes).Any(x => x.Name.ToString().EndsWith("NoIntercept"));
+                }))
             {
                 ClassDeclarations.Add(node);
             }

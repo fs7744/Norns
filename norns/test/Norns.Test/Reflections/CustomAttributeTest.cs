@@ -45,9 +45,4 @@ namespace Norns.Test.Reflections
             Assert.Null(typeof(CustomAttributeTest).GetMethod("WhenType").GetReflector().GetCustomAttribute<TestCustomAttribute>());
         }
     }
-
-    public static class A
-    {
-
-    }
 }
