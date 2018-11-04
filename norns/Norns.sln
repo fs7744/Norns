@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.AOP.Core", "src\Norns
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Extensions.Reflection", "src\Norns.Extensions.Reflection\Norns.Extensions.Reflection.csproj", "{B8FE0767-2652-4103-BDDE-0FE43153FF6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.AOP.Codegen", "src\Norns.AOP.Codegen\Norns.AOP.Codegen.csproj", "{3020AF7B-A9F2-497F-B2F1-C4AAD8C82C89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.AOP.Codegen", "src\Norns.AOP.Codegen\Norns.AOP.Codegen.csproj", "{3020AF7B-A9F2-497F-B2F1-C4AAD8C82C89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.AOP.Codegen.MSBuild", "src\Norns.AOP.Codegen.MSBuild\Norns.AOP.Codegen.MSBuild.csproj", "{F5C0A9E0-56BE-4932-8B78-02406021EE14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.AOP.Codegen.MSBuild", "src\Norns.AOP.Codegen.MSBuild\Norns.AOP.Codegen.MSBuild.csproj", "{F5C0A9E0-56BE-4932-8B78-02406021EE14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

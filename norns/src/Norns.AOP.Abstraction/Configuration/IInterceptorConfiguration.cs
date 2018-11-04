@@ -10,5 +10,9 @@ namespace Norns.AOP.Configuration
         IList<InterceptPredicate> GlobalBlacklists { get; }
 
         IList<IInterceptorCreator> Interceptors { get; }
+
+        bool DynamicInterceptor { get; set; }
+
+        bool PropertyInjector { get; set; } 
     }
 }
