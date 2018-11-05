@@ -17,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Norns.AOP.Codegen\Norns.AOP.Codegen.csproj" />
-    <ProjectReference Include="..\..\src\Norns.AOP.Core\Norns.Core.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Core\Norns.Core.csproj" />
     <ProjectReference Include="..\..\src\Norns.Extensions.Reflection\Norns.Extensions.Reflection.csproj" />
   </ItemGroup>
 </Project>

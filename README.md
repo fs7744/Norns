@@ -82,105 +82,9 @@ AOP静态编织 分为两条道路：
   </tr>
 </table>
 
-### 代码生成 设计
-
-由于上述对比中IL重写的复杂性以及理论上IL重写性能优势不明显，所以我们优先探索 代码生成 道路，将其做到尽可能完善之后，我们再看下有什么我们无法回避的问题。
-
-#### Context
-
-``` csharp
-public class Context
-{
-    public object[] Parameters { get; set; }
-
-    public object Result { get; set; }
-}
-```
-
-#### 代理类
-
-``` csharp
-public class XXProxy : ITestService
-{
-    private readonly IXXService realService;
-    private readonly ISyncInterceptor interceptor;
-
-    public XXProxy(IXXService realService, ISyncInterceptor interceptor)
-    {
-        this.realService = realService;
-        this.interceptor = interceptor;
-    }
-
-    private void XXReal(Context context)
-    {
-        var x = (XX)context.Parameters[0];
-        var y = (XX)context.Parameters[1];
-        context.Result = realService.XX(x, y);
-    }
-
-    public int XX(XX x, XX y)
-    {
-        var context = new Context()
-        {
-            Parameters = new object[] { x, y }
-        };
-        interceptor.OnInvokeSync(context, XXReal);
-        return (int)context.Result;
-    }
-
-    private async Task<int> XXRealAsync(Context context)
-    {
-        var x = (XX)context.Parameters[0];
-        var y = (XX)context.Parameters[1];
-        context.Result = await realService.XX(x, y);
-    }
-
-    public async Task<int> XXAsync(XX x, XX y)
-    {
-        var context = new Context()
-        {
-            Parameters = new object[] { x, y }
-        };
-        await interceptor.OnInvokeAsync(context, XXRealAsync);
-        return (int)context.Result;
-    }
-}
-```
-
-#### 拦截器
-
-``` csharp
-public interface IInterceptor
-{
-    void OnInvokeSync(Context context, Action<Context> next);
-
-    Task OnInvokeAsync(Context context, Func<Context, Task> next);
-}
-
-public abstract class InterceptorBase : IInterceptor
-{
-    public abstract Task OnInvokeAsync(Context context, Func<Context, Task> next);
-
-    public virtual void OnInvokeSync(Context context, Action<Context> next)
-    {
-        OnInvokeAsync(context, c =>
-        {
-            next(c);
-            return Task.CompletedTask;
-        }).ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-}
-
-// PS:
-// Sync 和 Async 表明task 以及 async/await 大致有几十纳秒的消耗，
-// 这个消耗并不是特别大，对偷懒的同学，我们可以让偷懒的同学只实现异步拦截器
-// 同步拦截器调异步拦截器就好，
-// 关心性能的同学让其同时实现同步和异步拦截器
-```
-
 ## Roadmap
 
-- 代码生成 实现 （第 0 阶段） 
+- 代码生成 实现
     - 探索与设计 阶段
         - nuget 包编译命令注入简单研究 （✔） [design/TestMSBuild](design/TestMSBuild)
         - 同步拦截器+代理类设计以及性能简单对比 （✔）[design/SyncInterceptor](design/SyncInterceptor)
@@ -197,12 +101,17 @@ public abstract class InterceptorBase : IInterceptor
         - 拦截器动态创建优化+全局拦截器配置扩展 编写（✔）
         - 特性拦截器动态创建 编写（✔）
         - 静态拦截代理类代码 生成 编写 （✔）*(纯解析代码导致很多处理不准确，整体来看从源代码去做代码生成只适合固定且最好简单的格式代码)*
-        - nuget 项目编译适配器 编写
-        - 动态代理类 生成 编写
-        - ioc 编写
-        - 示例 编写
-        - 文档 编写
-- IL 重写 实现 （第 1 阶段，PS：待定，如代码生成满足需求或IL 重写性能与代码生成方式没有优势，该阶段会放弃） 
+        - *(纯解析代码不准确性很难解决，现修改计划，先DI然后实现IL重写，最后实现动态代理以支持全局拦截)* （✔）
+- DependencyInjection 编写
+    - DI Singleton 编写 （✔）
+    - DI Scoped 编写 （✔）
+    - DI Transient 编写 （✔）
+    - DI 属性注入 
+- IL 重写 实现 
+    - nuget 项目编译适配器 编写
+- 动态代理类 生成 编写
+- 示例 编写
+- 文档 编写
 
 
 # 鸣谢列表

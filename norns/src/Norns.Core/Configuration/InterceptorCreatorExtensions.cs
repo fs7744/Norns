@@ -1,4 +1,4 @@
-﻿using Norns.AOP.Core.Configuration;
+﻿using Norns.Core.AOP.Configuration;
 using Norns.AOP.Interceptors;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using Norns.AOP.Attributes;
 using Norns.AOP.Configuration;
-using Norns.AOP.Core.Interceptors;
+using Norns.Core.AOP.Interceptors;
 using Norns.AOP.Extensions;
 using Norns.AOP.Interceptors;
 using Norns.Extensions.Reflection;
@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Norns.AOP.Core.Configuration
+namespace Norns.Core.AOP.Configuration
 {
     [NoIntercept]
     public class InterceptorCreatorFactory : IInterceptorCreatorFactory

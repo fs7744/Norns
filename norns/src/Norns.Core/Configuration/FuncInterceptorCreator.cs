@@ -2,7 +2,7 @@
 using Norns.AOP.Interceptors;
 using System;
 
-namespace Norns.AOP.Core.Configuration
+namespace Norns.Core.AOP.Configuration
 {
     [NoIntercept]
     public class FuncInterceptorCreator<T> : InterceptorCreator where T : IInterceptor

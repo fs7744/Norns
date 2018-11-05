@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Norns.AOP.Core.Interceptors
+namespace Norns.Core.AOP.Interceptors
 {
     [NoIntercept]
     public class InterceptDelegateBuilder : IInterceptDelegateBuilder

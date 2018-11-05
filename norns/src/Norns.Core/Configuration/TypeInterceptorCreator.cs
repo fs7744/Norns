@@ -4,7 +4,7 @@ using Norns.Extensions.Reflection;
 using System;
 using System.Linq;
 
-namespace Norns.AOP.Core.Configuration
+namespace Norns.Core.AOP.Configuration
 {
     [NoIntercept]
     public class TypeInterceptorCreator : InterceptorCreator

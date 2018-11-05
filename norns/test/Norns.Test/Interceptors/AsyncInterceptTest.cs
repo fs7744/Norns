@@ -1,5 +1,5 @@
 ﻿using Norns.AOP.Attributes;
-using Norns.AOP.Core.Interceptors;
+using Norns.Core.AOP.Interceptors;
 using Norns.AOP.Interceptors;
 using System;
 using System.Reflection;

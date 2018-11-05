@@ -1,7 +1,7 @@
 ﻿using Norns.AOP.Attributes;
 using Norns.AOP.Interceptors;
 
-namespace Norns.AOP.Core.Interceptors
+namespace Norns.Core.AOP.Interceptors
 {
     [NoIntercept]
     public class InterceptBox : IInterceptBox

@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Norns.AOP.Core.Configuration
+namespace Norns.Core.AOP.Configuration
 {
     [NoIntercept]
     public class InterceptorAttributeConfigurationHandler : IInterceptorConfigurationHandler

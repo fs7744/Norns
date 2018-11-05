@@ -3,7 +3,7 @@ using Norns.AOP.Configuration;
 using Norns.AOP.Interceptors;
 using System.Collections.Generic;
 
-namespace Norns.AOP.Core.Configuration
+namespace Norns.Core.AOP.Configuration
 {
     [NoIntercept]
     public class InterceptorConfiguration : IInterceptorConfiguration

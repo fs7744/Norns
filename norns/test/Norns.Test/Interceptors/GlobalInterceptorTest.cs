@@ -1,5 +1,5 @@
 ﻿using Norns.AOP.Configuration;
-using Norns.AOP.Core.Configuration;
+using Norns.Core.AOP.Configuration;
 using Norns.AOP.Interceptors;
 using Norns.DependencyInjection;
 using System.Threading.Tasks;
