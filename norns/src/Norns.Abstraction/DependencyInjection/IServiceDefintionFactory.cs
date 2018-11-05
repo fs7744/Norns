@@ -4,6 +4,6 @@ namespace Norns.DependencyInjection
 {
     public interface IServiceDefintionFactory
     {
-        DelegateServiceDefintion TryGet(Type serviceType);
+        DelegateServiceDefintion TryGet(Type serviceType, string name);
     }
 }

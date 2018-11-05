@@ -3,11 +3,11 @@ using Xunit;
 
 namespace Norns.Test.DependencyInjection
 {
-    public class PropertyInjectorTest
+    public class NamedPropertyInjectorTest
     {
         public class TestPropertyInjectorClass
         {
-            [FromDI]
+            [FromDI(Named = "Test")]
             public ScopedTest Scoped { get; set; }
         }
 
@@ -16,10 +16,11 @@ namespace Norns.Test.DependencyInjection
         {
             var service = new ServiceDefintions()
                 .AddScoped<TestPropertyInjectorClass>()
+                .AddSingleton<ScopedTest>("Test")
                 .AddSingleton<ScopedTest>()
                 .BuildServiceProvider();
 
-            var result0 = service.GetRequiredService<ScopedTest>();
+            var result0 = service.GetRequiredService<ScopedTest>("Test");
             var result1 = service.GetRequiredService<TestPropertyInjectorClass>();
             Assert.Same(result0, result1.Scoped);
         }
@@ -28,10 +29,11 @@ namespace Norns.Test.DependencyInjection
         public void WhenHasPropertyInjectorButNoService()
         {
             var service = new ServiceDefintions()
+                .AddSingleton<ScopedTest>()
                 .AddScoped<TestPropertyInjectorClass>()
                 .BuildServiceProvider();
 
-            var result0 = service.GetService<ScopedTest>();
+            var result0 = service.GetService<ScopedTest>("Test");
             Assert.Null(result0);
             var result1 = service.GetRequiredService<TestPropertyInjectorClass>();
             Assert.Null(result1.Scoped);

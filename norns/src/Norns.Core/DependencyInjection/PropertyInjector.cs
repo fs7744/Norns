@@ -1,16 +1,15 @@
-﻿using Norns.Extensions.Reflection.Extensions;
+﻿using Norns.Extensions.Reflection;
+using Norns.Extensions.Reflection.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using Norns.Extensions.Reflection;
 
 namespace Norns.DependencyInjection
 {
     public class PropertyInjector : IDelegateServiceDefintionHandler
     {
-        private static readonly MethodInfo getService = typeof(IServiceProvider).GetMethod("GetService");
+        private static readonly MethodInfo getService = typeof(INamedServiceProvider).GetMethod("GetService", new Type[] { typeof(Type), typeof(string) });
 
         public int Order => 0;
 
@@ -27,26 +26,27 @@ namespace Norns.DependencyInjection
             else
             {
                 return new DelegateServiceDefintion(defintion.ServiceType, defintion.ImplementationType,
-                    defintion.Lifetime, CreatePropertyInjector(properties, defintion.ImplementationFactory));
+                    defintion.Lifetime, CreatePropertyInjector(properties, defintion.ImplementationFactory), defintion.Name);
             }
         }
 
-        private Func<IServiceProvider, object> CreatePropertyInjector(PropertyInfo[] properties
-            , Func<IServiceProvider, object> implementationFactory)
+        private Func<INamedServiceProvider, object> CreatePropertyInjector(PropertyInfo[] properties
+            , Func<INamedServiceProvider, object> implementationFactory)
         {
-            var dynamicMethod = new DynamicMethod($"invoker-{Guid.NewGuid()}", typeof(void), new Type[] { typeof(IServiceProvider), typeof(object) }, this.GetType().Module, true);
+            var dynamicMethod = new DynamicMethod($"invoker-{Guid.NewGuid()}", typeof(void), new Type[] { typeof(INamedServiceProvider), typeof(object) }, GetType().Module, true);
             var ilGen = dynamicMethod.GetILGenerator();
             foreach (var property in properties)
             {
                 ilGen.EmitLoadArg(1);
                 ilGen.EmitLoadArg(0);
                 ilGen.EmitConstant(property.PropertyType, typeof(Type));
+                ilGen.EmitConstant(property.GetReflector().GetCustomAttribute<FromDIAttribute>().Named, typeof(string));
                 ilGen.Emit(OpCodes.Callvirt, getService);
                 ilGen.EmitConvertFromObject(property.PropertyType);
                 ilGen.Emit(OpCodes.Callvirt, property.SetMethod);
             }
             ilGen.Emit(OpCodes.Ret);
-            var setter = (Action<IServiceProvider, object>)dynamicMethod.CreateDelegate(typeof(Action<IServiceProvider, object>));
+            var setter = (Action<INamedServiceProvider, object>)dynamicMethod.CreateDelegate(typeof(Action<INamedServiceProvider, object>));
             return i =>
             {
                 var result = implementationFactory(i);

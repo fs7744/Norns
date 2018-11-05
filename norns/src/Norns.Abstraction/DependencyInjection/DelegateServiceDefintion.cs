@@ -5,12 +5,13 @@ namespace Norns.DependencyInjection
     public class DelegateServiceDefintion : ServiceDefintion, IImplementationFactory
     {
         public DelegateServiceDefintion(Type serviceType, Type implementationType, Lifetime lifetime,
-            Func<IServiceProvider, object> implementationFactory)
+            Func<INamedServiceProvider, object> implementationFactory, string name)
         {
             ServiceType = serviceType;
             ImplementationType = implementationType;
             Lifetime = lifetime;
             ImplementationFactory = implementationFactory;
+            Name = name;
         }
 
         public override Type ServiceType { get; }
@@ -19,6 +20,8 @@ namespace Norns.DependencyInjection
 
         public override Lifetime Lifetime { get; }
 
-        public Func<IServiceProvider, object> ImplementationFactory { get; }
+        public override string Name { get; }
+
+        public Func<INamedServiceProvider, object> ImplementationFactory { get; }
     }
 }

@@ -31,13 +31,13 @@ namespace Norns.DependencyInjection
             Root = root;
         }
 
-        public object GetService(Type serviceType)
+        public object GetService(Type serviceType, string name)
         {
             if (disposedValue)
             {
                 throw new ObjectDisposedException("Has been disposed.");
             }
-            var defintion = Defintions.TryGet(serviceType);
+            var defintion = Defintions.TryGet(serviceType, name);
             if (defintion != null)
             {
                 switch (defintion.Lifetime)
@@ -59,6 +59,11 @@ namespace Norns.DependencyInjection
             {
                 return null;
             }
+        }
+
+        public object GetService(Type serviceType)
+        {
+            return GetService(serviceType, null);
         }
 
         #region IDisposable Support

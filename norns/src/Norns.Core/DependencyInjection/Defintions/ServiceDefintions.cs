@@ -20,7 +20,7 @@ namespace Norns.DependencyInjection
         }
 
         public static ServiceDefintion Define(Type serviceType, Type implementationType, Lifetime lifetime,
-            Func<IServiceProvider, object> objectFactory = null)
+            Func<INamedServiceProvider, object> objectFactory = null, string name = null)
         {
             if (serviceType == null)
             {
@@ -36,11 +36,11 @@ namespace Norns.DependencyInjection
             }
             if (objectFactory != null)
             {
-                return new DelegateServiceDefintion(serviceType, implementationType, lifetime, objectFactory);
+                return new DelegateServiceDefintion(serviceType, implementationType, lifetime, objectFactory, name);
             }
             else
             {
-                return new TypeServiceDefintion(serviceType, implementationType, lifetime);
+                return new TypeServiceDefintion(serviceType, implementationType, lifetime, name);
             }
         }
 

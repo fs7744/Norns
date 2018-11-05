@@ -4,7 +4,7 @@ using System;
 namespace Norns.DependencyInjection
 {
     [NoIntercept]
-    internal class ServiceProvider : IServiceProvider, IDisposable
+    internal class ServiceProvider : INamedServiceProvider, IDisposable
     {
         private readonly IServiceProviderEngine engine;
 
@@ -15,11 +15,7 @@ namespace Norns.DependencyInjection
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == null)
-            {
-                throw new ArgumentNullException(nameof(serviceType));
-            }
-            return engine.GetService(serviceType);
+            return GetService(serviceType, null);
         }
 
         public void Dispose()
@@ -27,9 +23,13 @@ namespace Norns.DependencyInjection
             engine.Dispose();
         }
 
-        //public void OnResolve(Type serviceType, IServiceScope serviceProviderEngineScope)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public object GetService(Type serviceType, string name)
+        {
+            if (serviceType == null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
+            return engine.GetService(serviceType, name);
+        }
     }
 }

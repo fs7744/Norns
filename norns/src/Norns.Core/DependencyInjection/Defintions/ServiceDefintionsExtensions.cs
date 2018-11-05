@@ -8,11 +8,19 @@ namespace Norns.DependencyInjection
         internal static void AddInternalServiceDefintions(this IServiceDefintions services)
         {
             if (!services.Contains<IServiceProvider>())
+            {
                 services.AddScoped(i => i);
-            if(!services.Contains<IServiceScopeFactory>())
+            }
+
+            if (!services.Contains<IServiceScopeFactory>())
+            {
                 services.AddScoped<IServiceScopeFactory>(i => new ServiceScopeFactory(i));
+            }
+
             if (!services.Contains<IDelegateServiceDefintionHandler, PropertyInjector>())
+            {
                 services.AddScoped<IDelegateServiceDefintionHandler, PropertyInjector>(i => new PropertyInjector());
+            }
         }
 
         public static IServiceProvider BuildServiceProvider(this IServiceDefintions services)
@@ -25,13 +33,13 @@ namespace Norns.DependencyInjection
             return new ServiceProvider(services);
         }
 
-        public static IServiceDefintions Add(this IServiceDefintions services, Lifetime lifetime, Type serviceType, Type implementationType, Func<IServiceProvider, object> serviceFactory = null)
+        public static IServiceDefintions Add(this IServiceDefintions services, Lifetime lifetime, Type serviceType, Type implementationType, Func<INamedServiceProvider, object> serviceFactory = null, string name = null)
         {
-            services.Add(ServiceDefintions.Define(serviceType, implementationType, lifetime, serviceFactory));
+            services.Add(ServiceDefintions.Define(serviceType, implementationType, lifetime, serviceFactory, name));
             return services;
         }
 
-        public static IServiceDefintions AddInstance(this IServiceDefintions services, Lifetime lifetime, Type serviceType, Type implementationType, object implementationInstance)
+        public static IServiceDefintions AddInstance(this IServiceDefintions services, Lifetime lifetime, Type serviceType, Type implementationType, object implementationInstance, string name = null)
         {
             if (implementationInstance == null)
             {
@@ -41,7 +49,7 @@ namespace Norns.DependencyInjection
             {
                 throw new ArgumentException($"{implementationInstance} is not instance of type {serviceType}");
             }
-            services.Add(ServiceDefintions.Define(serviceType, implementationType, lifetime, i => implementationInstance));
+            services.Add(ServiceDefintions.Define(serviceType, implementationType, lifetime, i => implementationInstance, name));
             return services;
         }
 
@@ -68,62 +76,62 @@ namespace Norns.DependencyInjection
 
         #region Singleton
 
-        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Type implementationType, object implementationInstance)
+        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Type implementationType, object implementationInstance, string name = null)
         {
-            return services.AddInstance(Lifetime.Singleton, serviceType, implementationType, implementationInstance);
+            return services.AddInstance(Lifetime.Singleton, serviceType, implementationType, implementationInstance, name);
         }
 
-        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Type implementationType, Func<IServiceProvider, object> serviceFactory = null)
+        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Type implementationType, Func<INamedServiceProvider, object> serviceFactory = null, string name = null)
         {
-            return services.Add(Lifetime.Singleton, serviceType, implementationType, serviceFactory);
+            return services.Add(Lifetime.Singleton, serviceType, implementationType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType)
+        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, string name = null)
         {
-            return services.AddSingleton(serviceType, serviceType);
+            return services.AddSingleton(serviceType, serviceType, null, name);
         }
 
-        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, object instance)
+        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, object instance, string name = null)
         {
-            return services.AddInstance(Lifetime.Singleton, serviceType, serviceType, instance);
+            return services.AddInstance(Lifetime.Singleton, serviceType, serviceType, instance, name);
         }
 
-        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Func<IServiceProvider, object> serviceFactory)
+        public static IServiceDefintions AddSingleton(this IServiceDefintions services, Type serviceType, Func<INamedServiceProvider, object> serviceFactory, string name = null)
         {
-            return services.AddSingleton(serviceType, serviceType, serviceFactory);
+            return services.AddSingleton(serviceType, serviceType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services)
+        public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services, string name = null)
             where TService : class where TImplementation : TService
         {
-            return services.AddSingleton(typeof(TService), typeof(TImplementation));
+            return services.AddSingleton(typeof(TService), typeof(TImplementation), null, name);
         }
 
         public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services,
-            Func<IServiceProvider, TImplementation> serviceFactory) where TService : class where TImplementation : TService
+            Func<INamedServiceProvider, TImplementation> serviceFactory, string name = null) where TService : class where TImplementation : TService
         {
-            return services.AddSingleton(typeof(TService), typeof(TImplementation), i => serviceFactory(i));
+            return services.AddSingleton(typeof(TService), typeof(TImplementation), i => serviceFactory(i), name);
         }
 
         public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services,
-            TImplementation implementation) where TService : class where TImplementation : TService
+            TImplementation implementation, string name = null) where TService : class where TImplementation : TService
         {
-            return services.AddInstance(Lifetime.Singleton, typeof(TService), typeof(TImplementation), implementation);
+            return services.AddInstance(Lifetime.Singleton, typeof(TService), typeof(TImplementation), implementation, name);
         }
 
-        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services) where TService : class
+        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services, string name = null) where TService : class
         {
-            return services.AddSingleton(typeof(TService));
+            return services.AddSingleton(typeof(TService), name);
         }
 
-        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services, Func<IServiceProvider, TService> serviceFactory) where TService : class
+        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services, Func<INamedServiceProvider, TService> serviceFactory, string name = null) where TService : class
         {
-            return services.AddSingleton(typeof(TService), typeof(TService), serviceFactory);
+            return services.AddSingleton(typeof(TService), typeof(TService), serviceFactory, name);
         }
 
-        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services, TService service) where TService : class
+        public static IServiceDefintions AddSingleton<TService>(this IServiceDefintions services, TService service, string name = null) where TService : class
         {
-            return services.AddSingleton(typeof(TService), service);
+            return services.AddSingleton(typeof(TService), service, name);
         }
 
         #endregion Singleton
@@ -131,43 +139,43 @@ namespace Norns.DependencyInjection
         #region Scoped
 
         public static IServiceDefintions AddScoped(this IServiceDefintions services, Type serviceType, Type implementationType,
-            Func<IServiceProvider, object> serviceFactory = null)
+            Func<INamedServiceProvider, object> serviceFactory = null, string name = null)
         {
-            return services.Add(Lifetime.Scoped, serviceType, implementationType, serviceFactory);
+            return services.Add(Lifetime.Scoped, serviceType, implementationType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddScoped(this IServiceDefintions services, Type serviceType)
+        public static IServiceDefintions AddScoped(this IServiceDefintions services, Type serviceType, string name = null)
         {
-            return services.AddScoped(serviceType, serviceType);
+            return services.AddScoped(serviceType, serviceType, null, name);
         }
 
-        public static IServiceDefintions AddScoped(this IServiceDefintions services, Type serviceType, Func<IServiceProvider, object> serviceFactory)
+        public static IServiceDefintions AddScoped(this IServiceDefintions services, Type serviceType, Func<INamedServiceProvider, object> serviceFactory, string name = null)
         {
-            return services.AddScoped(serviceType, serviceType, serviceFactory);
+            return services.AddScoped(serviceType, serviceType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddScoped<TService, TImplementation>(this IServiceDefintions services)
+        public static IServiceDefintions AddScoped<TService, TImplementation>(this IServiceDefintions services, string name = null)
    where TService : class where TImplementation : TService
         {
-            return services.AddScoped(typeof(TService), typeof(TImplementation));
+            return services.AddScoped(typeof(TService), typeof(TImplementation), null, name);
         }
 
         public static IServiceDefintions AddScoped<TService, TImplementation>(this IServiceDefintions services,
-            Func<IServiceProvider, TImplementation> implementationFactory) where TService : class where TImplementation : TService
+            Func<INamedServiceProvider, TImplementation> implementationFactory, string name = null) where TService : class where TImplementation : TService
         {
-            return services.AddScoped(typeof(TService), typeof(TImplementation), i => implementationFactory(i));
+            return services.AddScoped(typeof(TService), typeof(TImplementation), i => implementationFactory(i), name);
         }
 
-        public static IServiceDefintions AddScoped<TService>(this IServiceDefintions services)
+        public static IServiceDefintions AddScoped<TService>(this IServiceDefintions services, string name = null)
    where TService : class
         {
-            return services.AddScoped(typeof(TService), typeof(TService));
+            return services.AddScoped(typeof(TService), typeof(TService), null, name);
         }
 
-        public static IServiceDefintions AddScoped<TService>(this IServiceDefintions services, Func<IServiceProvider, TService> implementationFactory)
+        public static IServiceDefintions AddScoped<TService>(this IServiceDefintions services, Func<INamedServiceProvider, TService> implementationFactory, string name = null)
    where TService : class
         {
-            return services.AddScoped(typeof(TService), typeof(TService), implementationFactory);
+            return services.AddScoped(typeof(TService), typeof(TService), implementationFactory, name);
         }
 
         #endregion Scoped
@@ -175,43 +183,43 @@ namespace Norns.DependencyInjection
         #region Transient
 
         public static IServiceDefintions AddTransient(this IServiceDefintions services, Type serviceType, Type implementationType,
-            Func<IServiceProvider, object> serviceFactory = null)
+            Func<INamedServiceProvider, object> serviceFactory = null, string name = null)
         {
-            return services.Add(Lifetime.Transient, serviceType, implementationType, serviceFactory);
+            return services.Add(Lifetime.Transient, serviceType, implementationType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddTransient(this IServiceDefintions services, Type serviceType)
+        public static IServiceDefintions AddTransient(this IServiceDefintions services, Type serviceType, string name = null)
         {
-            return services.AddTransient(serviceType, serviceType);
+            return services.AddTransient(serviceType, serviceType, null, name);
         }
 
-        public static IServiceDefintions AddTransient(this IServiceDefintions services, Type serviceType, Func<IServiceProvider, object> serviceFactory)
+        public static IServiceDefintions AddTransient(this IServiceDefintions services, Type serviceType, Func<INamedServiceProvider, object> serviceFactory, string name = null)
         {
-            return services.AddTransient(serviceType, serviceType, serviceFactory);
+            return services.AddTransient(serviceType, serviceType, serviceFactory, name);
         }
 
-        public static IServiceDefintions AddTransient<TService, TImplementation>(this IServiceDefintions services)
+        public static IServiceDefintions AddTransient<TService, TImplementation>(this IServiceDefintions services, string name = null)
    where TService : class where TImplementation : TService
         {
-            return services.AddTransient(typeof(TService), typeof(TImplementation));
+            return services.AddTransient(typeof(TService), typeof(TImplementation), null, name);
         }
 
         public static IServiceDefintions AddTransient<TService, TImplementation>(this IServiceDefintions services,
-            Func<IServiceProvider, TImplementation> implementationFactory) where TService : class where TImplementation : TService
+            Func<INamedServiceProvider, TImplementation> implementationFactory, string name = null) where TService : class where TImplementation : TService
         {
-            return services.AddTransient(typeof(TService), typeof(TImplementation), i => implementationFactory(i));
+            return services.AddTransient(typeof(TService), typeof(TImplementation), i => implementationFactory(i), name);
         }
 
-        public static IServiceDefintions AddTransient<TService>(this IServiceDefintions services)
+        public static IServiceDefintions AddTransient<TService>(this IServiceDefintions services, string name = null)
    where TService : class
         {
-            return services.AddTransient(typeof(TService), typeof(TService));
+            return services.AddTransient(typeof(TService), typeof(TService), null, name);
         }
 
-        public static IServiceDefintions AddTransient<TService>(this IServiceDefintions services, Func<IServiceProvider, TService> implementationFactory)
+        public static IServiceDefintions AddTransient<TService>(this IServiceDefintions services, Func<INamedServiceProvider, TService> implementationFactory, string name = null)
    where TService : class
         {
-            return services.AddTransient(typeof(TService), typeof(TService), implementationFactory);
+            return services.AddTransient(typeof(TService), typeof(TService), implementationFactory, name);
         }
 
         #endregion Transient

@@ -1,5 +1,4 @@
 ﻿using Norns.AOP.Attributes;
-using System;
 
 namespace Norns.DependencyInjection
 {
@@ -8,12 +7,12 @@ namespace Norns.DependencyInjection
     {
         private readonly IServiceProviderEngine engine;
 
-        public ServiceScopeFactory(IServiceProvider provider)
+        public ServiceScopeFactory(INamedServiceProvider provider)
         {
             engine = provider as IServiceProviderEngine;
         }
 
-        public IServiceProvider CreateScopeProvider()
+        public INamedServiceProvider CreateScopeProvider()
         {
             return new ServiceProviderEngine(engine.Root ?? engine);
         }

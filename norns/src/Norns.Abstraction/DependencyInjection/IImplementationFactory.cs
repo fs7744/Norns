@@ -4,6 +4,6 @@ namespace Norns.DependencyInjection
 {
     public interface IImplementationFactory
     {
-        Func<IServiceProvider, object> ImplementationFactory { get; }
+        Func<INamedServiceProvider, object> ImplementationFactory { get; }
     }
 }

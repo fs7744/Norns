@@ -2,13 +2,10 @@
 
 namespace Norns.Extensions.Reflection
 {
-    public class ParameterReflector
+    public class ParameterReflector : Reflector<ParameterInfo>
     {
-        public ParameterInfo Member { get; }
-
-        public ParameterReflector(ParameterInfo member)
+        public ParameterReflector(ParameterInfo member) : base(member, member.CustomAttributes)
         {
-            Member = member;
         }
     }
 }
