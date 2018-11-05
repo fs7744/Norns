@@ -21,7 +21,7 @@ namespace Norns.DependencyInjection
             return services.AddSingleton(typeof(TService));
         }
 
-        public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services) 
+        public static IServiceDefintions AddSingleton<TService, TImplementation>(this IServiceDefintions services)
             where TService : class where TImplementation : TService
         {
             return services.AddSingleton(typeof(TService), typeof(TImplementation));
@@ -74,7 +74,6 @@ namespace Norns.DependencyInjection
             services.Add(ServiceDefintions.Define(serviceType, implementationType, Lifetime.Singleton, serviceFactory));
             return services;
         }
-
 
         #endregion Singleton
     }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Norns.AOP.Configuration;
 
 namespace Norns.DependencyInjection
 {
@@ -23,8 +20,10 @@ namespace Norns.DependencyInjection
             return engine.GetService(serviceType);
         }
 
-
-        public void Dispose() => engine.Dispose();
+        public void Dispose()
+        {
+            engine.Dispose();
+        }
 
         //public void OnResolve(Type serviceType, IServiceScope serviceProviderEngineScope)
         //{

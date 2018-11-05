@@ -16,7 +16,7 @@ namespace Norns.AOP.Core.Configuration
 
         public IList<IInterceptorCreator> Interceptors { get; } = new List<IInterceptorCreator>();
 
-        public bool DynamicInterceptor { get ; set; }
+        public bool DynamicInterceptor { get; set; }
 
         public bool PropertyInjector { get; set; } = true;
     }

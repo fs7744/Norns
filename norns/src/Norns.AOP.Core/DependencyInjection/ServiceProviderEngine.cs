@@ -1,45 +1,31 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.DependencyInjection
 {
     internal class ServiceProviderEngine : IServiceProviderEngine
     {
         private readonly ConcurrentDictionary<DelegateServiceDefintion, object> singletonCache;
-
+        private readonly ConcurrentDictionary<DelegateServiceDefintion, object> scopedCache;
         private ServiceDefintionFactory defintions;
-        //private readonly IServiceProviderEngineCallback callback;
-
-        //internal ServiceProviderEngineScope RootScope { get; }
-
-        //private ConcurrentDictionary<Type, Func<ServiceProviderEngineScope, object>> RealizedServices;
-        //private readonly CallSiteFactory callSiteFactory;
-        ///private Func<Type, Func<ServiceProviderEngineScope, object>> createServiceAccessor;
-
-        //public IServiceScope Root => RootScope;
+        internal readonly IServiceProviderEngine root;
 
         public ServiceProviderEngine(IEnumerable<ServiceDefintion> services)
         {
             singletonCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
+            scopedCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
             defintions = new ServiceDefintionFactory(services);
-            //serviceTable = new ServiceTable(options.DynamicInterceptor);
-            //serviceTable.Fill(services);
-            //RootScope = new ServiceProviderEngineScope(this);
-
-            //callSiteFactory = new CallSiteFactory(serviceDescriptors);
-            //this.callback = callback;
-            //createServiceAccessor = CreateServiceAccessor;
+            root = this;
         }
 
-        //public IServiceScope CreateScope()
-        //{
-        //    return new ServiceProviderEngineScope(this);
-        //}
-
-        public void Dispose()
+        public ServiceProviderEngine(ServiceProviderEngine root)
         {
-            //Root.Dispose();
+            singletonCache = root.singletonCache;
+            scopedCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
+            defintions = root.defintions;
+            this.root = root;
         }
 
         public object GetService(Type serviceType)
@@ -50,10 +36,10 @@ namespace Norns.DependencyInjection
                 switch (defintion.Lifetime)
                 {
                     case Lifetime.Singleton:
-                        return singletonCache.GetOrAdd(defintion, d => d.ImplementationFactory(this));
+                        return singletonCache.GetOrAdd(defintion, d => d.ImplementationFactory(root));
 
                     case Lifetime.Scoped:
-                        return null;
+                        return scopedCache.GetOrAdd(defintion, d => d.ImplementationFactory(this));
 
                     case Lifetime.Transient:
                         return defintion.ImplementationFactory(this);
@@ -68,28 +54,35 @@ namespace Norns.DependencyInjection
             }
         }
 
-        //internal object GetService(Type serviceType)
-        //{
-        //    var realizedService = RealizedServices.GetOrAdd(serviceType, createServiceAccessor);
-        //    callback?.OnResolve(serviceType, serviceProviderEngineScope);
-        //    return realizedService.Invoke(serviceProviderEngineScope);
-        //}
+        #region IDisposable Support
 
-        //private Func<ServiceProviderEngineScope, object> CreateServiceAccessor(Type serviceType)
-        //{
-        //    var callSite = CallSiteFactory.GetCallSite(serviceType, new CallSiteChain());
-        //    if (callSite != null)
-        //    {
-        //        callback?.OnCreate(callSite);
-        //        return RealizeService(callSite);
-        //    }
+        private bool disposedValue = false;
 
-        //    return _ => null;
-        //}
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    var disposables = (root == null || root == this
+                        ? singletonCache.Union(scopedCache)
+                        : scopedCache)
+                        .Where(x => x.Value != this);
+                    foreach (var scoped in disposables)
+                    {
+                        var disposable = scoped.Value as IDisposable;
+                        disposable?.Dispose();
+                    }
+                }
+                disposedValue = true;
+            }
+        }
 
-        //protected Func<ServiceProviderEngineScope, object> RealizeService(ServiceCallSite callSite)
-        //{
-        //    return null;
-        //}
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion IDisposable Support
     }
 }
