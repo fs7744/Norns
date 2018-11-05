@@ -9,9 +9,9 @@ using System.Reflection.Emit;
 
 namespace Norns.DependencyInjection
 {
-    public class ServiceDefintionFactory
+    public class ServiceDefintionFactory : IServiceDefintionFactory
     {
-        private static readonly MethodInfo toArray = typeof(ServiceDefintionFactory).GetMethod("ToArray", BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly MethodInfo toArray = typeof(ServiceDefintionFactory).GetMethod("ToArray", BindingFlags.Static | BindingFlags.Public);
         private readonly ConcurrentDictionary<Type, LinkedList<DelegateServiceDefintion>> cache;
         private readonly ConcurrentDictionary<Type, LinkedList<TypeServiceDefintion>> genericCache;
 
@@ -22,7 +22,7 @@ namespace Norns.DependencyInjection
             Fill(services);
         }
 
-        private static object ToArray<T>(IEnumerable<object> list)
+        public static object ToArray<T>(IEnumerable<object> list)
         {
             return list.Select(i => (T)i).ToArray();
         }

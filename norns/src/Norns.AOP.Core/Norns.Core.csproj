@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Norns.AOP.Abstraction\Norns.AOP.Abstraction.csproj" />
+    <ProjectReference Include="..\Norns.AOP.Abstraction\Norns.Abstraction.csproj" />
     <ProjectReference Include="..\Norns.Extensions.Reflection\Norns.Extensions.Reflection.csproj" />
   </ItemGroup>
 

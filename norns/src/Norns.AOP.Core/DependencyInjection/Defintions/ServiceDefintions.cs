@@ -36,18 +36,6 @@ namespace Norns.DependencyInjection
             {
                 return new DelegateServiceDefintion(serviceType, implementationType, lifetime, objectFactory);
             }
-            //else if (serviceType.IsConstructedGenericType)
-            //{
-            //    switch (serviceType.GetGenericTypeDefinition())
-            //    {
-            //        case Type enumerable when enumerable == typeof(IEnumerable<>):
-            //            return FindEnumerable(serviceType);
-            //        case Type genericTypeDefinition:
-            //            return FindGenericService(serviceType, genericServiceDefinitions);
-            //        default:
-            //            throw new NotSupportedException($"ServiceDefintion not supported serviceType: {serviceType}.");
-            //    }
-            //}
             else
             {
                 return new TypeServiceDefintion(serviceType, implementationType, lifetime);

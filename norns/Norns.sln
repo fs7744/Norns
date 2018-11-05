@@ -7,11 +7,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7F54F1F1-976
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F39F4ACF-DB94-4B20-8FB5-7F9AA7C15E19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.AOP.Abstraction", "src\Norns.AOP.Abstraction\Norns.AOP.Abstraction.csproj", "{E39396F7-BC5A-43BF-9752-51ABC14A9D6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Abstraction", "src\Norns.AOP.Abstraction\Norns.Abstraction.csproj", "{E39396F7-BC5A-43BF-9752-51ABC14A9D6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Test", "test\Norns.Test\Norns.Test.csproj", "{FE535E4D-AACB-4C6F-94A1-C69D99804C53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.AOP.Core", "src\Norns.AOP.Core\Norns.AOP.Core.csproj", "{F7C853BA-4397-4533-92FA-6DF85DF5F4CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Core", "src\Norns.AOP.Core\Norns.Core.csproj", "{F7C853BA-4397-4533-92FA-6DF85DF5F4CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Extensions.Reflection", "src\Norns.Extensions.Reflection\Norns.Extensions.Reflection.csproj", "{B8FE0767-2652-4103-BDDE-0FE43153FF6E}"
 EndProject

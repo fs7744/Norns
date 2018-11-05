@@ -7,36 +7,40 @@ namespace Norns.DependencyInjection
 {
     internal class ServiceProviderEngine : IServiceProviderEngine
     {
-        private readonly ConcurrentDictionary<DelegateServiceDefintion, object> singletonCache;
         private readonly ConcurrentDictionary<DelegateServiceDefintion, object> scopedCache;
-        private ServiceDefintionFactory defintions;
-        internal readonly IServiceProviderEngine root;
+        public ConcurrentDictionary<DelegateServiceDefintion, object> SingletonCache { get; }
+        public IServiceDefintionFactory Defintions { get; }
+        public IServiceProviderEngine Root { get; }
 
         public ServiceProviderEngine(IEnumerable<ServiceDefintion> services)
         {
-            singletonCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
+            SingletonCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
             scopedCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
-            defintions = new ServiceDefintionFactory(services);
-            root = this;
+            Defintions = new ServiceDefintionFactory(services);
+            Root = this;
         }
 
-        public ServiceProviderEngine(ServiceProviderEngine root)
+        public ServiceProviderEngine(IServiceProviderEngine root)
         {
-            singletonCache = root.singletonCache;
+            SingletonCache = root.SingletonCache;
             scopedCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
-            defintions = root.defintions;
-            this.root = root;
+            Defintions = root.Defintions;
+            Root = root;
         }
 
         public object GetService(Type serviceType)
         {
-            var defintion = defintions.TryGet(serviceType);
+            if (disposedValue)
+            {
+                throw new ObjectDisposedException("Has been disposed.");
+            }
+            var defintion = Defintions.TryGet(serviceType);
             if (defintion != null)
             {
                 switch (defintion.Lifetime)
                 {
                     case Lifetime.Singleton:
-                        return singletonCache.GetOrAdd(defintion, d => d.ImplementationFactory(root));
+                        return SingletonCache.GetOrAdd(defintion, d => d.ImplementationFactory(Root));
 
                     case Lifetime.Scoped:
                         return scopedCache.GetOrAdd(defintion, d => d.ImplementationFactory(this));
@@ -64,8 +68,8 @@ namespace Norns.DependencyInjection
             {
                 if (disposing)
                 {
-                    var disposables = (root == null || root == this
-                        ? singletonCache.Union(scopedCache)
+                    var disposables = (Root == this
+                        ? SingletonCache.Union(scopedCache)
                         : scopedCache)
                         .Where(x => x.Value != this);
                     foreach (var scoped in disposables)
@@ -73,6 +77,8 @@ namespace Norns.DependencyInjection
                         var disposable = scoped.Value as IDisposable;
                         disposable?.Dispose();
                     }
+                    scopedCache.Clear();
+                    if (Root == this) SingletonCache.Clear();
                 }
                 disposedValue = true;
             }
