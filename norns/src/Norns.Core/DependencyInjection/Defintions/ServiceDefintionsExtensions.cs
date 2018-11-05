@@ -7,10 +7,12 @@ namespace Norns.DependencyInjection
     {
         internal static void AddInternalServiceDefintions(this IServiceDefintions services)
         {
-            if (!services.Contains(typeof(IServiceProvider)))
+            if (!services.Contains<IServiceProvider>())
                 services.AddScoped(i => i);
-            if(!services.Contains(typeof(IServiceScopeFactory)))
+            if(!services.Contains<IServiceScopeFactory>())
                 services.AddScoped<IServiceScopeFactory>(i => new ServiceScopeFactory(i));
+            if (!services.Contains<IDelegateServiceDefintionHandler, PropertyInjector>())
+                services.AddScoped<IDelegateServiceDefintionHandler, PropertyInjector>(i => new PropertyInjector());
         }
 
         public static IServiceProvider BuildServiceProvider(this IServiceDefintions services)
@@ -48,9 +50,20 @@ namespace Norns.DependencyInjection
             return services.Any(x => x.ServiceType == serviceType);
         }
 
+        public static bool Contains<TService>(this IServiceDefintions services) where TService : class
+        {
+            return services.Contains(typeof(TService));
+        }
+
         public static bool Contains(this IServiceDefintions services, Type serviceType, Type implementationType)
         {
             return services.Any(x => x.ServiceType == serviceType && x.ImplementationType == implementationType);
+        }
+
+        public static bool Contains<TService, TImplementation>(this IServiceDefintions services)
+            where TService : class where TImplementation : TService
+        {
+            return services.Contains(typeof(TService), typeof(TImplementation));
         }
 
         #region Singleton

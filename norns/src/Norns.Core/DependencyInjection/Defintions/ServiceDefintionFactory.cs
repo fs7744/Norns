@@ -1,4 +1,5 @@
-﻿using Norns.Extensions.Reflection;
+﻿using Norns.AOP.Attributes;
+using Norns.Extensions.Reflection;
 using Norns.Extensions.Reflection.Extensions;
 using System;
 using System.Collections.Concurrent;
@@ -9,14 +10,17 @@ using System.Reflection.Emit;
 
 namespace Norns.DependencyInjection
 {
-    public class ServiceDefintionFactory : IServiceDefintionFactory
+    [NoIntercept]
+    internal class ServiceDefintionFactory : IServiceDefintionFactory
     {
         private static readonly MethodInfo toArray = typeof(ServiceDefintionFactory).GetMethod("ToArray", BindingFlags.Static | BindingFlags.Public);
         private readonly ConcurrentDictionary<Type, LinkedList<DelegateServiceDefintion>> cache;
         private readonly ConcurrentDictionary<Type, LinkedList<TypeServiceDefintion>> genericCache;
+        private readonly IDelegateServiceDefintionHandler defintionHandler;
 
-        public ServiceDefintionFactory(IEnumerable<ServiceDefintion> services)
+        public ServiceDefintionFactory(IEnumerable<ServiceDefintion> services, IDelegateServiceDefintionHandler defintionHandler)
         {
+            this.defintionHandler = defintionHandler;
             cache = new ConcurrentDictionary<Type, LinkedList<DelegateServiceDefintion>>();
             genericCache = new ConcurrentDictionary<Type, LinkedList<TypeServiceDefintion>>();
             Fill(services);
@@ -35,8 +39,7 @@ namespace Norns.DependencyInjection
                 {
                     case DelegateServiceDefintion delegateDefintion:
                         {
-                            var list = cache.GetOrAdd(service.ServiceType, i => new LinkedList<DelegateServiceDefintion>());
-                            list.Add(delegateDefintion);
+                            CacheDelegate(delegateDefintion);
                         }
                         break;
 
@@ -92,15 +95,20 @@ namespace Norns.DependencyInjection
                 func = i => ctor(args);
             }
             var defintion = new DelegateServiceDefintion(serviceType, implementationType, typeServiceDefintion.Lifetime, func);
-            var list = cache.GetOrAdd(serviceType, i => new LinkedList<DelegateServiceDefintion>());
-            list.Add(defintion);
+            return CacheDelegate(defintion);
+        }
+
+        private LinkedList<DelegateServiceDefintion> CacheDelegate(DelegateServiceDefintion defintion)
+        {
+            var list = cache.GetOrAdd(defintion.ServiceType, i => new LinkedList<DelegateServiceDefintion>());
+            list.Add(defintionHandler.Handle(defintion));
             return list;
         }
 
         public DelegateServiceDefintion TryGet(Type serviceType)
         {
             var list = TryGetList(serviceType);
-            return list == null ? null : list.Last.Value;
+            return list?.Last.Value;
         }
 
         public LinkedList<DelegateServiceDefintion> TryGetList(Type serviceType)

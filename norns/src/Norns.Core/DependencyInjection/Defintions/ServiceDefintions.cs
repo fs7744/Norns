@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Norns.AOP.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Norns.DependencyInjection
 {
+    [NoIntercept]
     public class ServiceDefintions : IServiceDefintions
     {
         private readonly List<ServiceDefintion> services = new List<ServiceDefintion>();

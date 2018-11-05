@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Norns.AOP.Attributes;
+using System;
 
 namespace Norns.DependencyInjection
 {
-    public class ServiceScopeFactory : IServiceScopeFactory
+    [NoIntercept]
+    internal class ServiceScopeFactory : IServiceScopeFactory
     {
         private readonly IServiceProviderEngine engine;
 

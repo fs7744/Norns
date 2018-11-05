@@ -106,7 +106,9 @@ AOP静态编织 分为两条道路：
     - DI Singleton 编写 （✔）
     - DI Scoped 编写 （✔）
     - DI Transient 编写 （✔）
-    - DI 属性注入 
+    - DI 属性注入 （✔）
+    - DI named dependency
+    - DI 适配 Microsoft.Extensions.DependencyInjection
 - IL 重写 实现 
     - nuget 项目编译适配器 编写
 - 动态代理类 生成 编写

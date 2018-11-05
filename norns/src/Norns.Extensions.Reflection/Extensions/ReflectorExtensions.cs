@@ -26,6 +26,11 @@ namespace Norns.Extensions.Reflection
             return ReflectorCache<ParameterInfo, ParameterReflector>.GetOrAdd(parameterInfo, t => new ParameterReflector(t));
         }
 
+        public static PropertyReflector GetReflector(this PropertyInfo propertyInfo)
+        {
+            return ReflectorCache<PropertyInfo, PropertyReflector>.GetOrAdd(propertyInfo, t => new PropertyReflector(t));
+        }
+
         public static MethodInfo GetMethod<T>(Expression<T> expression)
         {
             if (expression == null)

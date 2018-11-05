@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Norns.AOP.Attributes;
+using System;
 
 namespace Norns.DependencyInjection
 {
+    [NoIntercept]
     internal class ServiceProvider : IServiceProvider, IDisposable
     {
         private readonly IServiceProviderEngine engine;
 
         public ServiceProvider(IServiceDefintions services)
         {
-            engine = new ServiceProviderEngine(services);
+            engine = new ServiceProviderEngine(services, new DelegateServiceDefintionHandler(services));
         }
 
         public object GetService(Type serviceType)
@@ -26,11 +28,6 @@ namespace Norns.DependencyInjection
         }
 
         //public void OnResolve(Type serviceType, IServiceScope serviceProviderEngineScope)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public void OnCreate(ServiceCallSite callSite)
         //{
         //    throw new NotImplementedException();
         //}

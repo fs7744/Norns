@@ -1,22 +1,25 @@
-﻿using System;
+﻿using Norns.AOP.Attributes;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.DependencyInjection
 {
+    [NoIntercept]
     internal class ServiceProviderEngine : IServiceProviderEngine
     {
         private readonly ConcurrentDictionary<DelegateServiceDefintion, object> scopedCache;
+
         public ConcurrentDictionary<DelegateServiceDefintion, object> SingletonCache { get; }
         public IServiceDefintionFactory Defintions { get; }
         public IServiceProviderEngine Root { get; }
 
-        public ServiceProviderEngine(IEnumerable<ServiceDefintion> services)
+        public ServiceProviderEngine(IEnumerable<ServiceDefintion> services, IDelegateServiceDefintionHandler defintionHandler)
         {
             SingletonCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
             scopedCache = new ConcurrentDictionary<DelegateServiceDefintion, object>();
-            Defintions = new ServiceDefintionFactory(services);
+            Defintions = new ServiceDefintionFactory(services, defintionHandler);
             Root = this;
         }
 
