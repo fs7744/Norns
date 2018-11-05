@@ -56,7 +56,7 @@ namespace Norns.DependencyInjection
                         return null;
 
                     case Lifetime.Transient:
-                        return null;
+                        return defintion.ImplementationFactory(this);
 
                     default:
                         return null;
