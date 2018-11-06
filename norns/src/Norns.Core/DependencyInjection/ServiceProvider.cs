@@ -4,7 +4,7 @@ using System;
 namespace Norns.DependencyInjection
 {
     [NoIntercept]
-    internal class ServiceProvider : INamedServiceProvider, IDisposable
+    internal class ServiceProvider : INamedServiceProvider
     {
         private readonly IServiceProviderEngine engine;
 

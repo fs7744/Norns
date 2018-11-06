@@ -23,7 +23,7 @@ namespace Norns.DependencyInjection
             }
         }
 
-        public static IServiceProvider BuildServiceProvider(this IServiceDefintions services)
+        public static INamedServiceProvider BuildServiceProvider(this IServiceDefintions services)
         {
             if (services == null)
             {
