@@ -127,50 +127,60 @@ namespace Norns.DependencyInjection
                 switch (serviceType.GetGenericTypeDefinition())
                 {
                     case Type enumerable when enumerable == typeof(IEnumerable<>):
-                        var elementType = serviceType.GetGenericArguments()[0];
-                        var elementList = TryGetList(elementType);
-                        if (elementList != null)
-                        {
-                            var method = toArray.MakeGenericMethod(new Type[] { elementType });
-                            var dynamicMethod = new DynamicMethod($"invoker-{Guid.NewGuid()}", serviceType, new Type[] { typeof(IEnumerable<object>) }, method.Module, true);
-                            var ilGen = dynamicMethod.GetILGenerator();
-                            ilGen.EmitLoadArg(0);
-                            ilGen.EmitCall(OpCodes.Call, method, null);
-                            ilGen.Emit(OpCodes.Ret);
-                            var func = (Func<IEnumerable<object>, object>)dynamicMethod.CreateDelegate(typeof(Func<IEnumerable<object>, object>));
-                            var lifetime = genericCache.TryGetValue(enumerable, out var genericServiceDefinitions) ? genericServiceDefinitions.Last.Value.Lifetime : Lifetime.Transient;
-                            var elementLists = elementList.SkipWhile(i => i.Name == null)
-                                .GroupBy(i => i.Name)
-                                .Select(i => Tuple.Create(i.Key, i.ToArray()))
-                                .Union(new Tuple<string, DelegateServiceDefintion[]>[]
-                                {
-                                    new Tuple<string, DelegateServiceDefintion[]>(null, elementList.ToArray())
-                                })
-                                .Select(x => new DelegateServiceDefintion(serviceType, serviceType, lifetime, i =>
-                                {
-                                    return func(x.Item2.Select(j => j.ImplementationFactory(i)).AsEnumerable());
-                                }, x.Item1));
-                            defintions = new LinkedList<DelegateServiceDefintion>(elementLists);
-                            cache[serviceType] = defintions;
-                        }
-                        break;
+                        return CreateEnumerableDefintion(serviceType, defintions, enumerable);
 
                     case Type genericTypeDefinition when genericCache.TryGetValue(genericTypeDefinition, out var genericServiceDefinitions):
-                        defintions = genericServiceDefinitions
-                            .GroupBy(i => i.Name)
-                            .Select(i =>
-                            {
-                                var genericDefinition = i.Last();
-                                return TypeToDelegateServiceDefintion(new TypeServiceDefintion(serviceType,
-                                genericDefinition.ImplementationType.MakeGenericType(serviceType.GenericTypeArguments),
-                                genericDefinition.Lifetime, genericDefinition.Name));
-                            }).Last();
-                        break;
+                        return CreateGenericTypeDefintion(serviceType, genericServiceDefinitions);
 
                     default:
-                        break;
+                        return defintions;
                 }
             }
+            return defintions;
+        }
+
+        private LinkedList<DelegateServiceDefintion> CreateGenericTypeDefintion(Type serviceType, LinkedList<TypeServiceDefintion> genericServiceDefinitions)
+        {
+            return genericServiceDefinitions
+                .GroupBy(i => i.Name)
+                .Select(i =>
+                {
+                    var genericDefinition = i.Last();
+                    return TypeToDelegateServiceDefintion(new TypeServiceDefintion(serviceType,
+                    genericDefinition.ImplementationType.MakeGenericType(serviceType.GenericTypeArguments),
+                    genericDefinition.Lifetime, genericDefinition.Name));
+                }).Last();
+        }
+
+        private LinkedList<DelegateServiceDefintion> CreateEnumerableDefintion(Type serviceType, LinkedList<DelegateServiceDefintion> defintions, Type enumerable)
+        {
+            var elementType = serviceType.GetGenericArguments()[0];
+            var elementList = TryGetList(elementType);
+            if (elementList != null)
+            {
+                var method = toArray.MakeGenericMethod(new Type[] { elementType });
+                var dynamicMethod = new DynamicMethod($"invoker-{Guid.NewGuid()}", serviceType, new Type[] { typeof(IEnumerable<object>) }, method.Module, true);
+                var ilGen = dynamicMethod.GetILGenerator();
+                ilGen.EmitLoadArg(0);
+                ilGen.EmitCall(OpCodes.Call, method, null);
+                ilGen.Emit(OpCodes.Ret);
+                var func = (Func<IEnumerable<object>, object>)dynamicMethod.CreateDelegate(typeof(Func<IEnumerable<object>, object>));
+                var lifetime = genericCache.TryGetValue(enumerable, out var genericServiceDefinitions) ? genericServiceDefinitions.Last.Value.Lifetime : Lifetime.Transient;
+                var elementLists = elementList.SkipWhile(i => i.Name == null)
+                    .GroupBy(i => i.Name)
+                    .Select(i => Tuple.Create(i.Key, i.ToArray()))
+                    .Union(new Tuple<string, DelegateServiceDefintion[]>[]
+                    {
+                                    new Tuple<string, DelegateServiceDefintion[]>(null, elementList.ToArray())
+                    })
+                    .Select(x => new DelegateServiceDefintion(serviceType, serviceType, lifetime, i =>
+                    {
+                        return func(x.Item2.Select(j => j.ImplementationFactory(i)).AsEnumerable());
+                    }, x.Item1));
+                defintions = new LinkedList<DelegateServiceDefintion>(elementLists);
+                cache[serviceType] = defintions;
+            }
+
             return defintions;
         }
     }
