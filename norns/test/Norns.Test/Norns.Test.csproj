@@ -19,5 +19,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Norns.Core\Norns.Core.csproj" />
     <ProjectReference Include="..\..\src\Norns.Extensions.Reflection\Norns.Extensions.Reflection.csproj" />
+    <ProjectReference Include="..\..\src\Norns.StaticWeave\Norns.StaticWeave.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="debugdll\TestFuncToDll.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="debugdll\TestFuncToDll.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
