@@ -1,15 +1,11 @@
 ﻿using Mono.Cecil;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Norns.StaticWeave
 {
     public class Scanner
     {
-        public Scanner()
-        {
-            
-        }
+
     }
 }

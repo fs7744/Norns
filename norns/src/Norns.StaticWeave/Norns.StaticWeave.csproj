@@ -8,4 +8,8 @@
     <PackageReference Include="Mono.Cecil" Version="0.10.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Norns.Core\Norns.Core.csproj" />
+  </ItemGroup>
+
 </Project>

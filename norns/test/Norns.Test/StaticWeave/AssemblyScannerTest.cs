@@ -14,12 +14,10 @@ namespace Norns.Test.StaticWeave
         [Fact]
         public void FindNeedProxyClass()
         {
-            var dllPath = Path.Combine(Directory.GetCurrentDirectory(), "debugdll", "TestFuncToDll.dll");
-            var assembly = AssemblyDefinition.ReadAssembly(dllPath, new ReaderParameters() { ReadSymbols = true, ReadWrite = true });
-           var types = assembly.Modules.SelectMany(i => i.Types).Where(i => 
-           {
-               return i.CustomAttributes.Count > 0 && i.CustomAttributes[0].AttributeType.BaseTypeIs(typeof(InterceptorBaseAttribute));
-           }).ToArray();
+           var dllPath = Path.Combine(Directory.GetCurrentDirectory(), "debugdll", "TestFuncToDll.dll");
+           var assembly = AssemblyDefinition.ReadAssembly(dllPath, new ReaderParameters() { ReadSymbols = false });
+           var types = assembly.GetNeedInterceptTypes().ToArray();
+           var methods = types[0].GetNeedInterceptMethods();
         }
     }
 }
