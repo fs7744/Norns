@@ -87,6 +87,68 @@ C# 里面有三种方式可以做静态编织：
   </tr>
 </table>
 
+## 设计
+
+``` csharp
+//原始代码
+public class Test
+{
+    [AddOne]
+    public int Sum(int x, int y)
+    {
+      return x + y;
+    } 
+}
+
+//Aop拦截器
+public class AddOneAttribute : InterceptorBaseAttribute
+{
+    public override void Intercept(InterceptContext context, InterceptDelegate next)
+    {
+        Console.WriteLine("Begin");
+        next(context);
+        Console.WriteLine("End");
+    }
+}
+
+//静态编织生成的类大致样子
+[NoIntercept]
+public class Test 
+{
+    private static MethodInfo Sum_guidMethod = typeof(TestSumService).GetMethod("Sum_guid", new Type[] { typeof(int), typeof(int) }); //避免多次获取，所以用static
+    private readonly InterceptDelegate Sum_guidInterceptor;  //缓存类似中间件的delegate，避免方法内部使用实例属性字段，所以不用static
+
+    public Test(IInterceptDelegateBuilder builder)  //修改构造器，以便创建中间件的delegate
+    {
+      Sum_guidInterceptor = builder.BuildInterceptDelegate(Sum_guidMethod, c =>
+      {
+          c.Result = Sum_guid((int)c.Parameters[0], (int)c.Parameters[1]);
+      });
+    }
+
+    [AddOne]    
+    public int Sum_guid(int x, int y) //将原始方法创建成新方法，以便代理方法调用
+    {
+      return x + y;
+    } 
+
+    public int Sum(int x, int y)  // 替换原始方法为代理方法
+    {
+      var context = new InterceptContext()
+      {
+          ServiceMethod = Sum_guidMethod,
+          Parameters = new object[] { x, y }
+      };
+      Sum_guidInterceptor(context);
+      return (int)context.Result;
+    } 
+}
+
+// 总体虽然用静态编织，但实际依然时代理模式
+// 这是我目前想到的唯一兼容动态代理AOP，以便支持动态全局拦截的方式
+// 如果大家有更好方式，请一定要告诉我
+```
+
 ## Roadmap
 
 - 代码生成 实现
