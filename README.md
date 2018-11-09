@@ -18,9 +18,14 @@ Norns == 诺伦三女神 （北欧神话中的命运女神）
 
 AOP静态编织 分为两条道路：
 
-* 使用预处理器添加源代码， c#中即 代码生成  
-    （c++等中存在类似宏的处理，可以真正得添加源代码，而c#暂不存在，c# 中对应讨论 https://github.com/dotnet/csharplang/issues/341）。
+* 使用预处理器添加源代码 c++等中存在类似宏的处理 
 * 使用后处理器在编译后的二进制代码上添加指令， dotnet 里面可以叫做 IL 重写。
+
+C# 里面有三种方式可以做静态编织：
+
+1. 可以使用Roslyn 在编译时修改AST添加拦截的代码  (不过暂时我没有在msbuild task的文档中找到怎么添加Roslyn 编译时修改，倒是可以自己利用Roslyn自己做编译，感觉这工作量有点大，有同学如果知道怎么添加Roslyn 编译时修改请一定要告知我，thanks very much)
+2. 使用mono.cecli或者dnlib 在编译后进行IL重写
+3. 实现CLR Profiling API 在JIT编译时修改method body。实现真正无任何限制的运行时静态AOP  （不过貌似得用C++才能做CLR Profiling API）
 
 ### 对比思考
 
