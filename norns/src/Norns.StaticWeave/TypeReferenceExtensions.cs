@@ -1,4 +1,5 @@
 ﻿using Mono.Cecil;
+using Mono.Cecil.Cil;
 using Norns.AOP.Attributes;
 using Norns.AOP.Interceptors;
 using System;
@@ -9,6 +10,9 @@ namespace Norns.StaticWeave
 {
     public static class TypeReferenceExtensions
     {
+        public const string CtorName = ".ctor";
+        public const string StaticCtorName = ".cctor";
+        public static readonly MethodAttributes StaticCtorAttributes = MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
         public static readonly Type ObjectType = typeof(object);
         public static readonly Type NoInterceptAttributeType = typeof(NoInterceptAttribute);
         public static readonly Type InterceptorBaseAttributeType = typeof(InterceptorBaseAttribute);
@@ -61,7 +65,7 @@ namespace Norns.StaticWeave
                 || def.CustomAttributes.All(j => !j.AttributeType.IsType(NoInterceptAttributeType));
         }
 
-        public static IEnumerable<TypeDefinition> GetNeedInterceptTypes(this AssemblyDefinition assembly)
+        public static IEnumerable<TypeDefinition> FindNeedInterceptTypes(this AssemblyDefinition assembly)
         {
             return assembly.Modules.SelectMany(i => i.Types)
                 .Where(i => i.IsPublic && i.IsClass && !i.IsAbstract 
@@ -71,11 +75,23 @@ namespace Norns.StaticWeave
                     && !i.IsType(ObjectType));
         }
 
-        public static IEnumerable<MethodDefinition> GetNeedInterceptMethods(this TypeDefinition typeDefinition)
+        public static IEnumerable<MethodDefinition> FindNeedInterceptMethods(this TypeDefinition typeDefinition)
         {
             return typeDefinition.Methods
                 .Where(i => i.IsPublic && !i.IsStatic && !i.IsAbstract && i.NeedIntercept()
                 && !DefaultNoInterceptMethods.Contains(i.Name));
+        }
+
+        public static MethodDefinition FindStaticCtorMethod(this TypeDefinition typeDefinition)
+        {
+            return typeDefinition.Methods
+                .FirstOrDefault(i => i.Name ==  StaticCtorName);
+        }
+
+        public static void InsertBeforeLast(this MethodDefinition methodDefinition, Instruction instruction)
+        {
+            var instrs = methodDefinition.Body.Instructions;
+            instrs.Insert(instrs.Count > 0 ? instrs.Count - 1 : 0, instruction);
         }
     }
 }

@@ -1,21 +1,21 @@
 ﻿using Norns.AOP.Attributes;
-using System;
+using Norns.DependencyInjection;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace Norns.AOP.Interceptors
 {
     [NoIntercept]
-    public class InterceptContext
+    public struct InterceptContext
     {
-        public Dictionary<string, object> Additions { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> Additions;
 
-        public MethodBase ServiceMethod { get; set; }
+        public MethodBase ServiceMethod;
 
-        public IServiceProvider ServiceProvider { get; set; }
+        public INamedServiceProvider ServiceProvider;
 
-        public object[] Parameters { get; set; }
+        public object[] Parameters;
 
-        public object Result { get; set; }
+        public object Result;
     }
 }
