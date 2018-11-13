@@ -1,6 +1,5 @@
 ﻿using Norns.AOP.Attributes;
 using Norns.DependencyInjection;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Norns.AOP.Interceptors
@@ -8,9 +7,9 @@ namespace Norns.AOP.Interceptors
     [NoIntercept]
     public struct InterceptContext
     {
-        public Dictionary<string, object> Additions;
+        public Additions Additions;
 
-        public MethodBase ServiceMethod;
+        public MethodInfo ServiceMethod;
 
         public INamedServiceProvider ServiceProvider;
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Norns.DependencyInjection;
 
 namespace Norns.Test.StaticWeave
 {
@@ -17,15 +18,35 @@ namespace Norns.Test.StaticWeave
         {
             var dllPath = Path.Combine(Directory.GetCurrentDirectory(), "debugdll", "TestFuncToDll.dll");
             var assembly = AssemblyDefinition.ReadAssembly(dllPath, new ReaderParameters() { ReadSymbols = false });
+            //assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo));
             var types = assembly.FindNeedInterceptTypes().ToArray();
-            var typedReference = assembly.MainModule.TypeSystem.TypedReference;
+            var typedReference = assembly.MainModule.ImportReference(typeof(Type));
             var contextReference = assembly.MainModule.ImportReference(typeof(InterceptContext));
-            var additionsReference = assembly.MainModule.ImportReference(typeof(Dictionary<string, object>));
-            var methodInfoReference = assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo));
+            var additionsReference = assembly.MainModule.ImportReference(typeof(Additions));
             var getTypeFromHandle = assembly.MainModule.ImportReference(typeof(Type).GetMethod("GetTypeFromHandle"));
-            var getMethodInfo = assembly.MainModule.ImportReference(typeof(Type).GetMethod("GetMethod", new Type[] {  typeof(string), typeof(Type[])}));
+            var getMethodInfo = assembly.MainModule.ImportReference(typeof(Type).GetMethod("GetMethod", new Type[] { typeof(string), typeof(Type[]) }));
+            var builderReference = assembly.MainModule.ImportReference(typeof(IInterceptDelegateBuilder));
+            var delegateReference = assembly.MainModule.ImportReference(typeof(InterceptDelegate));
+            var methodInfoReference = assembly.MainModule.ImportReference(typeof(System.Reflection.MethodInfo));
             foreach (var t in types)
             {
+                var builderF = new FieldDefinition($"interceptDelegateBuilder_{Guid.NewGuid()}", FieldAttributes.Private, builderReference);
+                var builderP = new PropertyDefinition($"InterceptDelegateBuilder_{Guid.NewGuid()}", PropertyAttributes.None, builderReference);
+                builderP.CustomAttributes.Add(new CustomAttribute(t.Module.ImportReference(typeof(FromDIAttribute).GetConstructors().First())));
+                builderP.GetMethod = new MethodDefinition($"{builderF.Name}_get", MethodAttributes.Public, builderReference);
+                var il = builderP.GetMethod.Body.GetILProcessor();
+                il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                il.Append(Instruction.Create(OpCodes.Ldfld, builderF));
+                il.Append(Instruction.Create(OpCodes.Ret));
+                builderP.SetMethod = new MethodDefinition($"{builderF.Name}_set", MethodAttributes.Public, assembly.MainModule.TypeSystem.Void);
+                il = builderP.SetMethod.Body.GetILProcessor();
+                builderP.SetMethod.Parameters.Add(new ParameterDefinition("value", ParameterAttributes.None, builderReference));
+                il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                il.Append(Instruction.Create(OpCodes.Ldarg_1));
+                il.Append(Instruction.Create(OpCodes.Stfld, builderF));
+                t.Fields.Add(builderF);
+                t.Properties.Add(builderP);
+
                 VariableDefinition typevariableDef = null;
                 var staticCtor = t.FindStaticCtorMethod();
                 if (staticCtor == null)
@@ -55,17 +76,17 @@ namespace Norns.Test.StaticWeave
                     staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Ldstr, method.Name));
                     staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)method.Parameters.Count));
                     staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Newarr, typedReference));
-                    staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Callvirt, getMethodInfo));
+                    staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Call, getMethodInfo));
                     staticCtor.InsertBeforeLast(Instruction.Create(OpCodes.Stsfld, field));
                     t.Fields.Add(field);
 
                     var newMethod = new MethodDefinition(newMethodName, method.Attributes, method.ReturnType);
+                    newMethod.Attributes = method.Attributes;
                     newMethod.IsReuseSlot = method.IsReuseSlot;
                     newMethod.IsNewSlot = method.IsNewSlot;
                     newMethod.IsCheckAccessOnOverride = method.IsCheckAccessOnOverride;
                     newMethod.IsAbstract = method.IsAbstract;
                     newMethod.IsSpecialName = method.IsSpecialName;
-                    newMethod.IsPInvokeImpl = method.IsPInvokeImpl;
                     newMethod.IsUnmanagedExport = method.IsUnmanagedExport;
                     newMethod.IsRuntimeSpecialName = method.IsRuntimeSpecialName;
                     newMethod.HasSecurity = method.HasSecurity;
@@ -89,9 +110,8 @@ namespace Norns.Test.StaticWeave
                     newMethod.IsFire = method.IsFire;
                     newMethod.DeclaringType = method.DeclaringType;
                     newMethod.IsForwardRef = method.IsForwardRef;
-                    newMethod.IsVirtual = method.IsVirtual;
+                    newMethod.IsVirtual = false;
                     newMethod.IsStatic = method.IsStatic;
-                    newMethod.Attributes = method.Attributes;
                     newMethod.ImplAttributes = method.ImplAttributes;
                     newMethod.SemanticsAttributes = method.SemanticsAttributes;
                     newMethod.Body = method.Body;
@@ -103,7 +123,6 @@ namespace Norns.Test.StaticWeave
                     newMethod.IsFamily = method.IsFamily;
                     newMethod.IsFamilyOrAssembly = method.IsFamilyOrAssembly;
                     newMethod.IsPublic = method.IsPublic;
-                    newMethod.PInvokeInfo = method.PInvokeInfo;
                     newMethod.MethodReturnType = method.MethodReturnType;
                     newMethod.ReturnType = method.ReturnType;
                     newMethod.CallingConvention = method.CallingConvention;
@@ -116,75 +135,92 @@ namespace Norns.Test.StaticWeave
                     var callMethod = new MethodDefinition($"Call_{newMethodName}", MethodAttributes.Private, assembly.MainModule.TypeSystem.Void);
                     var contextParameter = new ParameterDefinition("context", ParameterAttributes.None, contextReference);
                     callMethod.Parameters.Add(contextParameter);
-                    var il = callMethod.Body.GetILProcessor();
+                    t.Methods.Add(callMethod);
+                    var ilp = callMethod.Body.GetILProcessor();
                     if (method.ReturnType != assembly.MainModule.TypeSystem.Void)
                     {
-                        il.Append(Instruction.Create(OpCodes.Ldarg_1));
+                        ilp.Append(Instruction.Create(OpCodes.Ldarg_1));
                     }
-                    il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                    ilp.Append(Instruction.Create(OpCodes.Ldarg_0));
                     foreach (var parameter in method.Parameters)
                     {
-                        il.Append(Instruction.Create(OpCodes.Ldarg_1));
-                        il.Append(Instruction.Create(OpCodes.Ldfld, ct.Fields.First(j => j.Name == "Parameters")));
-                        il.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)parameter.Index));
-                        il.Append(Instruction.Create(OpCodes.Ldelem_Ref, parameter.Index));
+                        ilp.Append(Instruction.Create(OpCodes.Ldarg_1));
+                        ilp.Append(Instruction.Create(OpCodes.Ldfld, assembly.MainModule.ImportReference(ct.Fields.First(j => j.Name == "Parameters"))));
+                        ilp.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)parameter.Index));
+                        ilp.Append(Instruction.Create(OpCodes.Ldelem_Ref, parameter.Index));
                         if (parameter.ParameterType.IsValueType)
                         {
-                            il.Append(Instruction.Create(OpCodes.Unbox_Any, parameter.ParameterType));
+                            ilp.Append(Instruction.Create(OpCodes.Unbox_Any, parameter.ParameterType));
                         }
                     }
-                    il.Append(Instruction.Create(OpCodes.Call, newMethod));
+                    ilp.Append(Instruction.Create(OpCodes.Call, newMethod));
                     if (method.ReturnType != assembly.MainModule.TypeSystem.Void)
                     {
                         if (method.ReturnType.IsValueType)
                         {
-                            il.Append(Instruction.Create(OpCodes.Box, method.ReturnType));
+                            ilp.Append(Instruction.Create(OpCodes.Box, method.ReturnType));
                         }
-                        il.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(j => j.Name == "Result")));
+                        ilp.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(j => j.Name == "Result")));
                     }
-                    il.Append(Instruction.Create(OpCodes.Ret));
-                    var field1 = new FieldDefinition($"f_{callMethod.Name}", FieldAttributes.Private, assembly.MainModule.ImportReference(typeof(InterceptDelegate)));
+                    ilp.Append(Instruction.Create(OpCodes.Ret));
+                    var field1 = new FieldDefinition($"f_{callMethod.Name}", FieldAttributes.Private, delegateReference);
                     t.Fields.Add(field1);
 
                     method.Body = new MethodBody(method);
-                    method.Body.InitLocals = true;
                     var context = new VariableDefinition(contextReference);
                     var parameters = new VariableDefinition(assembly.MainModule.ImportReference(typeof(object[])));
                     method.Body.Variables.Add(context);
-                    il = method.Body.GetILProcessor();
-                    il.Append(Instruction.Create(OpCodes.Initobj, contextReference));
-                    il.Append(Instruction.Create(OpCodes.Stloc_S, context));
-                    il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
-                    il.Append(Instruction.Create(OpCodes.Ldfld, field));
-                    il.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(i => i.Name == "ServiceMethod")));
-                    il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
-                    il.Append(Instruction.Create(OpCodes.Newobj, additionsReference.Resolve().Methods.First(i => i.Name == TypeReferenceExtensions.CtorName)));
-                    il.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(i => i.Name == "Additions")));
-                    il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
-                    il.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)method.Parameters.Count));
-                    il.Append(Instruction.Create(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object));
-                    il.Append(Instruction.Create(OpCodes.Stloc_S, parameters));
-                    il.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
-                    il.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(i => i.Name == "Parameters")));
+                    method.Body.Variables.Add(parameters);
+                    ilp = method.Body.GetILProcessor();
+                    ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
+                    ilp.Append(Instruction.Create(OpCodes.Initobj, contextReference));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
+                    ilp.Append(Instruction.Create(OpCodes.Ldsfld, assembly.MainModule.ImportReference(field)));
+                    ilp.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(ct.Fields.First(i => i.Name == "ServiceMethod"))));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
+                    var a = typeof(Additions).GetConstructors().First();
+                    ilp.Append(Instruction.Create(OpCodes.Newobj, assembly.MainModule.ImportReference(a)));
+                    ilp.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(ct.Fields.First(i => i.Name == "Additions"))));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
+                    ilp.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)method.Parameters.Count));
+                    ilp.Append(Instruction.Create(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object));
+                    ilp.Append(Instruction.Create(OpCodes.Stloc_S, parameters));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
+                    ilp.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(ct.Fields.First(i => i.Name == "Parameters"))));
                     foreach (var parameter in method.Parameters)
                     {
-                        il.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
-                        il.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)parameter.Index));
-                        il.Append(Instruction.Create(OpCodes.Ldarga_S, parameter.Index));
+                        ilp.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
+                        ilp.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)parameter.Index));
+                        ilp.Append(Instruction.Create(OpCodes.Ldarga_S, parameter.Index));
                         if (parameter.ParameterType.IsValueType)
                         {
-                            il.Append(Instruction.Create(OpCodes.Box, parameter.ParameterType));
+                            ilp.Append(Instruction.Create(OpCodes.Box, parameter.ParameterType));
                         }
-                        il.Append(Instruction.Create(OpCodes.Stelem_Ref));
+                        ilp.Append(Instruction.Create(OpCodes.Stelem_Ref));
                     }
 
+                    ilp.Append(Instruction.Create(OpCodes.Ldarg_0));
+                    ilp.Append(Instruction.Create(OpCodes.Ldfld, assembly.MainModule.ImportReference(field1)));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloc_S, context));
+                    ilp.Append(Instruction.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(delegateReference.Resolve().Methods.First(j => j.Name == "Invoke"))));
+                    ilp.Append(Instruction.Create(OpCodes.Ret));
+
+
                     il.Append(Instruction.Create(OpCodes.Ldarg_0));
-                    il.Append(Instruction.Create(OpCodes.Ldfld, field1));
-                    il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
-                    il.Append(Instruction.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(typeof(InterceptDelegate)).Resolve().Methods.First(j => j.Name == "Invoke")));
-                    il.Append(Instruction.Create(OpCodes.Ret));
+                    il.Append(Instruction.Create(OpCodes.Ldarg_1));
+                    il.Append(Instruction.Create(OpCodes.Ldsfld, assembly.MainModule.ImportReference(field)));
+                    il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                    il.Append(Instruction.Create(OpCodes.Ldftn, assembly.MainModule.ImportReference(callMethod)));
+                    il.Append(Instruction.Create(OpCodes.Newobj, assembly.MainModule.ImportReference(delegateReference.Resolve().Methods.First(j => j.Name == TypeReferenceExtensions.CtorName))));
+                    il.Append(Instruction.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(builderReference.Resolve().Methods.First(j => j.Name == "BuildInterceptDelegate"))));
+                    il.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(field1)));
                 }
+
+                il.Append(Instruction.Create(OpCodes.Ret));
+                t.Methods.Add(builderP.GetMethod);
+                t.Methods.Add(builderP.SetMethod);
             }
+            assembly.Write(Path.Combine(Directory.GetCurrentDirectory(), "debugdll", "TestFuncToDll2.dll"));
         }
     }
 }

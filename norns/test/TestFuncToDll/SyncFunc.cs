@@ -2,7 +2,6 @@
 
 namespace TestFuncToDll
 {
-    [TestInterceptor]
     public interface ISyncFunc
     {
         void SyncCallNoParameters();
@@ -10,6 +9,7 @@ namespace TestFuncToDll
 
     public class SyncFunc : ISyncFunc
     {
+        [TestInterceptor]
         public void SyncCallNoParameters()
         {
             (3 + 4).ToString();

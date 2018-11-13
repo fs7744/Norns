@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject>TestFuncToDll.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
