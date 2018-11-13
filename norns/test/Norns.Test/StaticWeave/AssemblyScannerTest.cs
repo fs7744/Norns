@@ -36,10 +36,11 @@ namespace Norns.Test.StaticWeave
                     t.Methods.Add(staticCtor);
                 }
                 var methods = t.FindNeedInterceptMethods().ToArray();
+
                 foreach (var method in methods)
                 {
                     var newMethodName = $"{method.Name}_{Guid.NewGuid()}";
-                    var newfieldName = $"field_{newMethodName}";
+                    var newfieldName = $"f_{newMethodName}";
                     var field = new FieldDefinition(newfieldName, FieldAttributes.Private | FieldAttributes.Static, methodInfoReference);
                     if (typevariableDef == null)
                     {
@@ -112,12 +113,45 @@ namespace Norns.Test.StaticWeave
                     t.Methods.Add(newMethod);
 
                     var ct = contextReference.Resolve();
+                    var callMethod = new MethodDefinition($"Call_{newMethodName}", MethodAttributes.Private, assembly.MainModule.TypeSystem.Void);
+                    var contextParameter = new ParameterDefinition("context", ParameterAttributes.None, contextReference);
+                    callMethod.Parameters.Add(contextParameter);
+                    var il = callMethod.Body.GetILProcessor();
+                    if (method.ReturnType != assembly.MainModule.TypeSystem.Void)
+                    {
+                        il.Append(Instruction.Create(OpCodes.Ldarg_1));
+                    }
+                    il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                    foreach (var parameter in method.Parameters)
+                    {
+                        il.Append(Instruction.Create(OpCodes.Ldarg_1));
+                        il.Append(Instruction.Create(OpCodes.Ldfld, ct.Fields.First(j => j.Name == "Parameters")));
+                        il.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)parameter.Index));
+                        il.Append(Instruction.Create(OpCodes.Ldelem_Ref, parameter.Index));
+                        if (parameter.ParameterType.IsValueType)
+                        {
+                            il.Append(Instruction.Create(OpCodes.Unbox_Any, parameter.ParameterType));
+                        }
+                    }
+                    il.Append(Instruction.Create(OpCodes.Call, newMethod));
+                    if (method.ReturnType != assembly.MainModule.TypeSystem.Void)
+                    {
+                        if (method.ReturnType.IsValueType)
+                        {
+                            il.Append(Instruction.Create(OpCodes.Box, method.ReturnType));
+                        }
+                        il.Append(Instruction.Create(OpCodes.Stsfld, ct.Fields.First(j => j.Name == "Result")));
+                    }
+                    il.Append(Instruction.Create(OpCodes.Ret));
+                    var field1 = new FieldDefinition($"f_{callMethod.Name}", FieldAttributes.Private, assembly.MainModule.ImportReference(typeof(InterceptDelegate)));
+                    t.Fields.Add(field1);
+
                     method.Body = new MethodBody(method);
                     method.Body.InitLocals = true;
                     var context = new VariableDefinition(contextReference);
                     var parameters = new VariableDefinition(assembly.MainModule.ImportReference(typeof(object[])));
                     method.Body.Variables.Add(context);
-                    var il = method.Body.GetILProcessor();
+                    il = method.Body.GetILProcessor();
                     il.Append(Instruction.Create(OpCodes.Initobj, contextReference));
                     il.Append(Instruction.Create(OpCodes.Stloc_S, context));
                     il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
@@ -143,6 +177,11 @@ namespace Norns.Test.StaticWeave
                         }
                         il.Append(Instruction.Create(OpCodes.Stelem_Ref));
                     }
+
+                    il.Append(Instruction.Create(OpCodes.Ldarg_0));
+                    il.Append(Instruction.Create(OpCodes.Ldfld, field1));
+                    il.Append(Instruction.Create(OpCodes.Ldloc_S, context));
+                    il.Append(Instruction.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(typeof(InterceptDelegate)).Resolve().Methods.First(j => j.Name == "Invoke")));
                     il.Append(Instruction.Create(OpCodes.Ret));
                 }
             }
