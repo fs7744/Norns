@@ -12,15 +12,15 @@ namespace TestFuncToDll
     {
         private static void Main(string[] args)
         {
-            //try
-            //{
-            //    new Test().ProxyJustCall();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex);
-            //}
-            //Console.WriteLine("No");
+            try
+            {
+                new Test().ProxyJustCall();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            Console.WriteLine("No");
             BenchmarkRunner.Run<Test>();
         }
     }

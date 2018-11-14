@@ -196,12 +196,16 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
 
 
 ```
-|          Method |      Mean |     Error |    StdDev |
-|---------------- |----------:|----------:|----------:|
-|  RealNewAndCall |  60.18 ns | 0.4025 ns | 0.3568 ns |
-| ProxyNewAndCall | 327.30 ns | 3.1691 ns | 2.9644 ns |
-|    RealJustCall |  15.82 ns | 0.1009 ns | 0.0895 ns |
-|   ProxyJustCall | 113.75 ns | 1.4697 ns | 1.3747 ns |
+|                    Method |      Mean |     Error |    StdDev |
+|-------------------------- |----------:|----------:|----------:|
+|            RealNewAndCall |  60.97 ns | 0.1618 ns | 0.1434 ns |
+|           ProxyNewAndCall | 308.39 ns | 1.7986 ns | 1.5944 ns |
+| AspectCoreProxyNewAndCall | 582.90 ns | 2.2300 ns | 1.9769 ns |
+|              RealJustCall |  15.95 ns | 0.0882 ns | 0.0737 ns |
+|             ProxyJustCall | 115.55 ns | 0.2246 ns | 0.1991 ns |
+|   AspectCoreProxyJustCall | 310.25 ns | 0.8924 ns | 0.7911 ns |
+
+`和aspectcore 的时间差异估计应该是 aspectcore 将同步方法转化为异步方法的差异`
 
 
 # 鸣谢列表

@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using AspectCore.Injector;
+using BenchmarkDotNet.Attributes;
 using Norns.AOP.Configuration;
 using Norns.AOP.Interceptors;
 using Norns.Core.AOP.Configuration;
@@ -13,6 +14,8 @@ namespace TestFuncToDll
         private readonly INamedServiceProvider ioc;
         private readonly ISyncFunc2 real;
         private readonly ISyncFunc proxy;
+        private readonly IServiceResolver aspectcoreIoc;
+        private readonly ISyncFunc2 aspectcoreProxy;
 
         public Test()
         {
@@ -40,6 +43,12 @@ namespace TestFuncToDll
             real.SyncCallNoParameters();
             proxy = ioc.GetRequiredService<ISyncFunc>();
             proxy.SyncCallNoParameters();
+
+            var containerBuilder = new ServiceContainer();
+            aspectcoreIoc = containerBuilder.AddType<ISyncFunc2, SyncFunc2>(AspectCore.Injector.Lifetime.Transient)
+                .Build();
+            aspectcoreProxy = aspectcoreIoc.GetRequiredService<ISyncFunc2>();
+            aspectcoreProxy.SyncCallNoParameters();
         }
 
         [Benchmark]
@@ -55,6 +64,12 @@ namespace TestFuncToDll
         }
 
         [Benchmark]
+        public void AspectCoreProxyNewAndCall()
+        {
+            aspectcoreIoc.GetRequiredService<ISyncFunc2>().SyncCallNoParameters();
+        }
+
+        [Benchmark]
         public void RealJustCall()
         {
             real.SyncCallNoParameters();
@@ -64,6 +79,12 @@ namespace TestFuncToDll
         public void ProxyJustCall()
         {
             proxy.SyncCallNoParameters();
+        }
+
+        [Benchmark]
+        public void AspectCoreProxyJustCall()
+        {
+            aspectcoreProxy.SyncCallNoParameters();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Norns.AOP.Attributes;
+﻿using AspectCore.DynamicProxy;
+using Norns.AOP.Attributes;
 using Norns.AOP.Interceptors;
 using System;
 using System.Threading.Tasks;
@@ -20,6 +21,15 @@ namespace TestFuncToDll
             Console.WriteLine("Async Begin");
             await nextAsync(context);
             Console.WriteLine("Async End");
+        }
+    }
+
+    public class TestAspectCoreInterceptorAttribute : AspectCore.DynamicProxy.AbstractInterceptorAttribute
+    {
+        public override async Task Invoke(AspectContext context, AspectDelegate next)
+        {
+            context.ToString();
+            await next(context);
         }
     }
 

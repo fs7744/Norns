@@ -14,6 +14,7 @@ namespace TestFuncToDll
     [Norns.AOP.Attributes.NoIntercept]
     public class SyncFunc2 : ISyncFunc2
     {
+        [TestAspectCoreInterceptor]
         public void SyncCallNoParameters()
         {
             (3 + 4).ToString();
