@@ -177,10 +177,31 @@ public class Test
     - DI named dependency （✔）
     - DI 适配 Microsoft.Extensions.DependencyInjection （✔）
 - IL 重写 实现 
+    - 初步IL重写测试  （✔）
     - nuget 项目编译适配器 编写
 - 动态代理类 生成 编写
 - 示例 编写
 - 文档 编写
+
+## 初步IL重写测试结果
+测试代码参见  https://github.com/fs7744/Norns/tree/master/norns/test/TestFuncToDll 和 https://github.com/fs7744/Norns/blob/master/norns/test/Norns.Test/StaticWeave/AssemblyScannerTest.cs
+
+``` ini
+
+BenchmarkDotNet=v0.11.2, OS=Windows 10.0.17134.407 (1803/April2018Update/Redstone4)
+Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
+.NET Core SDK=2.1.403
+  [Host]     : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+  DefaultJob : .NET Core 2.1.5 (CoreCLR 4.6.26919.02, CoreFX 4.6.26919.02), 64bit RyuJIT
+
+
+```
+|          Method |      Mean |     Error |    StdDev |
+|---------------- |----------:|----------:|----------:|
+|  RealNewAndCall |  60.18 ns | 0.4025 ns | 0.3568 ns |
+| ProxyNewAndCall | 327.30 ns | 3.1691 ns | 2.9644 ns |
+|    RealJustCall |  15.82 ns | 0.1009 ns | 0.0895 ns |
+|   ProxyJustCall | 113.75 ns | 1.4697 ns | 1.3747 ns |
 
 
 # 鸣谢列表

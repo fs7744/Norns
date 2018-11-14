@@ -62,7 +62,7 @@ namespace Norns.Test.StaticWeave
                 {
                     var newMethodName = $"{method.Name}_{Guid.NewGuid()}";
                     var newfieldName = $"f_{newMethodName}";
-                    var field = new FieldDefinition(newfieldName, FieldAttributes.Private | FieldAttributes.Static, methodInfoReference);
+                    var field = new FieldDefinition(newfieldName, FieldAttributes.Private | FieldAttributes.Static | FieldAttributes.InitOnly, methodInfoReference);
                     if (typevariableDef == null)
                     {
                         staticCtor.Body.InitLocals = true;
@@ -83,7 +83,7 @@ namespace Norns.Test.StaticWeave
                     var newMethod = new MethodDefinition(newMethodName, method.Attributes, method.ReturnType);
                     newMethod.Attributes = method.Attributes;
                     newMethod.IsReuseSlot = method.IsReuseSlot;
-                    newMethod.IsNewSlot = method.IsNewSlot;
+                    newMethod.IsNewSlot = false;
                     newMethod.IsCheckAccessOnOverride = method.IsCheckAccessOnOverride;
                     newMethod.IsAbstract = method.IsAbstract;
                     newMethod.IsSpecialName = method.IsSpecialName;
@@ -170,7 +170,7 @@ namespace Norns.Test.StaticWeave
                     var context = new VariableDefinition(contextReference);
                     var parameters = new VariableDefinition(assembly.MainModule.ImportReference(typeof(object[])));
                     method.Body.Variables.Add(context);
-                    method.Body.Variables.Add(parameters);
+                    //method.Body.Variables.Add(parameters);
                     ilp = method.Body.GetILProcessor();
                     ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
                     ilp.Append(Instruction.Create(OpCodes.Initobj, contextReference));
@@ -182,10 +182,11 @@ namespace Norns.Test.StaticWeave
                     ilp.Append(Instruction.Create(OpCodes.Newobj, assembly.MainModule.ImportReference(a)));
                     ilp.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(ct.Fields.First(i => i.Name == "Additions"))));
                     ilp.Append(Instruction.Create(OpCodes.Ldloca_S, context));
-                    ilp.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)method.Parameters.Count));
+                    ilp.Append(Instruction.Create(OpCodes.Ldc_I4_0));
+                    //ilp.Append(Instruction.Create(OpCodes.Ldc_I4_S, (sbyte)method.Parameters.Count));
                     ilp.Append(Instruction.Create(OpCodes.Newarr, assembly.MainModule.TypeSystem.Object));
-                    ilp.Append(Instruction.Create(OpCodes.Stloc_S, parameters));
-                    ilp.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
+                    //ilp.Append(Instruction.Create(OpCodes.Stloc_S, parameters));
+                    //ilp.Append(Instruction.Create(OpCodes.Ldloc_S, parameters));
                     ilp.Append(Instruction.Create(OpCodes.Stfld, assembly.MainModule.ImportReference(ct.Fields.First(i => i.Name == "Parameters"))));
                     foreach (var parameter in method.Parameters)
                     {
@@ -201,7 +202,7 @@ namespace Norns.Test.StaticWeave
 
                     ilp.Append(Instruction.Create(OpCodes.Ldarg_0));
                     ilp.Append(Instruction.Create(OpCodes.Ldfld, assembly.MainModule.ImportReference(field1)));
-                    ilp.Append(Instruction.Create(OpCodes.Ldloc_S, context));
+                    ilp.Append(Instruction.Create(OpCodes.Ldloc_0));
                     ilp.Append(Instruction.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(delegateReference.Resolve().Methods.First(j => j.Name == "Invoke"))));
                     ilp.Append(Instruction.Create(OpCodes.Ret));
 
@@ -219,6 +220,7 @@ namespace Norns.Test.StaticWeave
                 il.Append(Instruction.Create(OpCodes.Ret));
                 t.Methods.Add(builderP.GetMethod);
                 t.Methods.Add(builderP.SetMethod);
+                t.IsBeforeFieldInit = false;
             }
             assembly.Write(Path.Combine(Directory.GetCurrentDirectory(), "debugdll", "TestFuncToDll2.dll"));
         }

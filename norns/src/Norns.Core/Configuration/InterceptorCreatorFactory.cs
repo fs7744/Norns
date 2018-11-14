@@ -16,8 +16,7 @@ namespace Norns.Core.AOP.Configuration
         private static readonly InterceptPredicate defaultBlacklists = m => m.GetReflector().IsDefined<NoInterceptAttribute>()
                 || m.DeclaringType.GetReflector().IsDefined<NoInterceptAttribute>();
 
-        private static readonly InterceptPredicate defaultWhitelists = m => m.GetReflector().IsDefined<NoInterceptAttribute>()
-                || m.DeclaringType.GetReflector().IsDefined<NoInterceptAttribute>();
+        private static readonly InterceptPredicate defaultWhitelists = m => true;
 
         private readonly IInterceptorConfiguration configuration;
         private readonly IEnumerable<IInterceptorConfigurationHandler> handlers;

@@ -9,7 +9,7 @@ namespace Norns.AOP.Configuration
         public static InterceptPredicate ForNamespace(string nameSpace)
         {
             Arguments.NotNullOrEmpty(nameof(nameSpace), nameSpace);
-            return method => method.DeclaringType.Namespace.Matches(nameSpace);
+            return method => method.DeclaringType.Namespace != null && method.DeclaringType.Namespace.Matches(nameSpace);
         }
 
         public static InterceptPredicate ForService(string service)

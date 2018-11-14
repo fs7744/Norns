@@ -12,7 +12,7 @@ namespace Norns.StaticWeave
     {
         public const string CtorName = ".ctor";
         public const string StaticCtorName = ".cctor";
-        public static readonly MethodAttributes StaticCtorAttributes = MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
+        public static readonly MethodAttributes StaticCtorAttributes = MethodAttributes.Private | MethodAttributes.Static | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
         public static readonly Type ObjectType = typeof(object);
         public static readonly Type NoInterceptAttributeType = typeof(NoInterceptAttribute);
         public static readonly Type InterceptorBaseAttributeType = typeof(InterceptorBaseAttribute);
