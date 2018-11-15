@@ -17,9 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Extensions.Reflection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Extensions.DependencyInjection.Adapter", "src\Norns.Extensions.DependencyInjection.Adapter\Norns.Extensions.DependencyInjection.Adapter.csproj", "{991F279D-F0B5-469F-B61B-0BD3223C4936}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.StaticWeave", "src\Norns.StaticWeave\Norns.StaticWeave.csproj", "{B3D3F143-1D8E-4068-9588-F9AA04C53D45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.StaticWeave", "src\Norns.StaticWeave\Norns.StaticWeave.csproj", "{B3D3F143-1D8E-4068-9588-F9AA04C53D45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFuncToDll", "test\TestFuncToDll\TestFuncToDll.csproj", "{7ABD6695-29E6-4E28-B0A4-F36C59D8F439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestFuncToDll", "test\TestFuncToDll\TestFuncToDll.csproj", "{7ABD6695-29E6-4E28-B0A4-F36C59D8F439}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.StaticWeave.MSBuild", "src\Norns.StaticWeave.MSBuild\Norns.StaticWeave.MSBuild.csproj", "{3849A855-D250-4FD0-A03F-AC453CD08AB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{7ABD6695-29E6-4E28-B0A4-F36C59D8F439}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ABD6695-29E6-4E28-B0A4-F36C59D8F439}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ABD6695-29E6-4E28-B0A4-F36C59D8F439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3849A855-D250-4FD0-A03F-AC453CD08AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3849A855-D250-4FD0-A03F-AC453CD08AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3849A855-D250-4FD0-A03F-AC453CD08AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3849A855-D250-4FD0-A03F-AC453CD08AB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{991F279D-F0B5-469F-B61B-0BD3223C4936} = {7F54F1F1-9765-40BD-B63A-F91C9CBA6C65}
 		{B3D3F143-1D8E-4068-9588-F9AA04C53D45} = {7F54F1F1-9765-40BD-B63A-F91C9CBA6C65}
 		{7ABD6695-29E6-4E28-B0A4-F36C59D8F439} = {F39F4ACF-DB94-4B20-8FB5-7F9AA7C15E19}
+		{3849A855-D250-4FD0-A03F-AC453CD08AB7} = {7F54F1F1-9765-40BD-B63A-F91C9CBA6C65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3D4F4DE-A086-41B4-86FC-549D67F2C28C}
