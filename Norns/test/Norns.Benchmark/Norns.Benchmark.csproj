@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Norns.DestinyLoom\Norns.DestinyLoom.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Fate\Norns.Fate.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Inception\Norns.Inception.csproj" />
+    <ProjectReference Include="..\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test.csproj"  
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>
