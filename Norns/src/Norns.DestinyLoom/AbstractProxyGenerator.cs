@@ -14,18 +14,20 @@ namespace Norns.DestinyLoom
         {
             Type = typeSymbol;
             SourceGeneratorContext = context;
+            ProxyFieldName = $"proxy{GuidHelper.NewGuidName()}";
         }
 
         public INamedTypeSymbol Type { get; }
         public SourceGeneratorContext SourceGeneratorContext { get; }
+        public string ProxyFieldName { get; }
     }
 
     public class ProxyMethodGeneratorContext
     {
-        public ProxyMethodGeneratorContext(IMethodSymbol method, SourceGeneratorContext context)
+        public ProxyMethodGeneratorContext(IMethodSymbol method, ProxyGeneratorContext context)
         {
             Method = method;
-            SourceGeneratorContext = context;
+            ClassGeneratorContext = context;
             HasReturnValue = method.ReturnType.ToDisplayString() != "void";
             if (HasReturnValue)
             {
@@ -34,7 +36,7 @@ namespace Norns.DestinyLoom
         }
 
         public IMethodSymbol Method { get; }
-        public SourceGeneratorContext SourceGeneratorContext { get; }
+        public ProxyGeneratorContext ClassGeneratorContext { get; }
         public bool HasReturnValue { get; }
         public string ReturnValueParameterName { get; }
     }

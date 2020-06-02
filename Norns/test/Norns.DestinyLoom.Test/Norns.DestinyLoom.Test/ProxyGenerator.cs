@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.DestinyLoom.Test
 {
@@ -10,7 +11,7 @@ namespace Norns.DestinyLoom.Test
     {
         public override IEnumerable<IInterceptorGenerator> FindInterceptorGenerators()
         {
-            yield return new AddOne();
+            yield return new ConsoleCall();
         }
 
         public override bool CanProxy(INamedTypeSymbol @type)
@@ -19,8 +20,39 @@ namespace Norns.DestinyLoom.Test
         }
     }
 
-    public class AddOne : IInterceptorGenerator
-    { 
-    
+    public class ConsoleCall : IInterceptorGenerator
+    {
+        public IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
+        {
+            if (!context.Method.Parameters.IsEmpty)
+            {
+                yield return "System.Console.WriteLine($\"";
+                yield return context.Method.Parameters[0].Type.ToDisplayString();
+                yield return " ";
+                yield return context.Method.Parameters[0].Name;
+                yield return " = {";
+                yield return context.Method.Parameters[0].Name;
+                yield return "}";
+                foreach (var item in context.Method.Parameters.Skip(1))
+                {
+                    yield return ", ";
+                    yield return item.ToDisplayString();
+                    yield return " ";
+                    yield return item.Name;
+                    yield return " = {";
+                    yield return item.Name;
+                    yield return "}";
+                }
+                yield return "\");";
+            }
+        }
+
+        public IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
+        {
+            if (context.HasReturnValue)
+            {
+                yield return $"{context.ReturnValueParameterName} ++;";
+            }
+        }
     }
 }

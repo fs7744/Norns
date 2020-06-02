@@ -62,9 +62,14 @@ namespace Norns.DestinyLoom
             sb.Append(" ");
             sb.Append(Name);
         }
+
+        public void GeneratePassing(StringBuilder sb)
+        {
+            sb.Append(Name);
+        }
     }
 
-        internal class MethodNode : INodeGenerator
+    internal class MethodNode : INodeGenerator
     {
         public string Accessibility { get; set; }
         public string Return { get; set; }
@@ -95,11 +100,23 @@ namespace Norns.DestinyLoom
         private void GenerateParameters(StringBuilder sb)
         {
             if (Parameters.Count == 0) return;
+            Action<ParameterNode, StringBuilder> call;
             Parameters[0].Generate(sb);
             for (int i = 1; i < Parameters.Count; i++)
             {
                 sb.Append(",");
                 Parameters[i].Generate(sb);
+            }
+        }
+
+        internal void GenerateParameters(List<string> body)
+        {
+            if (Parameters.Count == 0) return;
+            body.Add(Parameters[0].Name);
+            for (int i = 1; i < Parameters.Count; i++)
+            {
+                body.Add(",");
+                body.Add(Parameters[i].Name);
             }
         }
     }
@@ -112,6 +129,9 @@ namespace Norns.DestinyLoom
 
         public List<MethodNode> Methods { get; } = new List<MethodNode>();
 
+        public List<CtorNode> Ctors { get; } = new List<CtorNode>();
+        public string Accessibility { get; set; }
+
         public ClassNode(string name)
         {
             Name = name;
@@ -119,7 +139,8 @@ namespace Norns.DestinyLoom
 
         public void Generate(StringBuilder sb)
         {
-            sb.AppendLine("public class ");
+            sb.Append(Accessibility);
+            sb.Append(" class ");
             sb.Append(Name);
             Inherit.Generate(sb);
             sb.Append(" { ");
@@ -128,6 +149,13 @@ namespace Norns.DestinyLoom
                 methodNode.Generate(sb);
             }
             sb.Append(" } ");
+        }
+    }
+
+    internal class CtorNode : INodeGenerator
+    {
+        public void Generate(StringBuilder sb)
+        {
         }
     }
 
@@ -142,7 +170,7 @@ namespace Norns.DestinyLoom
 
         internal (string fileName, string content) Generate(ProxyGeneratorContext context)
         {
-            return ($"{context.Type.Name}Proxy{GuidHelper.NewGuidName()}.cs", GenerateProxyClass(context));
+            return ($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}.cs", GenerateProxyClass(context));
         }
 
         internal abstract string GenerateProxyClass(ProxyGeneratorContext context);
@@ -169,6 +197,30 @@ namespace Norns.DestinyLoom
                 methodNode.Body.Add(");");
             }
 
+            foreach (var item in interceptors)
+            {
+                methodNode.Body.AddRange(item.BeforeMethod(context));
+            }
+
+            if (!method.IsAbstract)
+            {
+                if (context.HasReturnValue)
+                {
+                    methodNode.Body.Add(context.ReturnValueParameterName);
+                    methodNode.Body.Add(" = ");
+                }
+                methodNode.Body.Add("base."); 
+                methodNode.Body.Add(method.Name);
+                methodNode.Body.Add("(");
+                methodNode.GenerateParameters(methodNode.Body);
+                methodNode.Body.Add(");");
+            }
+
+            foreach (var item in interceptors)
+            {
+                methodNode.Body.AddRange(item.AfterMethod(context));
+            }
+
             if (context.HasReturnValue)
             {
                 methodNode.Body.Add("return ");
@@ -188,7 +240,8 @@ namespace Norns.DestinyLoom
         internal override string GenerateProxyClass(ProxyGeneratorContext context)
         {
             var @namespace = new NamespaceNode($"{context.Type.ContainingNamespace.ToDisplayString()}.Proxy{GuidHelper.NewGuidName()}");
-            var @class = new ClassNode($"{context.Type.Name}Proxy{GuidHelper.NewGuidName()}");
+            var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
+            @class.Accessibility = context.Type.DeclaredAccessibility.ToString().ToLower();
             @namespace.Classes.Add(@class);
             @class.Inherit.Types.Add(context.Type.ToDisplayString());
             foreach (var member in context.Type.GetMembers())
@@ -196,7 +249,7 @@ namespace Norns.DestinyLoom
                 switch (member)
                 {
                     case IMethodSymbol method:
-                        var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context.SourceGeneratorContext);
+                        var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context);
                         @class.Methods.Add(GenerateProxyMethod(methodGeneratorContext));
                         break;
 
