@@ -8,7 +8,7 @@ namespace ProxyGenerators.Test
 {
     public interface IC
     {
-        string this[int a] { get => a.ToString(); }
+        string this[int a, int b] { get => a.ToString(); }
 
         Task<ValueTuple<int, int>> AddOne(int v);
     }

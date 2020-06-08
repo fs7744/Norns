@@ -13,7 +13,7 @@ namespace Norns.DestinyLoom
 
         public override bool CanProxy(INamedTypeSymbol type)
         {
-            return true;
+            return type.TypeKind == TypeKind.Interface;
         }
 
         public override string GenerateProxyClass(ProxyGeneratorContext context)
@@ -56,8 +56,9 @@ namespace Norns.DestinyLoom
             {
                 Accessibility = p.DeclaredAccessibility.ToString().ToLower(),
                 Type = p.Type.ToDisplayString(),
-                Name = p.Name
+                Name = p.IsIndexer ? p.Name.Replace("]", string.Join(",", p.Parameters.Select(i => i.Type.ToDisplayString() + " " + i.Name)) + "]") : p.Name
             };
+            
             if (!p.IsWriteOnly)
             {
                 node.Getter = new PropertyMethodNode()
