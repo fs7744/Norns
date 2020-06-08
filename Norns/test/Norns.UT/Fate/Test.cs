@@ -1,13 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Norns.Adapters.DependencyInjection.Attributes;
 using Norns.Fate.Abstraction;
-using Norns.UT.Fate;
 using System;
 using System.Threading.Tasks;
 using Xunit;
-
-[assembly: ProxyMapping(typeof(ITest), typeof(Test), typeof(TestProxy))]
-[assembly: ProxyMapping(typeof(ITest), typeof(TestInterceptor), typeof(TestProxy))]
 
 namespace Norns.UT.Fate
 {
@@ -58,19 +53,11 @@ namespace Norns.UT.Fate
         }
     }
 
+    [Proxy(typeof(ITest))]
     public class TestProxy : ITest, IInterceptProxy
     {
-        public IServiceProvider Provider { get; set; }
-
-        private readonly IInterceptor Interceptor;
-        private readonly Test test;
-
-        public TestProxy(IServiceProvider provider, Test test)
-        {
-            Provider = provider;
-            this.test = test;
-            Interceptor = new TestInterceptor();
-        }
+        private IInterceptor Interceptor;
+        private ITest test;
 
         public async Task<int> AddOneAsync(int v)
         {
@@ -97,6 +84,12 @@ namespace Norns.UT.Fate
             context.Parameters = new object[] { v };
             Interceptor.Invoke(context, InvokeBase);
             return (int)context.ReturnValue;
+        }
+
+        public void SetProxy(object instance, IServiceProvider serviceProvider)
+        {
+            test = instance as ITest;
+            Interceptor = new TestInterceptor();
         }
     }
 

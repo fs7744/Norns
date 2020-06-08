@@ -1,5 +1,6 @@
-﻿using Norns.Adapters.DependencyInjection.Attributes;
+﻿using Norns.Fate.Abstraction;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -7,26 +8,59 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class NornsDependencyInjectionExtensions
     {
+        public static (Dictionary<Type, Type> DefaultInterfaceImplementDict, Dictionary<Type, Type> ProxyDict)
+            FindProxyTypes(params Assembly[] assemblies)
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies().Union(assemblies).Distinct().SelectMany(i => i.GetTypes())
+                .Where(j => j.IsDefined(typeof(FateAttribute), false))
+                .SelectMany(i => i.GetCustomAttributes<FateAttribute>()
+                .Select(j =>
+                {
+                    switch (j)
+                    {
+                        case DefaultInterfaceImplementAttribute defaultInterfaceImplement:
+                            return (IsProxy: false, ServiceType: defaultInterfaceImplement.InterfaceType, ImplementType: i);
+
+                        case ProxyAttribute proxy:
+                            return (IsProxy: true, ServiceType: proxy.ServiceType, ImplementType: i);
+
+                        default:
+                            return (IsProxy: false, ServiceType: null, ImplementType: null);
+                    }
+                }))
+                .Where(i => i.ServiceType != null)
+                .Distinct()
+                .GroupBy(i => i.IsProxy)
+                .ToDictionary(j => j.Key, i => i.GroupBy(j => j.ServiceType).ToDictionary(j => j.Key, j => j.First().ImplementType));
+            Dictionary<Type, Type> defaultInterfaceImplementDict = new Dictionary<Type, Type>();
+            Dictionary<Type, Type> proxyDict = new Dictionary<Type, Type>();
+            foreach (var t in types)
+            {
+                if (t.Key)
+                {
+                    proxyDict = t.Value;
+                }
+                else
+                {
+                    defaultInterfaceImplementDict = t.Value;
+                }
+            }
+
+            return (defaultInterfaceImplementDict, proxyDict);
+        }
+
         public static IServiceProvider BuildAopServiceProvider(this IServiceCollection sc, params Assembly[] assemblies)
         {
-            var ass = AppDomain.CurrentDomain.GetAssemblies().Union(assemblies).Distinct();
-            var proxys = (from m in ass.SelectMany(j => j.GetCustomAttributes(typeof(ProxyMappingAttribute), false).Select(i => i as ProxyMappingAttribute))
-                          join d in sc
-                          on m.ServiceType equals d.ServiceType
-                          select new { m.ImplementationType, m.ProxyType, ServiceDescriptor = d })
-                          .Distinct()
-                          .ToArray();
+            var (defaultInterfaceImplementDict, proxyDict) = FindProxyTypes(assemblies);
 
-            foreach (var c in proxys)
+            foreach (var c in sc.Where(c => proxyDict.ContainsKey(c.ServiceType)).ToArray())
             {
-                sc.Remove(c.ServiceDescriptor);
-                sc.Add(ToImplementationServiceDescriptor(c.ServiceDescriptor, c.ImplementationType));
-                sc.Add(ServiceDescriptor.Describe(c.ServiceDescriptor.ServiceType, c.ProxyType, c.ServiceDescriptor.Lifetime));
+                sc.Remove(c);
+                sc.Add(ToImplementationServiceDescriptor(c, proxyDict[c.ServiceType]));
             }
 
             return sc.BuildServiceProvider();
         }
-
 
         // todo: 替换所有的接口为接口实现代理类，类为代理类（ovrrve visual member） 不实现任何ioc 容器
         public static ServiceDescriptor ToImplementationServiceDescriptor(ServiceDescriptor serviceDescriptor, Type implementationType)
@@ -34,13 +68,27 @@ namespace Microsoft.Extensions.DependencyInjection
             switch (serviceDescriptor)
             {
                 case ServiceDescriptor d when d.ImplementationType != null:
-                    return ServiceDescriptor.Describe(d.ImplementationType, d.ImplementationType, d.Lifetime);
+                    return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, i =>
+                    {
+                        var p = ActivatorUtilities.CreateInstance(i, implementationType) as IInterceptProxy;
+                        p?.SetProxy(ActivatorUtilities.CreateInstance(i, d.ImplementationType), i);
+                        return p;
+                    }, d.Lifetime);
                 case ServiceDescriptor d when d.ImplementationFactory != null:
-                    return ServiceDescriptor.Describe(implementationType, d.ImplementationFactory, d.Lifetime);
+                    return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, i =>
+                    {
+                        var p = ActivatorUtilities.CreateInstance(i, implementationType) as IInterceptProxy;
+                        p?.SetProxy(d.ImplementationFactory(i), i);
+                        return p;
+                    }, d.Lifetime);
                 default:
-                    return ServiceDescriptor.Describe(serviceDescriptor.ImplementationInstance.GetType(), i => serviceDescriptor.ImplementationInstance, serviceDescriptor.Lifetime);
+                    return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, i =>
+                    {
+                        var p = ActivatorUtilities.CreateInstance(i, implementationType) as IInterceptProxy;
+                        p?.SetProxy(serviceDescriptor.ImplementationInstance, i);
+                        return p;
+                    }, serviceDescriptor.Lifetime);
             }
-
         }
     }
 }

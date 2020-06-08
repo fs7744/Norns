@@ -51,6 +51,7 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
             Assert.Contains("public void AddOne() {  }", str);
+            Assert.Contains("[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof(Norns.ProxyGenerators.Test.IC))]", str);
         }
 
         [Fact]

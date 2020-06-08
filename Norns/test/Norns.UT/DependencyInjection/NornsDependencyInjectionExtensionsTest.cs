@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Norns.Adapters.DependencyInjection.Attributes;
-using Norns.Fate;
-using Norns.UT.DependencyInjection;
+using Norns.Fate.Abstraction;
 using System;
 using Xunit;
-
-[assembly: ProxyMapping(typeof(ITestDependencyInjection), typeof(TestDependencyInjection), typeof(TestDependencyInjectionProxy))]
 
 namespace Norns.UT.DependencyInjection
 {
@@ -14,7 +10,6 @@ namespace Norns.UT.DependencyInjection
         int AddOne(int v);
     }
 
-    [Proxy]
     public class TestDependencyInjection : ITestDependencyInjection
     {
         public int AddOne(int v)
@@ -23,18 +18,19 @@ namespace Norns.UT.DependencyInjection
         }
     }
 
-    public class TestDependencyInjectionProxy : ITestDependencyInjection
+    [Proxy(typeof(ITestDependencyInjection))]
+    public class TestDependencyInjectionProxy : ITestDependencyInjection, IInterceptProxy
     {
-        private readonly TestDependencyInjection implementation;
-
-        public TestDependencyInjectionProxy(TestDependencyInjection implementation)
-        {
-            this.implementation = implementation;
-        }
+        private TestDependencyInjection implementation;
 
         public int AddOne(int v)
         {
             return implementation.AddOne(v) + 1;
+        }
+
+        public void SetProxy(object instance, IServiceProvider serviceProvider)
+        {
+            implementation = instance as TestDependencyInjection;
         }
     }
 

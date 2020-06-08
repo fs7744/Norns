@@ -20,6 +20,9 @@ namespace Norns.DestinyLoom
         {
             var @namespace = new NamespaceNode($"{context.Type.ContainingNamespace.ToDisplayString()}.Proxy{GuidHelper.NewGuidName()}");
             var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
+            @class.CustomAttributes.Add("[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof(");
+            @class.CustomAttributes.Add(context.Type.ToDisplayString());
+            @class.CustomAttributes.Add("))]");
             @class.Accessibility = context.Type.DeclaredAccessibility.ToString().ToLower();
             @namespace.Classes.Add(@class);
             @class.Inherit.Types.Add(context.Type.ToDisplayString());

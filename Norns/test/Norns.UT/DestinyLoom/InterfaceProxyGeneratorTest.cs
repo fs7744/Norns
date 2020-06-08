@@ -26,7 +26,7 @@ namespace Norns.UT.DestinyLoom
 
         public override IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors)
         {
-            return new AbstractProxyClassGenerator[0];
+            yield return new InterfaceProxyClassGenerator(interceptors);
         }
     }
 
@@ -65,11 +65,11 @@ namespace Norns.UT.DestinyLoom
             return new string[0];
         }
 
-        public class EmptyProxyGeneratorTest
+        public class InterfaceProxyGeneratorTest
         {
             private static Compilation GenerateSource(string source)
             {
-                return ProxyGeneratorTest.GenerateSource(source, new ProxyGenerator());
+                return ProxyGeneratorTest.GenerateSource(source, new EmptyProxyGenerator());
             }
 
             [Fact]
@@ -140,7 +140,7 @@ namespace Norns.ProxyGenerators.Test
                 Assert.Contains("public int AddOne(int v)", str);
                 Assert.Contains("= default(int)", str);
                 Assert.Contains("return r", str);
-                Assert.Contains("= base.AddOne(v);", str);
+                Assert.Contains(".AddOne(v);", str);
             }
 
             [Fact]
@@ -217,6 +217,7 @@ namespace Norns.ProxyGenerators.Test
                 Assert.Contains("ProxyIC", str);
                 Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
                 Assert.Contains("public int AddOne(int v)", str);
+                Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.IC))]", str);
             }
         }
     }

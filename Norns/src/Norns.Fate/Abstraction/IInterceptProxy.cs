@@ -6,6 +6,6 @@ namespace Norns.Fate.Abstraction
 {
     public interface IInterceptProxy
     {
-        IServiceProvider Provider { get; set; }
+        void SetProxy(object instance, IServiceProvider serviceProvider);
     }
 }

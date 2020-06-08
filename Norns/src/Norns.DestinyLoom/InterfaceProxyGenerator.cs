@@ -156,6 +156,23 @@ namespace Norns.DestinyLoom
         }
     }
 
+    internal class FieldNode : INodeGenerator
+    {
+        public string Name { get; set; }
+        public string Accessibility { get; set; }
+        public string Type { get; set; }
+
+        public void Generate(StringBuilder sb)
+        {
+            sb.Append(Accessibility);
+            sb.Append(" ");
+            sb.Append(Type);
+            sb.Append(" ");
+            sb.Append(Name);
+            sb.Append(";");
+        }
+    }
+
     internal class ClassNode : INodeGenerator
     {
         public string Name { get; }
@@ -163,11 +180,12 @@ namespace Norns.DestinyLoom
         public InheritsNode Inherit { get; } = new InheritsNode();
 
         public List<MethodNode> Methods { get; } = new List<MethodNode>();
+        public List<FieldNode> Fields { get; } = new List<FieldNode>();
 
         public List<CtorNode> Ctors { get; } = new List<CtorNode>();
         public string Accessibility { get; set; }
         public List<PropertyNode> Properties { get; set; } = new List<PropertyNode>();
-
+        public List<string> CustomAttributes { get; } = new List<string>();
         public ClassNode(string name)
         {
             Name = name;
@@ -175,11 +193,20 @@ namespace Norns.DestinyLoom
 
         public void Generate(StringBuilder sb)
         {
+            foreach (var a in CustomAttributes)
+            {
+                sb.Append(a);
+            }
+            sb.Append(" ");
             sb.Append(Accessibility);
             sb.Append(" class ");
             sb.Append(Name);
             Inherit.Generate(sb);
             sb.Append(" { ");
+            foreach (var f in Fields)
+            {
+                f.Generate(sb);
+            }
             foreach (var p in Properties)
             {
                 p.Generate(sb);
@@ -251,7 +278,8 @@ namespace Norns.DestinyLoom
                     methodNode.Body.Add(context.ReturnValueParameterName);
                     methodNode.Body.Add(" = ");
                 }
-                methodNode.Body.Add("base.");
+                methodNode.Body.Add(context.ClassGeneratorContext.ProxyFieldName);
+                methodNode.Body.Add(".");
                 methodNode.Body.Add(method.Name);
                 methodNode.Body.Add("(");
                 methodNode.GenerateParameters(methodNode.Body);
@@ -289,8 +317,31 @@ namespace Norns.DestinyLoom
             var @namespace = new NamespaceNode($"{context.Type.ContainingNamespace.ToDisplayString()}.Proxy{GuidHelper.NewGuidName()}");
             var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
             @class.Accessibility = context.Type.DeclaredAccessibility.ToString().ToLower();
+            @class.CustomAttributes.Add("[Norns.Fate.Abstraction.Proxy(typeof(");
+            @class.CustomAttributes.Add(context.Type.ToDisplayString());
+            @class.CustomAttributes.Add("))]");
+            @class.Fields.Add(new FieldNode()
+            {
+                Accessibility = "public",
+                Type = context.Type.ToDisplayString(),
+                Name = context.ProxyFieldName,
+            });
+            var setProxyNode = new MethodNode()
+            {
+                Accessibility = "public",
+                Return = "void",
+                Name = "SetProxy",
+            };
+            setProxyNode.Parameters.Add(new ParameterNode() { Name = "instance", Type = "object" });
+            setProxyNode.Parameters.Add(new ParameterNode() { Name = "serviceProvider", Type = "System.IServiceProvider" });
+            setProxyNode.Body.Add(context.ProxyFieldName);
+            setProxyNode.Body.Add(" = instance as ");
+            setProxyNode.Body.Add(context.Type.ToDisplayString());
+            setProxyNode.Body.Add(";");
+            @class.Methods.Add(setProxyNode);
             @namespace.Classes.Add(@class);
             @class.Inherit.Types.Add(context.Type.ToDisplayString());
+            @class.Inherit.Types.Add("Norns.Fate.Abstraction.IInterceptProxy");
             foreach (var member in context.Type.GetMembers())
             {
                 switch (member)

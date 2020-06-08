@@ -1,9 +1,14 @@
 ﻿using System;
 
-namespace Norns.Fate
+namespace Norns.Fate.Abstraction
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ProxyAttribute : Attribute
+    public class ProxyAttribute : FateAttribute
     {
+        public ProxyAttribute(Type serviceType)
+        {
+            ServiceType = serviceType;
+        }
+
+        public Type ServiceType { get; }
     }
 }
