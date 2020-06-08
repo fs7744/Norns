@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -26,13 +27,17 @@ namespace Norns.DestinyLoom
             {
                 switch (member)
                 {
-                    case IMethodSymbol method:
+                    case IMethodSymbol method when method.MethodKind != MethodKind.PropertyGet && method.MethodKind != MethodKind.PropertySet:
                         var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context);
                         var m = GenerateProxyMethod(methodGeneratorContext);
                         if (m != null)
                         {
                             @class.Methods.Add(m);
                         }
+                        break;
+                    case IPropertySymbol property:
+                        var propertyGeneratorContext = new ProxyPropertyGeneratorContext(property, context);
+                        @class.Properties.Add(GenerateProxyProperty(propertyGeneratorContext));
                         break;
 
                     default:
@@ -42,6 +47,42 @@ namespace Norns.DestinyLoom
             var sb = new StringBuilder();
             @namespace.Generate(sb);
             return sb.ToString();
+        }
+
+        private PropertyNode GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
+        {
+            var p = propertyGeneratorContext.Property;
+            var node = new PropertyNode()
+            {
+                Accessibility = p.DeclaredAccessibility.ToString().ToLower(),
+                Type = p.Type.ToDisplayString(),
+                Name = p.Name
+            };
+            if (!p.IsWriteOnly)
+            {
+                node.Getter = new PropertyMethodNode()
+                { 
+                    Name = "get",
+                    Accessibility = p.GetMethod.DeclaredAccessibility.ToString().ToLower(),
+                };
+                if (node.Accessibility == node.Getter.Accessibility)
+                {
+                    node.Getter.Accessibility = string.Empty;
+                }
+            }
+            if (!p.IsReadOnly)
+            {
+                node.Setter = new PropertyMethodNode()
+                {
+                    Name = "set",
+                    Accessibility = p.SetMethod.DeclaredAccessibility.ToString().ToLower(),
+                }; 
+                if (node.Accessibility == node.Setter.Accessibility)
+                {
+                    node.Setter.Accessibility = string.Empty;
+                }
+            }
+            return node;
         }
 
         public override MethodNode GenerateProxyMethod(ProxyMethodGeneratorContext context)

@@ -2,6 +2,7 @@
 using Norns.DestinyLoom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Xunit;
 
 namespace Norns.UT.DestinyLoom
@@ -244,6 +245,48 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("public int AddOne(int v)", str);
             Assert.Contains("return default;", str);
             Assert.DoesNotContain("class C", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenInterfaceAndPropertyGetSetMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        int A { get; set; }
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyIC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+            Assert.Contains("public int A {  get;  set; }", str);
+        }
+        
+        [Fact]
+        public void GenerateProxyClassWhenInterfaceAndInternalPropertyGetSetMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        int A { get; internal set; }
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyIC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+            Assert.Contains("public int A {  get; internal set; }", str);
         }
     }
 }

@@ -41,6 +41,18 @@ namespace Norns.DestinyLoom
         public string ReturnValueParameterName { get; }
     }
 
+    public class ProxyPropertyGeneratorContext
+    {
+        public ProxyPropertyGeneratorContext(IPropertySymbol property, ProxyGeneratorContext context)
+        {
+            Property = property;
+            ClassGeneratorContext = context;
+        }
+
+        public IPropertySymbol Property { get; }
+        public ProxyGeneratorContext ClassGeneratorContext { get; }
+    }
+
     public abstract class AbstractProxyGenerator : ISourceGenerator
     {
         protected Encoding Encoding { get; set; } = Encoding.UTF8;

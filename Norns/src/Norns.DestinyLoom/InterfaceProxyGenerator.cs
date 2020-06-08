@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -120,6 +119,43 @@ namespace Norns.DestinyLoom
         }
     }
 
+    internal class PropertyMethodNode : INodeGenerator
+    {
+        public string Name { get; set; }
+        public string Accessibility { get; set; }
+
+        public void Generate(StringBuilder sb)
+        {
+            sb.Append(Accessibility);
+            sb.Append(" ");
+            sb.Append(Name);
+            sb.Append(";");
+        }
+    }
+
+    internal class PropertyNode : INodeGenerator
+    {
+        public string Name { get; set; }
+        public string Accessibility { get; set; }
+        public string Type { get; set; }
+        public PropertyMethodNode Getter { get; set; }
+        public PropertyMethodNode Setter { get; set; }
+
+        public void Generate(StringBuilder sb)
+        {
+            sb.Append(Accessibility);
+            sb.Append(" ");
+            sb.Append(Type);
+            sb.Append(" ");
+            sb.Append(Name);
+            sb.Append(" { ");
+            Getter?.Generate(sb);
+            sb.Append(" ");
+            Setter?.Generate(sb);
+            sb.Append(" } ");
+        }
+    }
+
     internal class ClassNode : INodeGenerator
     {
         public string Name { get; }
@@ -130,6 +166,7 @@ namespace Norns.DestinyLoom
 
         public List<CtorNode> Ctors { get; } = new List<CtorNode>();
         public string Accessibility { get; set; }
+        public List<PropertyNode> Properties { get; set; } = new List<PropertyNode>();
 
         public ClassNode(string name)
         {
@@ -143,6 +180,10 @@ namespace Norns.DestinyLoom
             sb.Append(Name);
             Inherit.Generate(sb);
             sb.Append(" { ");
+            foreach (var p in Properties)
+            {
+                p.Generate(sb);
+            }
             foreach (var methodNode in Methods)
             {
                 methodNode.Generate(sb);
@@ -181,9 +222,9 @@ namespace Norns.DestinyLoom
             var method = context.Method;
             var methodNode = new MethodNode()
             {
-                 Accessibility = method.DeclaredAccessibility.ToString().ToLower(),
-                 Return = method.ReturnType.ToDisplayString(),
-                 Name = method.Name,
+                Accessibility = method.DeclaredAccessibility.ToString().ToLower(),
+                Return = method.ReturnType.ToDisplayString(),
+                Name = method.Name,
             };
             foreach (var p in method.Parameters)
             {
@@ -210,7 +251,7 @@ namespace Norns.DestinyLoom
                     methodNode.Body.Add(context.ReturnValueParameterName);
                     methodNode.Body.Add(" = ");
                 }
-                methodNode.Body.Add("base."); 
+                methodNode.Body.Add("base.");
                 methodNode.Body.Add(method.Name);
                 methodNode.Body.Add("(");
                 methodNode.GenerateParameters(methodNode.Body);
