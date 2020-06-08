@@ -51,7 +51,7 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class ParameterNode : INodeGenerator
+    public class ParameterNode : INodeGenerator
     {
         public string Type { get; set; }
         public string Name { get; set; }
@@ -69,7 +69,7 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class MethodNode : INodeGenerator
+    public class MethodNode : INodeGenerator
     {
         public string Accessibility { get; set; }
         public string Return { get; set; }
@@ -158,7 +158,7 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal abstract class AbstractProxyClassGenerator
+    public abstract class AbstractProxyClassGenerator
     {
         protected IInterceptorGenerator[] interceptors;
 
@@ -167,14 +167,16 @@ namespace Norns.DestinyLoom
             this.interceptors = interceptors;
         }
 
-        internal (string fileName, string content) Generate(ProxyGeneratorContext context)
+        public (string fileName, string content) Generate(ProxyGeneratorContext context)
         {
             return ($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}.cs", GenerateProxyClass(context));
         }
 
-        internal abstract string GenerateProxyClass(ProxyGeneratorContext context);
+        public abstract string GenerateProxyClass(ProxyGeneratorContext context);
 
-        internal MethodNode GenerateProxyMethod(ProxyMethodGeneratorContext context)
+        public abstract bool CanProxy(INamedTypeSymbol type);
+
+        public virtual MethodNode GenerateProxyMethod(ProxyMethodGeneratorContext context)
         {
             var method = context.Method;
             var methodNode = new MethodNode()
@@ -230,13 +232,18 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class InterfaceProxyClassGenerator : AbstractProxyClassGenerator
+    public class InterfaceProxyClassGenerator : AbstractProxyClassGenerator
     {
-        internal InterfaceProxyClassGenerator(IInterceptorGenerator[] interceptors) : base(interceptors)
+        public InterfaceProxyClassGenerator(IInterceptorGenerator[] interceptors) : base(interceptors)
         {
         }
 
-        internal override string GenerateProxyClass(ProxyGeneratorContext context)
+        public override bool CanProxy(INamedTypeSymbol type)
+        {
+            return @type.TypeKind == TypeKind.Interface;
+        }
+
+        public override string GenerateProxyClass(ProxyGeneratorContext context)
         {
             var @namespace = new NamespaceNode($"{context.Type.ContainingNamespace.ToDisplayString()}.Proxy{GuidHelper.NewGuidName()}");
             var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
@@ -249,7 +256,8 @@ namespace Norns.DestinyLoom
                 {
                     case IMethodSymbol method:
                         var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context);
-                        @class.Methods.Add(GenerateProxyMethod(methodGeneratorContext));
+                        var m = GenerateProxyMethod(methodGeneratorContext);
+                        @class.Methods.Add(m);
                         break;
 
                     default:
@@ -262,13 +270,18 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class ClassProxyClassGenerator : AbstractProxyClassGenerator
+    public class ClassProxyClassGenerator : AbstractProxyClassGenerator
     {
-        internal ClassProxyClassGenerator(IInterceptorGenerator[] interceptors) : base(interceptors)
+        public ClassProxyClassGenerator(IInterceptorGenerator[] interceptors) : base(interceptors)
         {
         }
 
-        internal override string GenerateProxyClass(ProxyGeneratorContext context)
+        public override bool CanProxy(INamedTypeSymbol type)
+        {
+            return @type.TypeKind == TypeKind.Class;
+        }
+
+        public override string GenerateProxyClass(ProxyGeneratorContext context)
         {
             return string.Empty;
         }

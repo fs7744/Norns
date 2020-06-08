@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Norns.Benchmark.Fate
+namespace Benchmark.Fate
 {
     public delegate Task InterceptAsync(FateContext context);
 

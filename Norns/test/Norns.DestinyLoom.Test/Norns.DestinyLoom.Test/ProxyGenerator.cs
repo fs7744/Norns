@@ -20,6 +20,12 @@ namespace Norns.DestinyLoom.Test
             //return @type.ToDisplayString().StartsWith("Norns.Benchmark.IC");
             return @type.ToDisplayString().StartsWith("Norns");
         }
+
+        public override IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors)
+        {
+            yield return new InterfaceProxyClassGenerator(interceptors);
+            yield return new ClassProxyClassGenerator(interceptors);
+        }
     }
 
     public class ConsoleCall : IInterceptorGenerator

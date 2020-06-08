@@ -28,7 +28,7 @@ namespace Norns.DestinyLoom
         {
             Method = method;
             ClassGeneratorContext = context;
-            HasReturnValue = method.ReturnType.ToDisplayString() != "void";
+            HasReturnValue = !method.ReturnsVoid;
             if (HasReturnValue)
             {
                 ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
@@ -51,8 +51,10 @@ namespace Norns.DestinyLoom
                 return;
             var compilation = context.Compilation;
             var interceptors = FindInterceptorGenerators().ToArray();
-            GenerateProxyClass(new InterfaceProxyClassGenerator(interceptors), receiver.CandidateInterfaces, context, compilation);
-            GenerateProxyClass(new ClassProxyClassGenerator(interceptors), receiver.CandidateClasses, context, compilation);
+            foreach (var generator in FindProxyClassGenerators(interceptors))
+            {
+                GenerateProxyClass(generator, receiver.CandidateTypes, context, compilation);
+            }
         }
 
         private void GenerateProxyClass(AbstractProxyClassGenerator generator, IEnumerable<TypeDeclarationSyntax> typeSyntaxs, SourceGeneratorContext context, Compilation compilation)
@@ -63,7 +65,8 @@ namespace Norns.DestinyLoom
                 if (model.GetDeclaredSymbol(typeSyntax) is INamedTypeSymbol @type
                     && !@type.IsStatic
                     && !@type.IsValueType
-                    && CanProxy(@type))
+                    && CanProxy(@type)
+                    && generator.CanProxy(@type))
                 {
                     var proxyGeneratorContext = new ProxyGeneratorContext(@type, context);
                     var (fileName, content) = generator.Generate(proxyGeneratorContext);
@@ -84,22 +87,29 @@ namespace Norns.DestinyLoom
 
         public abstract IEnumerable<IInterceptorGenerator> FindInterceptorGenerators();
 
+        public abstract IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors);
+
         internal class SyntaxReceiver : ISyntaxReceiver
         {
+            internal List<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
             internal List<ClassDeclarationSyntax> CandidateClasses { get; } = new List<ClassDeclarationSyntax>();
             internal List<InterfaceDeclarationSyntax> CandidateInterfaces { get; } = new List<InterfaceDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
                 switch (syntaxNode)
-                {
-                    case ClassDeclarationSyntax @class:
-                        CandidateClasses.Add(@class);
+                { 
+                    case TypeDeclarationSyntax @type:
+                        CandidateTypes.Add(@type);
                         break;
 
-                    case InterfaceDeclarationSyntax @interface:
-                        CandidateInterfaces.Add(@interface);
-                        break;
+                    //case ClassDeclarationSyntax @class:
+                    //    CandidateClasses.Add(@class);
+                    //    break;
+
+                    //case InterfaceDeclarationSyntax @interface:
+                    //    CandidateInterfaces.Add(@interface);
+                    //    break;
 
                     default:
                         break;
