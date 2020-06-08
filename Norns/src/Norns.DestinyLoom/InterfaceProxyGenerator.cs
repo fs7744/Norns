@@ -100,7 +100,6 @@ namespace Norns.DestinyLoom
         private void GenerateParameters(StringBuilder sb)
         {
             if (Parameters.Count == 0) return;
-            Action<ParameterNode, StringBuilder> call;
             Parameters[0].Generate(sb);
             for (int i = 1; i < Parameters.Count; i++)
             {

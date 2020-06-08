@@ -16,6 +16,8 @@ namespace Norns.DestinyLoom.Test
 
         public override bool CanProxy(INamedTypeSymbol @type)
         {
+            //return false;
+            //return @type.ToDisplayString().StartsWith("Norns.Benchmark.IC");
             return @type.ToDisplayString().StartsWith("Norns");
         }
     }
