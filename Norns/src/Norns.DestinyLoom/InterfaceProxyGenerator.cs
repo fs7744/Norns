@@ -261,7 +261,7 @@ namespace Norns.DestinyLoom
                 Return = method.ReturnType.ToDisplayString(),
                 Name = method.Name,
             };
-            if (method.IsAsync)
+            if (context.IsAsync)
             {
                 methodNode.Symbols.Add("async");
             }
@@ -303,7 +303,7 @@ namespace Norns.DestinyLoom
                 methodNode.Body.Add(context.ReturnValueParameterName);
                 methodNode.Body.Add(" = ");
             }
-            if (method.IsAsync)
+            if (context.IsAsync)
             {
                 methodNode.Body.Add("await ");
             }

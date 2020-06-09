@@ -221,7 +221,7 @@ namespace Norns.ProxyGenerators.Test
             }
 
             [Fact]
-            public void GenerateProxyClassWhenInterfaceWithHaAsyncMethod()
+            public void GenerateProxyClassWhenInterfaceWithAsyncMethod()
             {
                 var source = @"
 using System.Threading.Tasks;
@@ -241,6 +241,30 @@ namespace Norns.ProxyGenerators.Test
                 Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
                 Assert.Contains("public async  System.Threading.Tasks.Task AddOne(int v)", str);
                 Assert.Contains("await proxy", str);
+                Assert.Contains(".AddOne(v);", str);
+            }
+
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceWithAsyncValueMethod()
+            {
+                var source = @"
+using System.Threading.Tasks;
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        Task<int> AddOne(int v) {}
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public async  System.Threading.Tasks.Task<int> AddOne(int v)", str);
+                Assert.Contains("= await proxy", str);
                 Assert.Contains(".AddOne(v);", str);
             }
         }
