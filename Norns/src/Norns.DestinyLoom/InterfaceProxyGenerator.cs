@@ -73,6 +73,7 @@ namespace Norns.DestinyLoom
         public string Accessibility { get; set; }
         public string Return { get; set; }
         public string Name { get; set; }
+        public List<string> Symbols { get; } = new List<string>();
 
         public List<ParameterNode> Parameters { get; } = new List<ParameterNode>();
 
@@ -81,6 +82,12 @@ namespace Norns.DestinyLoom
         public void Generate(StringBuilder sb)
         {
             sb.Append(Accessibility);
+            sb.Append(" ");
+            foreach (var item in Symbols)
+            {
+                sb.Append(item);
+                sb.Append(" ");
+            }
             sb.Append(" ");
             sb.Append(Return);
             sb.Append(" ");
@@ -186,6 +193,7 @@ namespace Norns.DestinyLoom
         public string Accessibility { get; set; }
         public List<PropertyNode> Properties { get; set; } = new List<PropertyNode>();
         public List<string> CustomAttributes { get; } = new List<string>();
+
         public ClassNode(string name)
         {
             Name = name;
@@ -253,6 +261,10 @@ namespace Norns.DestinyLoom
                 Return = method.ReturnType.ToDisplayString(),
                 Name = method.Name,
             };
+            if (method.IsAsync)
+            {
+                methodNode.Symbols.Add("async");
+            }
             foreach (var p in method.Parameters)
             {
                 methodNode.Parameters.Add(new ParameterNode() { Type = p.Type.ToDisplayString(), Name = p.Name });
@@ -261,9 +273,24 @@ namespace Norns.DestinyLoom
             {
                 methodNode.Body.Add("var ");
                 methodNode.Body.Add(context.ReturnValueParameterName);
-                methodNode.Body.Add(" = default(");
-                methodNode.Body.Add(methodNode.Return);
-                methodNode.Body.Add(");");
+                var returnTypeStr = context.Method.ReturnType.ToDisplayString();
+                 
+                if (context.IsAsyncValue)
+                {
+                    methodNode.Body.Add(" = ");
+                    methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
+                    methodNode.Body.Add("(default);");
+                }
+                else if (context.IsAsync)
+                {
+                    methodNode.Body.Add(" = System.Threading.Tasks.Task.CompletedTask;");
+                }
+                else
+                {
+                    methodNode.Body.Add(" = default(");
+                    methodNode.Body.Add(methodNode.Return);
+                    methodNode.Body.Add(");");
+                }
             }
 
             foreach (var item in interceptors)
@@ -271,20 +298,21 @@ namespace Norns.DestinyLoom
                 methodNode.Body.AddRange(item.BeforeMethod(context));
             }
 
-            if (!method.IsAbstract)
+            if (context.HasReturnValue)
             {
-                if (context.HasReturnValue)
-                {
-                    methodNode.Body.Add(context.ReturnValueParameterName);
-                    methodNode.Body.Add(" = ");
-                }
-                methodNode.Body.Add(context.ClassGeneratorContext.ProxyFieldName);
-                methodNode.Body.Add(".");
-                methodNode.Body.Add(method.Name);
-                methodNode.Body.Add("(");
-                methodNode.GenerateParameters(methodNode.Body);
-                methodNode.Body.Add(");");
+                methodNode.Body.Add(context.ReturnValueParameterName);
+                methodNode.Body.Add(" = ");
             }
+            if (method.IsAsync)
+            {
+                methodNode.Body.Add("await ");
+            }
+            methodNode.Body.Add(context.ClassGeneratorContext.ProxyFieldName);
+            methodNode.Body.Add(".");
+            methodNode.Body.Add(method.Name);
+            methodNode.Body.Add("(");
+            methodNode.GenerateParameters(methodNode.Body);
+            methodNode.Body.Add(");");
 
             foreach (var item in interceptors)
             {

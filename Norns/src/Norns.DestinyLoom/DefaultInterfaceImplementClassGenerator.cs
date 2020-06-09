@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Linq;
 using System.Text;
 
@@ -38,6 +37,7 @@ namespace Norns.DestinyLoom
                             @class.Methods.Add(m);
                         }
                         break;
+
                     case IPropertySymbol property:
                         var propertyGeneratorContext = new ProxyPropertyGeneratorContext(property, context);
                         @class.Properties.Add(GenerateProxyProperty(propertyGeneratorContext));
@@ -61,11 +61,11 @@ namespace Norns.DestinyLoom
                 Type = p.Type.ToDisplayString(),
                 Name = p.IsIndexer ? p.Name.Replace("]", string.Join(",", p.Parameters.Select(i => i.Type.ToDisplayString() + " " + i.Name)) + "]") : p.Name
             };
-            
+
             if (!p.IsWriteOnly)
             {
                 node.Getter = new PropertyMethodNode()
-                { 
+                {
                     Name = "get",
                     Accessibility = p.GetMethod.DeclaredAccessibility.ToString().ToLower(),
                 };
@@ -80,7 +80,7 @@ namespace Norns.DestinyLoom
                 {
                     Name = "set",
                     Accessibility = p.SetMethod.DeclaredAccessibility.ToString().ToLower(),
-                }; 
+                };
                 if (node.Accessibility == node.Setter.Accessibility)
                 {
                     node.Setter.Accessibility = string.Empty;
@@ -104,21 +104,18 @@ namespace Norns.DestinyLoom
                 methodNode.Parameters.Add(new ParameterNode() { Type = p.Type.ToDisplayString(), Name = p.Name });
             }
 
-            if (context.HasReturnValue)
+            if (context.HasReturnValue || context.IsAsync)
             {
                 var returnTypeStr = context.Method.ReturnType.ToDisplayString();
-                if (returnTypeStr.StartsWith("System.Threading.Tasks.Task"))
+                if (context.IsAsyncValue)
                 {
-                    if (returnTypeStr.EndsWith(">"))
-                    {
-                        methodNode.Body.Add("return ");
-                        methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
-                        methodNode.Body.Add("(default);");
-                    }
-                    else
-                    {
-                        methodNode.Body.Add("return System.Threading.Tasks.Task.CompletedTask;");
-                    }
+                    methodNode.Body.Add("return ");
+                    methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
+                    methodNode.Body.Add("(default);");
+                }
+                else if (context.IsAsync)
+                {
+                    methodNode.Body.Add("return System.Threading.Tasks.Task.CompletedTask;");
                 }
                 else
                 {

@@ -27,7 +27,10 @@ namespace Norns.DestinyLoom
         {
             Method = method;
             ClassGeneratorContext = context;
-            HasReturnValue = !method.ReturnsVoid;
+            var returnTypeStr = method.ReturnType.ToDisplayString(); 
+            IsAsync = returnTypeStr.StartsWith("System.Threading.Tasks.Task") || returnTypeStr.StartsWith("System.Threading.Tasks.ValueTask");
+            IsAsyncValue = IsAsync && returnTypeStr.EndsWith(">");
+            HasReturnValue = IsAsync ? IsAsyncValue : !method.ReturnsVoid;
             if (HasReturnValue)
             {
                 ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
@@ -38,6 +41,8 @@ namespace Norns.DestinyLoom
         public ProxyGeneratorContext ClassGeneratorContext { get; }
         public bool HasReturnValue { get; }
         public string ReturnValueParameterName { get; }
+        public bool IsAsync { get; }
+        public bool IsAsyncValue { get; }
     }
 
     public class ProxyPropertyGeneratorContext
@@ -76,6 +81,13 @@ namespace Norns.DestinyLoom
                 if (model.GetDeclaredSymbol(typeSyntax) is INamedTypeSymbol @type
                     && !@type.IsStatic
                     && !@type.IsValueType
+                    && !@type.IsAnonymousType
+                    && !@type.IsComImport
+                    && !@type.IsNativeIntegerType
+                    && !@type.IsScriptClass
+                    && !@type.IsSealed
+                    && !@type.IsTupleType
+                    && !@type.IsUnmanagedType
                     && CanProxy(@type)
                     && generator.CanProxy(@type))
                 {
