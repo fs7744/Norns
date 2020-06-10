@@ -31,10 +31,7 @@ namespace Norns.DestinyLoom
             IsAsync = returnTypeStr.StartsWith("System.Threading.Tasks.Task") || returnTypeStr.StartsWith("System.Threading.Tasks.ValueTask");
             IsAsyncValue = IsAsync && returnTypeStr.EndsWith(">");
             HasReturnValue = IsAsync ? IsAsyncValue : !method.ReturnsVoid;
-            if (HasReturnValue)
-            {
-                ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
-            }
+            ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
         }
 
         public IMethodSymbol Method { get; }

@@ -18,10 +18,12 @@ namespace ProxyGenerators.Test
         Task<ValueTuple<int, int>> AddOne(int v);
     }
 }
+
 namespace ProxyGenerators.Test.Proxyc713170faed04810ab2c37adc1214595 
 { 
     public class ProxyIC678a642569b74ae39ddc3acf2bf04161 : ProxyGenerators.Test.ICD, ProxyGenerators.Test.IC
-    { 
+    {
+        
         public Task<ValueTuple<int, int>> AddOne(int v) 
         {
             return System.Threading.Tasks.Task.FromResult<ValueTuple<int, int>>(default);

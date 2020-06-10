@@ -29,7 +29,7 @@ namespace Norns.UT.DestinyLoom
         }
     }
 
-    public class ProxyGeneratorTest
+    public static class ProxyGeneratorTest
     {
         public static readonly CSharpParseOptions Regular = new CSharpParseOptions(kind: SourceCodeKind.Regular, documentationMode: DocumentationMode.Parse);
         public static readonly CSharpCompilationOptions DebugDll = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Debug);
@@ -266,6 +266,148 @@ namespace Norns.ProxyGenerators.Test
                 Assert.Contains("public async  System.Threading.Tasks.Task<int> AddOne(int v)", str);
                 Assert.Contains("= await proxy", str);
                 Assert.Contains(".AddOne(v);", str);
+            }
+
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceWithIntPropertyGetSetMethod()
+            {
+                var source = @"
+using System.Threading.Tasks;
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        int V {get;set;}
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public int V {", str);
+                Assert.Contains("= default(int);", str);
+                Assert.Contains("get", str);
+                Assert.Contains(".V;", str);
+                Assert.Contains("return r", str);
+                Assert.Contains("set", str);
+                Assert.Contains("= value;", str);
+                Assert.Contains(".V =", str);
+            }
+            
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceWithPropertyInternalGetSetMethod()
+            {
+                var source = @"
+using System.Threading.Tasks;
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        object V { internal get; internal set;}
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public object V {", str);
+                Assert.Contains("= default(object);", str);
+                Assert.Contains("internal get", str);
+                Assert.Contains(".V;", str);
+                Assert.Contains("return r", str);
+                Assert.Contains("internal set", str);
+                Assert.Contains("= value;", str);
+                Assert.Contains(".V =", str);
+            }
+
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceAndIndexerMethod()
+            {
+                var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        string this[int a, string bb] { get; set; }
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public string this[int a,string bb] {", str);
+                Assert.Contains("= default(string);", str);
+                Assert.Contains("get", str);
+                Assert.Contains("[a,bb];", str);
+                Assert.Contains("return r", str);
+                Assert.Contains("set", str);
+                Assert.Contains("= value;", str);
+                Assert.Contains("[a,bb] =", str);
+            }
+
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceAndIndexerInternalGetMethod()
+            {
+                var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        string this[int a, string bb] { internal get; set; }
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public string this[int a,string bb] {", str);
+                Assert.Contains("= default(string);", str);
+                Assert.Contains("internal get", str);
+                Assert.Contains("[a,bb];", str);
+                Assert.Contains("return r", str);
+                Assert.Contains("set", str);
+                Assert.Contains("= value;", str);
+                Assert.Contains("[a,bb] =", str);
+            }
+
+            [Fact]
+            public void GenerateProxyClassWhenInterfaceAndIndexerInternalSetMethod()
+            {
+                var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public interface IC
+    {
+        string this[int a, string bb] { get; internal set; }
+    }
+}
+";
+                Compilation outputCompilation = GenerateSource(source);
+                var array = outputCompilation.SyntaxTrees.ToArray();
+                Assert.Equal(2, array.Length);
+                var str = array[1].ToString();
+                Assert.Contains("ProxyIC", str);
+                Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
+                Assert.Contains("public string this[int a,string bb] {", str);
+                Assert.Contains("= default(string);", str);
+                Assert.Contains("get", str);
+                Assert.Contains("[a,bb];", str);
+                Assert.Contains("return r", str);
+                Assert.Contains("internal set", str);
+                Assert.Contains("= value;", str);
+                Assert.Contains("[a,bb] =", str);
             }
         }
     }
