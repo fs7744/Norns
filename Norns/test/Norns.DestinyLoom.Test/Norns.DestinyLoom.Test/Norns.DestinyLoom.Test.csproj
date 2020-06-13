@@ -10,8 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\..\src\Norns.DestinyLoom\Norns.DestinyLoom.csproj" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.0.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Norns.DestinyLoom\Norns.DestinyLoom.csproj" />
+  </ItemGroup>
 </Project>

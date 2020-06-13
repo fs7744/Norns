@@ -53,6 +53,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var (defaultInterfaceImplementDict, proxyDict) = FindProxyTypes(assemblies);
 
+            foreach (var c in sc.Where(c => c.ImplementationType == typeof(DefaultInterfaceImplementAttribute)).ToArray())
+            {
+                sc.Remove(c);
+                if (defaultInterfaceImplementDict.TryGetValue(c.ServiceType, out var implementType))
+                {
+                    sc.Add(ServiceDescriptor.Describe(c.ServiceType, implementType, c.Lifetime));
+                }
+            }
+
             foreach (var c in sc.Where(c => proxyDict.ContainsKey(c.ServiceType)).ToArray())
             {
                 sc.Remove(c);
@@ -62,7 +71,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildServiceProvider();
         }
 
-        // todo: 替换所有的接口为接口实现代理类，类为代理类（ovrrve visual member） 不实现任何ioc 容器
+        public static IServiceCollection AddFateInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        {
+            sc.Add(ServiceDescriptor.Describe(typeof(T), typeof(DefaultInterfaceImplementAttribute), lifetime));
+            return sc;
+        }
+
+        // todo: 类为代理类（ovrrve visual member） 不实现任何ioc 容器
         public static ServiceDescriptor ToImplementationServiceDescriptor(ServiceDescriptor serviceDescriptor, Type implementationType)
         {
             switch (serviceDescriptor)

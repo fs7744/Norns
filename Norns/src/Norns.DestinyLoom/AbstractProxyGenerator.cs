@@ -23,13 +23,23 @@ namespace Norns.DestinyLoom
 
     public class ProxyMethodGeneratorContext
     {
+        const string TaskFullName = "System.Threading.Tasks.Task";
+        const string ValueTaskFullName = "System.Threading.Tasks.ValueTask";
+
         public ProxyMethodGeneratorContext(IMethodSymbol method, ProxyGeneratorContext context)
         {
             Method = method;
             ClassGeneratorContext = context;
-            var returnTypeStr = method.ReturnType.ToDisplayString(); 
-            IsAsync = returnTypeStr.StartsWith("System.Threading.Tasks.Task") || returnTypeStr.StartsWith("System.Threading.Tasks.ValueTask");
+            var returnTypeStr = method.ReturnType.ToDisplayString();
+            var isTask = returnTypeStr.StartsWith(TaskFullName);
+            var isValueTask = returnTypeStr.StartsWith(ValueTaskFullName);
+            IsAsync = isTask || isValueTask;
             IsAsyncValue = IsAsync && returnTypeStr.EndsWith(">");
+            if (IsAsyncValue)
+            {
+                AsyncValueType = returnTypeStr.Substring((isTask ? TaskFullName.Length : ValueTaskFullName.Length) + 1);
+                AsyncValueType = AsyncValueType.Substring(0, AsyncValueType.Length - 1);
+            }
             HasReturnValue = IsAsync ? IsAsyncValue : !method.ReturnsVoid;
             ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
         }
@@ -40,6 +50,7 @@ namespace Norns.DestinyLoom
         public string ReturnValueParameterName { get; }
         public bool IsAsync { get; }
         public bool IsAsyncValue { get; }
+        public string AsyncValueType { get; }
     }
 
     public class ProxyPropertyGeneratorContext
@@ -80,8 +91,6 @@ namespace Norns.DestinyLoom
                     && !@type.IsValueType
                     && !@type.IsAnonymousType
                     && !@type.IsComImport
-                    && !@type.IsNativeIntegerType
-                    && !@type.IsScriptClass
                     && !@type.IsSealed
                     && !@type.IsTupleType
                     && !@type.IsUnmanagedType

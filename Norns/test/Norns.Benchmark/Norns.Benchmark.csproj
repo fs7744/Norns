@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Norns.DestinyLoom\Norns.DestinyLoom.csproj" />
     <ProjectReference Include="..\..\src\Norns.Fate\Norns.Fate.csproj" />
     <ProjectReference Include="..\..\src\Norns.Inception\Norns.Inception.csproj" />
     <ProjectReference Include="..\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

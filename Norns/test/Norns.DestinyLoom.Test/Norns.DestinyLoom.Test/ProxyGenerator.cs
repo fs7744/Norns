@@ -18,13 +18,14 @@ namespace Norns.DestinyLoom.Test
         {
             //return false;
             //return @type.ToDisplayString().StartsWith("Norns.Benchmark.IC");
-            return @type.ToDisplayString().StartsWith("Norns");
+           return @type.ToDisplayString().StartsWith("Norns");
         }
 
         public override IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors)
         {
+            yield return new DefaultInterfaceImplementClassGenerator(interceptors);
             yield return new InterfaceProxyClassGenerator(interceptors);
-            yield return new ClassProxyClassGenerator(interceptors);
+            //yield return new ClassProxyClassGenerator(interceptors);
         }
     }
 
@@ -34,7 +35,9 @@ namespace Norns.DestinyLoom.Test
         {
             if (!context.Method.Parameters.IsEmpty)
             {
-                yield return "System.Console.WriteLine($\"";
+                yield return "System.Console.WriteLine($\"Call Method";
+                yield return context.Method.Name;
+                yield return " ";
                 yield return context.Method.Parameters[0].Type.ToDisplayString();
                 yield return " ";
                 yield return context.Method.Parameters[0].Name;
@@ -59,7 +62,9 @@ namespace Norns.DestinyLoom.Test
         {
             if (context.HasReturnValue)
             {
-                yield return $"{context.ReturnValueParameterName} ++;";
+                yield return "System.Console.WriteLine($\"";
+                yield return $"return {{{context.ReturnValueParameterName}}}";
+                yield return "\");";
             }
         }
     }

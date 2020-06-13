@@ -73,6 +73,13 @@ namespace Norns.DestinyLoom
                 {
                     node.Getter.Accessibility = string.Empty;
                 }
+                if (p.IsIndexer)
+                {
+                    node.Getter.Body.Add("return default");
+                    node.Getter.Body.Add("(");
+                    node.Getter.Body.Add(p.Type.ToDisplayString());
+                    node.Getter.Body.Add(");");
+                }
             }
             if (!p.IsReadOnly)
             {
@@ -84,6 +91,10 @@ namespace Norns.DestinyLoom
                 if (node.Accessibility == node.Setter.Accessibility)
                 {
                     node.Setter.Accessibility = string.Empty;
+                }
+                if (p.IsIndexer)
+                {
+                    node.Setter.Body.Add(" ");
                 }
             }
             return node;

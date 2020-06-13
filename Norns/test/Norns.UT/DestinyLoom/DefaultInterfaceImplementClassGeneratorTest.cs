@@ -2,7 +2,6 @@
 using Norns.DestinyLoom;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using Xunit;
 
 namespace Norns.UT.DestinyLoom
@@ -269,7 +268,6 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("public int A {  get;  set; }", str);
         }
 
-
         [Fact]
         public void GenerateProxyClassWhenInterfaceAndPropertyNoGetMethod()
         {
@@ -330,49 +328,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public string this[int a,string bb] {  get;  set; }", str);
-        }
-
-        [Fact]
-        public void GenerateProxyClassWhenInterfaceAndIndexerInternalGetMethod()
-        {
-            var source = @"
-namespace Norns.ProxyGenerators.Test
-{
-    public interface IC
-    {
-        string this[int a, string bb] { internal get; set; }
-    }
-}
-";
-            Compilation outputCompilation = GenerateSource(source);
-            var array = outputCompilation.SyntaxTrees.ToArray();
-            Assert.Equal(2, array.Length);
-            var str = array[1].ToString();
-            Assert.Contains("ProxyIC", str);
-            Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public string this[int a,string bb] { internal get;  set; }", str);
-        }
-
-        [Fact]
-        public void GenerateProxyClassWhenInterfaceAndIndexerNoSetMethod()
-        {
-            var source = @"
-namespace Norns.ProxyGenerators.Test
-{
-    public interface IC
-    {
-        string this[int a, string bb] { internal get; }
-    }
-}
-";
-            Compilation outputCompilation = GenerateSource(source);
-            var array = outputCompilation.SyntaxTrees.ToArray();
-            Assert.Equal(2, array.Length);
-            var str = array[1].ToString();
-            Assert.Contains("ProxyIC", str);
-            Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public string this[int a,string bb] { internal get;  }", str);
+            Assert.Contains("public string this[int a,string bb] {  get { return default(string); }   set {   }  }", str);
         }
     }
 }

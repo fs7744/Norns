@@ -45,7 +45,7 @@ namespace Norns.DestinyLoom
             @namespace.Classes.Add(@class);
             @class.Inherit.Types.Add(context.Type.ToDisplayString());
             @class.Inherit.Types.Add("Norns.Fate.Abstraction.IInterceptProxy");
-            foreach (var member in context.Type.GetMembers())
+            foreach (var member in context.Type.GetMembers().Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
             {
                 switch (member)
                 {

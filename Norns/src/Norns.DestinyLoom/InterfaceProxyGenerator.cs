@@ -285,22 +285,28 @@ namespace Norns.DestinyLoom
             }
             if (context.HasReturnValue)
             {
-                methodNode.Body.Add("var ");
-                methodNode.Body.Add(context.ReturnValueParameterName);
-                var returnTypeStr = context.Method.ReturnType.ToDisplayString();
+                //methodNode.Body.Add("var ");
+                //methodNode.Body.Add(context.ReturnValueParameterName);
+                //var returnTypeStr = context.Method.ReturnType.ToDisplayString();
                  
                 if (context.IsAsyncValue)
                 {
+                    methodNode.Body.Add("var ");
+                    methodNode.Body.Add(context.ReturnValueParameterName);
                     methodNode.Body.Add(" = ");
-                    methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
-                    methodNode.Body.Add("(default);");
+                    //methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
+                    methodNode.Body.Add("default(");
+                    methodNode.Body.Add(context.AsyncValueType);
+                    methodNode.Body.Add(");");
                 }
-                else if (context.IsAsync)
-                {
-                    methodNode.Body.Add(" = System.Threading.Tasks.Task.CompletedTask;");
-                }
+                //else if (context.IsAsync)
+                //{
+                //    methodNode.Body.Add(" = System.Threading.Tasks.Task.CompletedTask;");
+                //}
                 else
                 {
+                    methodNode.Body.Add("var ");
+                    methodNode.Body.Add(context.ReturnValueParameterName);
                     methodNode.Body.Add(" = default(");
                     methodNode.Body.Add(methodNode.Return);
                     methodNode.Body.Add(");");

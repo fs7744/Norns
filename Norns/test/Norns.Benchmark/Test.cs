@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Benchmark.Fate
+namespace Norns.Benchmark.Fate
 {
     public delegate Task InterceptAsync(FateContext context);
 
@@ -176,8 +176,8 @@ namespace Benchmark.Fate
             int r;
             //try
             //{
-                r = base.AddOne3(v);
-                r = r + 1;
+            r = base.AddOne3(v);
+            r = r + 1;
             //}
             //catch
             //{
@@ -251,7 +251,7 @@ namespace Benchmark.Fate
 
         public async Task Test()
         {
-            var sw = Stopwatch.StartNew(); 
+            var sw = Stopwatch.StartNew();
             await RealCallAsync();
             sw.Stop();
             Console.WriteLine($"RealCallAsync : {sw.ElapsedMilliseconds}");
