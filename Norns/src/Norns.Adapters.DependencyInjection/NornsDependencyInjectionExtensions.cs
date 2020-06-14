@@ -9,25 +9,34 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class NornsDependencyInjectionExtensions
     {
+        public static bool TryCreateProxyDescriptor(Dictionary<Type, Type> defaultInterfaceImplementDict, Dictionary<Type, Type> proxyDict, ServiceDescriptor origin, out ServiceDescriptor proxy)
+        {
+            proxy = origin;
+            if (proxy.ImplementationType == typeof(DefaultInterfaceImplementAttribute)
+                && defaultInterfaceImplementDict.TryGetValue(proxy.ServiceType, out var implementType))
+            {
+                proxy = ServiceDescriptor.Describe(proxy.ServiceType, implementType, proxy.Lifetime);
+            }
+            if (proxyDict.ContainsKey(proxy.ServiceType))
+            {
+                proxy = ToImplementationServiceDescriptor(proxy, proxyDict[proxy.ServiceType]);
+            }
+
+            return proxy != origin;
+        }
+
         public static IServiceProvider BuildAopServiceProvider(this IServiceCollection sc, params Assembly[] assemblies)
         {
             var (defaultInterfaceImplementDict, proxyDict) = FateExtensions.FindProxyTypes(assemblies);
 
-            foreach (var c in sc.Where(c => c.ImplementationType == typeof(DefaultInterfaceImplementAttribute)).ToArray())
+            foreach (var c in sc.ToArray())
             {
-                sc.Remove(c);
-                if (defaultInterfaceImplementDict.TryGetValue(c.ServiceType, out var implementType))
+                if (TryCreateProxyDescriptor(defaultInterfaceImplementDict, proxyDict, c, out var proxy))
                 {
-                    sc.Add(ServiceDescriptor.Describe(c.ServiceType, implementType, c.Lifetime));
+                    sc.Remove(c);
+                    sc.Add(proxy);
                 }
             }
-
-            foreach (var c in sc.Where(c => proxyDict.ContainsKey(c.ServiceType)).ToArray())
-            {
-                sc.Remove(c);
-                sc.Add(ToImplementationServiceDescriptor(c, proxyDict[c.ServiceType]));
-            }
-
             return sc.BuildServiceProvider();
         }
 
@@ -37,7 +46,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc;
         }
 
-        // todo: 类为代理类（ovrrve visual member） 不实现任何ioc 容器
         public static ServiceDescriptor ToImplementationServiceDescriptor(ServiceDescriptor serviceDescriptor, Type implementationType)
         {
             switch (serviceDescriptor)
