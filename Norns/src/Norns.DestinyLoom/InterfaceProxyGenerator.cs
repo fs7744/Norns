@@ -125,7 +125,7 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class PropertyMethodNode : INodeGenerator
+    public class PropertyMethodNode : INodeGenerator
     {
         public string Name { get; set; }
         public string Accessibility { get; set; }
@@ -153,18 +153,24 @@ namespace Norns.DestinyLoom
         }
     }
 
-    internal class PropertyNode : INodeGenerator
+    public class PropertyNode : INodeGenerator
     {
         public string Name { get; set; }
         public string Accessibility { get; set; }
         public string Type { get; set; }
         public PropertyMethodNode Getter { get; set; }
         public PropertyMethodNode Setter { get; set; }
+        public List<string> Symbols { get; } = new List<string>();
 
         public void Generate(StringBuilder sb)
         {
             sb.Append(Accessibility);
             sb.Append(" ");
+            foreach (var item in Symbols)
+            {
+                sb.Append(item);
+                sb.Append(" ");
+            }
             sb.Append(Type);
             sb.Append(" ");
             sb.Append(Name);

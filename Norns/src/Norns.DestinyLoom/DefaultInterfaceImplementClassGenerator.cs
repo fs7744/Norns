@@ -50,7 +50,7 @@ namespace Norns.DestinyLoom
             @namespace.Generate(context.Content);
         }
 
-        private PropertyNode GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
+        public override PropertyNode GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
         {
             var p = propertyGeneratorContext.Property;
             var node = new PropertyNode()

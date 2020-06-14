@@ -125,8 +125,6 @@ namespace Norns.DestinyLoom
         internal class SyntaxReceiver : ISyntaxReceiver
         {
             internal List<TypeDeclarationSyntax> CandidateTypes { get; } = new List<TypeDeclarationSyntax>();
-            internal List<ClassDeclarationSyntax> CandidateClasses { get; } = new List<ClassDeclarationSyntax>();
-            internal List<InterfaceDeclarationSyntax> CandidateInterfaces { get; } = new List<InterfaceDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
@@ -136,117 +134,10 @@ namespace Norns.DestinyLoom
                         CandidateTypes.Add(@type);
                         break;
 
-                    //case ClassDeclarationSyntax @class:
-                    //    CandidateClasses.Add(@class);
-                    //    break;
-
-                    //case InterfaceDeclarationSyntax @interface:
-                    //    CandidateInterfaces.Add(@interface);
-                    //    break;
-
                     default:
                         break;
                 }
             }
         }
     }
-
-    //    [Generator]
-    //    public class ProxyGenerator : ISourceGenerator
-    //    {
-    //        public void Execute(SourceGeneratorContext context)
-    //        {
-    //            if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
-    //                return;
-
-    //            CSharpParseOptions options = (context.Compilation as CSharpCompilation).SyntaxTrees[0].Options as CSharpParseOptions;
-    //            Compilation compilation = context.Compilation;
-    //            INamedTypeSymbol attributeSymbol = compilation.GetTypeByMetadataName("Norns.Fate.ProxyAttribute");
-    //            foreach (var item in receiver.CandidateClass)
-    //            {
-    //                SemanticModel model = compilation.GetSemanticModel(item.SyntaxTree);
-    //                var classSymbol = model.GetDeclaredSymbol(item) as INamedTypeSymbol;
-    //                if (classSymbol.GetAttributes().Any(ad => ad.AttributeClass.Equals(attributeSymbol, SymbolEqualityComparer.Default)))
-    //                {
-    //                    string classSource = ProcessClass(classSymbol);
-    //                    context.AddSource($"{classSymbol.Name}_proxy.cs", SourceText.From(classSource, Encoding.UTF8));
-    //                }
-    //            }
-    //        }
-
-    //        private string ProcessClass(INamedTypeSymbol classSymbol)
-    //        {
-    //            string namespaceName = classSymbol.ContainingNamespace.ToDisplayString();
-
-    //            StringBuilder source = new StringBuilder($@"
-    //using System;
-    //using {namespaceName};
-    //{string.Join(" ", classSymbol.Interfaces.Select(i => $"[assembly: Norns.Adapters.DependencyInjection.Attributes.ProxyMapping(typeof({i.Name}), typeof({classSymbol.Name}), typeof({classSymbol.Name}Proxy))]"))}
-    //namespace {namespaceName}
-    //{{
-    //    public class {classSymbol.Name}Proxy");
-    //            var interfaces = string.Join(",", classSymbol.Interfaces.Select(i => i.Name));
-    //            if (!string.IsNullOrEmpty(interfaces))
-    //            {
-    //                source.Append(": ");
-    //                source.Append(interfaces);
-    //            }
-    //            source.Append($@" {{
-    //private {classSymbol.Name} _proxy;
-    //public {classSymbol.Name}Proxy({classSymbol.Name} proxy)
-    //{{
-    //    _proxy = proxy;
-    //}}
-    //");
-    //            foreach (var member in classSymbol.GetMembers())
-    //            {
-    //                switch (member)
-    //                {
-    //                    case IMethodSymbol method when !method.IsImplicitlyDeclared :
-    //                        source.Append($@"public {method.ReturnType} {method.Name}({string.Join(",", method.Parameters.Select(p => $"{p.Type} {p.Name}"))})
-    //{{
-    //    var r = default({method.ReturnType});
-    //try {{
-    //     {method.Parameters[0].Name} = {method.Parameters[0].Name} + 3;
-    //     Console.WriteLine(""+3"");
-    //     if(r > 5) return r;
-    //     r = _proxy.{method.Name}({string.Join(",", method.Parameters.Select(p => $"{p.Name}"))});
-    //     Console.WriteLine(""+1"");
-    //    r = r * -1;
-    //     Console.WriteLine(""* -1"");
-    //}} finally {{
-    //     Console.WriteLine(""= {{0}}"", r); }}
-    //return r;
-    //}}");
-    //                        break;
-    //                    default:
-    //                        break;
-    //                }
-    //            }
-
-    //            source.Append("} } ");
-    //            return source.ToString();
-    //        }
-
-    //        public void Initialize(InitializationContext context)
-    //        {
-    //            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-    //        }
-
-    //        class SyntaxReceiver : ISyntaxReceiver
-    //        {
-    //            public List<ClassDeclarationSyntax> CandidateClass { get; } = new List<ClassDeclarationSyntax>();
-
-    //            public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-    //            {
-    //                if(InterfaceDeclarationSyntax )
-
-    //                if (syntaxNode is ClassDeclarationSyntax classDeclarationSyntax
-    //                    && classDeclarationSyntax.AttributeLists.Count > 0)
-    //                {
-    //                    CandidateClass.Add(classDeclarationSyntax);
-    //                }
-    //            }
-    //        }
-    //    }
 }
