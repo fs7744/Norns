@@ -232,5 +232,91 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("= default(int);", str);
             Assert.Contains("return r", str);
         }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassWithIntPropertyGetSetMethod()
+        {
+            var source = @"
+using System.Threading.Tasks;
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        public virtual int V {get;set;}
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("public override int V {", str);
+            Assert.Contains("= default(int);", str);
+            Assert.Contains("get", str);
+            Assert.Contains(".V;", str);
+            Assert.Contains("return r", str);
+            Assert.Contains("set", str);
+            Assert.Contains("= value;", str);
+            Assert.Contains(".V =", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassWithPropertyInternalGetSetMethod()
+        {
+            var source = @"
+using System.Threading.Tasks;
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        public virtual object V { internal get; internal set;}
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("public override object V {", str);
+            Assert.Contains("= default(object);", str);
+            Assert.Contains("internal get", str);
+            Assert.Contains(".V;", str);
+            Assert.Contains("return r", str);
+            Assert.Contains("internal set", str);
+            Assert.Contains("= value;", str);
+            Assert.Contains(".V =", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassAndIndexerMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        public virtual string this[int a, string bb] { get; set; }
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("public override string this[int a,string bb] {", str);
+            Assert.Contains("= default(string);", str);
+            Assert.Contains("get", str);
+            Assert.Contains("[a,bb];", str);
+            Assert.Contains("return r", str);
+            Assert.Contains("set", str);
+            Assert.Contains("= value;", str);
+            Assert.Contains("[a,bb] =", str);
+        }
     }
 }
