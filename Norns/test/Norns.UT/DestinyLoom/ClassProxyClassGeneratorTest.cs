@@ -318,5 +318,27 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("= value;", str);
             Assert.Contains("[a,bb] =", str);
         }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassAndConstructorMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        public C() {}
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("public   ProxyC", str);
+            Assert.Contains("() : base()  {  }", str);
+        }
     }
 }

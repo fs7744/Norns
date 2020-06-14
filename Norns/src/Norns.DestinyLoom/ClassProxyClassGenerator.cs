@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Linq;
 
 namespace Norns.DestinyLoom
@@ -45,15 +46,29 @@ namespace Norns.DestinyLoom
             @class.Inherit.Types.Add(context.Type.ToDisplayString());
             @class.Inherit.Types.Add("Norns.Fate.Abstraction.IInterceptProxy");
 
-            foreach (var member in context.Type.GetMembers().Where(i => i.IsAbstract || i.IsVirtual || i.IsOverride).Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
+            foreach (var member in context.Type.GetMembers().Where(i => i.IsAbstract || i.IsVirtual || i.IsOverride || (i is IMethodSymbol m) && m.MethodKind == MethodKind.Constructor)
+                .Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
             {
                 switch (member)
-                { 
+                {
+                    case IMethodSymbol method when method.MethodKind == MethodKind.Constructor:
+                        {
+                            var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context) 
+                            { 
+                                ClassName = @class.Name 
+                            };
+                            var m = GenerateProxyConstructor(methodGeneratorContext);
+                            @class.Methods.Add(m);
+                        }
+                        break;
+
                     case IMethodSymbol method when method.MethodKind != MethodKind.PropertyGet && method.MethodKind != MethodKind.PropertySet:
-                        var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context);
-                        var m = GenerateProxyMethod(methodGeneratorContext);
-                        m.Symbols.Add("override");
-                        @class.Methods.Add(m);
+                        {
+                            var methodGeneratorContext = new ProxyMethodGeneratorContext(method, context);
+                            var m = GenerateProxyMethod(methodGeneratorContext);
+                            m.Symbols.Add("override");
+                            @class.Methods.Add(m);
+                        }
                         break;
 
                     case IPropertySymbol property:
@@ -68,6 +83,32 @@ namespace Norns.DestinyLoom
                 }
             }
             @namespace.Generate(context.Content);
+        }
+
+        private MethodNode GenerateProxyConstructor(ProxyMethodGeneratorContext context)
+        {
+            var method = context.Method;
+            var methodNode = new MethodNode()
+            {
+                Accessibility = method.DeclaredAccessibility.ToString().ToLower(),
+                Return = string.Empty,
+                Name = context.ClassName,
+            };
+            methodNode.Constraints.Add(" : base(");
+            foreach (var p in method.Parameters)
+            {
+                methodNode.Parameters.Add(new ParameterNode() { Type = p.Type.ToDisplayString(), Name = p.Name });
+            }
+            methodNode.Constraints.Add(") ");
+            foreach (var item in interceptors)
+            {
+                methodNode.Body.AddRange(item.BeforeMethod(context));
+            }
+            foreach (var item in interceptors)
+            {
+                methodNode.Body.AddRange(item.AfterMethod(context));
+            }
+            return methodNode;
         }
     }
 }

@@ -73,6 +73,7 @@ namespace Norns.DestinyLoom
         public string Return { get; set; }
         public string Name { get; set; }
         public List<string> Symbols { get; } = new List<string>();
+        public List<string> Constraints { get; } = new List<string>();
 
         public List<ParameterNode> Parameters { get; } = new List<ParameterNode>();
 
@@ -94,6 +95,10 @@ namespace Norns.DestinyLoom
             sb.Append("(");
             GenerateParameters(sb);
             sb.Append(")");
+            foreach (var item in Constraints)
+            {
+                sb.Append(item);
+            }
             sb.Append(" { ");
             foreach (var item in Body)
             {

@@ -55,6 +55,7 @@ namespace Norns.DestinyLoom
         public bool IsAsync { get; }
         public bool IsAsyncValue { get; }
         public string AsyncValueType { get; }
+        public string ClassName { get; set; }
     }
 
     public class ProxyPropertyGeneratorContext
