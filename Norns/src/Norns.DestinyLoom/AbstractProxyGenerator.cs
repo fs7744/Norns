@@ -9,15 +9,19 @@ namespace Norns.DestinyLoom
 {
     public class ProxyGeneratorContext
     {
-        public ProxyGeneratorContext(INamedTypeSymbol typeSymbol, SourceGeneratorContext context)
+        public ProxyGeneratorContext(INamedTypeSymbol typeSymbol, SourceGeneratorContext context, StringBuilder sb, string @namespace)
         {
             Type = typeSymbol;
             SourceGeneratorContext = context;
+            Content = sb;
+            Namespace = @namespace;
             ProxyFieldName = $"proxy{GuidHelper.NewGuidName()}";
         }
 
         public INamedTypeSymbol Type { get; }
         public SourceGeneratorContext SourceGeneratorContext { get; }
+        public StringBuilder Content { get; }
+        public string Namespace { get; }
         public string ProxyFieldName { get; }
     }
 
@@ -73,15 +77,19 @@ namespace Norns.DestinyLoom
         {
             if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
                 return;
+            var sb = new StringBuilder();
+            var @namespace = $"Norns.Destiny.Proxy{GuidHelper.NewGuidName()}";
             var compilation = context.Compilation;
             var interceptors = FindInterceptorGenerators().ToArray();
             foreach (var generator in FindProxyClassGenerators(interceptors))
             {
-                GenerateProxyClass(generator, receiver.CandidateTypes, context, compilation);
+                GenerateProxyClass(generator, receiver.CandidateTypes, context, compilation, sb, @namespace);
             }
+            context.AddSource($"{@namespace}.cs", SourceText.From(sb.ToString(), Encoding));
         }
 
-        private void GenerateProxyClass(AbstractProxyClassGenerator generator, IEnumerable<TypeDeclarationSyntax> typeSyntaxs, SourceGeneratorContext context, Compilation compilation)
+        private void GenerateProxyClass(AbstractProxyClassGenerator generator, IEnumerable<TypeDeclarationSyntax> typeSyntaxs,
+            SourceGeneratorContext context, Compilation compilation, StringBuilder sb, string @namespace)
         {
             foreach (var typeSyntax in typeSyntaxs)
             {
@@ -97,12 +105,8 @@ namespace Norns.DestinyLoom
                     && CanProxy(@type)
                     && generator.CanProxy(@type))
                 {
-                    var proxyGeneratorContext = new ProxyGeneratorContext(@type, context);
-                    var (fileName, content) = generator.Generate(proxyGeneratorContext);
-                    if (!string.IsNullOrWhiteSpace(content))
-                    {
-                        context.AddSource(fileName, SourceText.From(content, Encoding));
-                    }
+                    var proxyGeneratorContext = new ProxyGeneratorContext(@type, context, sb, @namespace);
+                    generator.Generate(proxyGeneratorContext);
                 }
             }
         }

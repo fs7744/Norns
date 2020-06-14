@@ -209,7 +209,7 @@ public interface ICD : System.IDisposable
 ";
             Compilation outputCompilation = GenerateSource(source);
             var array = outputCompilation.SyntaxTrees.Select(i => i.ToString()).ToArray();
-            Assert.Equal(3, array.Length);
+            Assert.Equal(2, array.Length);
             var str = array.First(i => i.Contains(": Norns.ProxyGenerators.Test.IC {"));
             Assert.Contains("Task<int> AddOne(int v)", str);
             Assert.Contains("Task<int> AddOne2(int v)", str);

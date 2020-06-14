@@ -15,9 +15,9 @@ namespace Norns.DestinyLoom
             return @type.TypeKind == TypeKind.Interface;
         }
 
-        public override string GenerateProxyClass(ProxyGeneratorContext context)
+        public override void GenerateProxyClass(ProxyGeneratorContext context)
         {
-            var @namespace = new NamespaceNode($"{context.Type.ContainingNamespace.ToDisplayString()}.Proxy{GuidHelper.NewGuidName()}");
+            var @namespace = new NamespaceNode(context.Namespace);
             var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
             @class.Accessibility = context.Type.DeclaredAccessibility.ToString().ToLower();
             @class.CustomAttributes.Add("[Norns.Fate.Abstraction.Proxy(typeof(");
@@ -64,9 +64,7 @@ namespace Norns.DestinyLoom
                         break;
                 }
             }
-            var sb = new StringBuilder();
-            @namespace.Generate(sb);
-            return sb.ToString();
+            @namespace.Generate(context.Content);
         }
 
         private PropertyNode GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)

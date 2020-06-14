@@ -35,7 +35,7 @@ namespace Norns.DestinyLoom.Test
         {
             if (!context.Method.Parameters.IsEmpty)
             {
-                yield return "System.Console.WriteLine($\"Call Method";
+                yield return "System.Console.WriteLine($\"Call Method ";
                 yield return context.Method.Name;
                 yield return " ";
                 yield return context.Method.Parameters[0].Type.ToDisplayString();
