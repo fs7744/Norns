@@ -1,16 +1,32 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.DestinyLoom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace Norns.UT.DestinyLoom
 {
+    public class DITestGenerator : AbstractInterceptorGenerator
+    {
+        public override IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
+        {
+            context.AddUsing("System.Linq");
+            context.ClassGeneratorContext.GetFromDI(typeof(IServiceProvider).FullName);
+            yield return string.Empty;
+        }
+
+        public override IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
+        {
+            yield return string.Empty;
+        }
+    }
+
     public class ClassProxyClassTestGenerator : AbstractProxyGenerator
     {
         public override IEnumerable<IInterceptorGenerator> FindInterceptorGenerators()
         {
-            return new IInterceptorGenerator[0];
+            yield return new DITestGenerator();
         }
 
         public override bool CanProxy(INamedTypeSymbol @type)
@@ -29,6 +45,32 @@ namespace Norns.UT.DestinyLoom
         private static Compilation GenerateSource(string source)
         {
             return ProxyGeneratorTest.GenerateSource(source, new ClassProxyClassTestGenerator());
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassAndGetFromDIMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        public void AddOne() {};
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.DoesNotContain("AddOne()", str);
+            Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
+            Assert.Contains("proxy", str);
+            Assert.Contains("private System.IServiceProvider f", str);
+            Assert.Contains("= serviceProvider.GetService(typeof(System.IServiceProvider)) as System.IServiceProvider;", str);
+            Assert.Contains("using System.Linq;", str);
         }
 
         [Fact]

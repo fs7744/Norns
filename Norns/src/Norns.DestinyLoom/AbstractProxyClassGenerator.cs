@@ -104,6 +104,11 @@ namespace Norns.DestinyLoom
             setProxyNode.AddBody(context.ProxyFieldName, " = instance as ", context.Type.ToDisplayString(), ";");
             @class.Members.Add(setProxyNode);
             @class.Inherits.Add("Norns.Fate.Abstraction.IInterceptProxy");
+            foreach (var f in context.DIFields.Values)
+            {
+                @class.Members.Add(f);
+                setProxyNode.AddBody(f.Name, " = serviceProvider.GetService(typeof(", f.Type, ")) as ", f.Type, ";");
+            }
         }
 
         public virtual NamespaceSymbol GenerateProxyClass(ProxyGeneratorContext context)
@@ -113,7 +118,6 @@ namespace Norns.DestinyLoom
             @class.CustomAttributes.Add($"[Norns.Fate.Abstraction.Proxy(typeof({context.Type.ToDisplayString()}))]");
             @class.Inherits.Add(context.Type.ToDisplayString());
             @namespace.Members.Add(@class);
-            AddProxyInfo(@class, context);
 
             foreach (var member in context.Type.GetMembers().Where(i => i.IsAbstract || i.IsVirtual || i.IsOverride || (i is IMethodSymbol m) && m.MethodKind == MethodKind.Constructor)
                 .Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
@@ -149,6 +153,8 @@ namespace Norns.DestinyLoom
                         break;
                 }
             }
+            AddProxyInfo(@class, context);
+            @namespace.Usings.Add(context.Usings.Values.ToArray<IGenerateSymbol>());
             return @namespace;
         }
 

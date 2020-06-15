@@ -23,10 +23,16 @@ namespace Norns.DestinyLoom.Symbols
         public static readonly StringSymbol KeyThis = "this".ToSymbol();
         public static readonly StringSymbol KeyAsync = "async".ToSymbol();
         public static readonly StringSymbol KeyOverride = "override".ToSymbol();
-
+        public static readonly StringSymbol KeyUsing = "using".ToSymbol();
+        
         public static IGenerateSymbol Create(Func<IGenerateSymbol> func)
         {
             return new SymbolLazyCreater(func);
+        }
+
+        public static UsingSymbol CreateUsing(string @namespace)
+        {
+            return new UsingSymbol() { Name = @namespace };
         }
 
         public static NamespaceSymbol CreateNamespace(string @namespace)

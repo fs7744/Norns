@@ -8,67 +8,6 @@ using System.Text;
 
 namespace Norns.DestinyLoom
 {
-    public class ProxyGeneratorContext
-    {
-        public ProxyGeneratorContext(INamedTypeSymbol typeSymbol, SourceGeneratorContext context, string @namespace)
-        {
-            Type = typeSymbol;
-            SourceGeneratorContext = context;
-            Namespace = @namespace;
-            ProxyFieldName = $"proxy{GuidHelper.NewGuidName()}";
-        }
-
-        public INamedTypeSymbol Type { get; }
-        public SourceGeneratorContext SourceGeneratorContext { get; }
-        public string Namespace { get; }
-        public string ProxyFieldName { get; }
-    }
-
-    public class ProxyMethodGeneratorContext
-    {
-        private const string TaskFullName = "System.Threading.Tasks.Task";
-        private const string ValueTaskFullName = "System.Threading.Tasks.ValueTask";
-
-        public ProxyMethodGeneratorContext(IMethodSymbol method, ProxyGeneratorContext context)
-        {
-            Method = method;
-            ClassGeneratorContext = context;
-            var returnTypeStr = method.ReturnType.ToDisplayString();
-            var isTask = returnTypeStr.StartsWith(TaskFullName);
-            var isValueTask = returnTypeStr.StartsWith(ValueTaskFullName);
-            IsAsync = isTask || isValueTask;
-            IsAsyncValue = IsAsync && returnTypeStr.EndsWith(">");
-            if (IsAsyncValue)
-            {
-                AsyncValueType = returnTypeStr.Substring((isTask ? TaskFullName.Length : ValueTaskFullName.Length) + 1);
-                AsyncValueType = AsyncValueType.Substring(0, AsyncValueType.Length - 1);
-            }
-            HasReturnValue = IsAsync ? IsAsyncValue : !method.ReturnsVoid;
-            ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
-        }
-
-        public IMethodSymbol Method { get; }
-        public ProxyGeneratorContext ClassGeneratorContext { get; }
-        public bool HasReturnValue { get; }
-        public string ReturnValueParameterName { get; }
-        public bool IsAsync { get; }
-        public bool IsAsyncValue { get; }
-        public string AsyncValueType { get; }
-        public string ClassName { get; set; }
-    }
-
-    public class ProxyPropertyGeneratorContext
-    {
-        public ProxyPropertyGeneratorContext(IPropertySymbol property, ProxyGeneratorContext context)
-        {
-            Property = property;
-            ClassGeneratorContext = context;
-        }
-
-        public IPropertySymbol Property { get; }
-        public ProxyGeneratorContext ClassGeneratorContext { get; }
-    }
-
     public abstract class AbstractProxyGenerator : ISourceGenerator
     {
         protected Encoding Encoding { get; set; } = Encoding.UTF8;
