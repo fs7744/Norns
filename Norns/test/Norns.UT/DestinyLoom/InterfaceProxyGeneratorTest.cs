@@ -52,14 +52,14 @@ namespace Norns.UT.DestinyLoom
         }
     }
 
-    public class EmptyInterceptorGenerator : IInterceptorGenerator
+    public class EmptyInterceptorGenerator : AbstractInterceptorGenerator
     {
-        public IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
+        public override IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
         {
             return new string[0];
         }
 
-        public IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
+        public override IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
         {
             return new string[0];
         }
@@ -90,7 +90,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  void AddOne() {", str);
+            Assert.Contains("public void AddOne() {", str);
             Assert.Contains(".AddOne();", str);
         }
 
@@ -112,7 +112,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  int AddOne(int v)", str);
+            Assert.Contains("public int AddOne(int v)", str);
             Assert.Contains("= default(int)", str);
             Assert.Contains("return r", str);
         }
@@ -138,7 +138,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  int AddOne(int v)", str);
+            Assert.Contains("public int AddOne(int v)", str);
             Assert.Contains("= default(int)", str);
             Assert.Contains("return r", str);
             Assert.Contains(".AddOne(v);", str);
@@ -162,7 +162,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  (int, int) AddOne(int v)", str);
+            Assert.Contains("public (int, int) AddOne(int v)", str);
             Assert.Contains("= default((int, int))", str);
             Assert.Contains("return r", str);
         }
@@ -186,7 +186,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  System.Collections.Generic.List<int> AddOne(int v)", str);
+            Assert.Contains("public System.Collections.Generic.List<int> AddOne(int v)", str);
             Assert.Contains("= default(System.Collections.Generic.List<int>)", str);
             Assert.Contains("return r", str);
         }
@@ -217,7 +217,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public  int AddOne(int v)", str);
+            Assert.Contains("public int AddOne(int v)", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.IC))]", str);
         }
 
@@ -240,7 +240,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public async  System.Threading.Tasks.Task AddOne(int v)", str);
+            Assert.Contains("public async System.Threading.Tasks.Task AddOne(int v)", str);
             Assert.Contains("await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.DoesNotContain("return", str);
@@ -265,7 +265,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public async  System.Threading.Tasks.Task<int> AddOne(int v)", str);
+            Assert.Contains("public async System.Threading.Tasks.Task<int> AddOne(int v)", str);
             Assert.Contains("= await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.Contains("= default(int);", str);
@@ -291,7 +291,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyIC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.IC", str);
-            Assert.Contains("public async  System.Threading.Tasks.ValueTask<int> AddOne(int v)", str);
+            Assert.Contains("public async System.Threading.Tasks.ValueTask<int> AddOne(int v)", str);
             Assert.Contains("= await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.Contains("= default(int);", str);

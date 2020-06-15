@@ -72,7 +72,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("public override  void AddOne() {  }", str);
+            Assert.Contains("public override void AddOne() { }", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
             Assert.Contains("proxy", str);
         }
@@ -95,7 +95,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("public override  void AddOne() {  } ", str);
+            Assert.Contains("public override void AddOne() { } ", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
             Assert.Contains("proxy", str);
         }
@@ -118,7 +118,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("public override  int AddOne()", str);
+            Assert.Contains("public override int AddOne()", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
             Assert.Contains("= proxy", str);
             Assert.Contains(".AddOne();", str);
@@ -148,7 +148,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyCd", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.Cd", str);
-            Assert.Contains("public override  int AddOne()", str);
+            Assert.Contains("public override int AddOne()", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.Cd))]", str);
             Assert.Contains("= proxy", str);
             Assert.Contains(".AddOne();", str);
@@ -175,7 +175,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("private async override  System.Threading.Tasks.Task AddOne(int v)", str);
+            Assert.Contains("private async override System.Threading.Tasks.Task AddOne(int v)", str);
             Assert.Contains("await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.DoesNotContain("return r", str);
@@ -200,7 +200,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("private async override  System.Threading.Tasks.Task<int> AddOne(int v)", str);
+            Assert.Contains("private async override System.Threading.Tasks.Task<int> AddOne(int v)", str);
             Assert.Contains("= await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.Contains("= default(int);", str);
@@ -226,7 +226,7 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("protected async override  System.Threading.Tasks.ValueTask<int> AddOne(int v)", str);
+            Assert.Contains("protected async override System.Threading.Tasks.ValueTask<int> AddOne(int v)", str);
             Assert.Contains("= await proxy", str);
             Assert.Contains(".AddOne(v);", str);
             Assert.Contains("= default(int);", str);
@@ -337,8 +337,8 @@ namespace Norns.ProxyGenerators.Test
             var str = array[1].ToString();
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
-            Assert.Contains("public   ProxyC", str);
-            Assert.Contains("() : base()  {  }", str);
+            Assert.Contains("public ProxyC", str);
+            Assert.Contains("() : base() { }", str);
         }
     }
 }

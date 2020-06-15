@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.DestinyLoom.Symbols;
 using System.Linq;
-using System.Text;
 
 namespace Norns.DestinyLoom
 {
@@ -15,16 +15,13 @@ namespace Norns.DestinyLoom
             return type.TypeKind == TypeKind.Interface;
         }
 
-        public override void GenerateProxyClass(ProxyGeneratorContext context)
+        public override NamespaceSymbol GenerateProxyClass(ProxyGeneratorContext context)
         {
-            var @namespace = new NamespaceNode(context.Namespace);
-            var @class = new ClassNode($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}");
-            @class.CustomAttributes.Add("[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof(");
-            @class.CustomAttributes.Add(context.Type.ToDisplayString());
-            @class.CustomAttributes.Add("))]");
-            @class.Accessibility = context.Type.DeclaredAccessibility.ToString().ToLower();
-            @namespace.Classes.Add(@class);
-            @class.Inherit.Types.Add(context.Type.ToDisplayString());
+            var @namespace = Symbol.CreateNamespace(context.Namespace);
+            var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Type.DeclaredAccessibility.ToString().ToLower());
+            @class.CustomAttributes.AddLast($"[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof({context.Type.ToDisplayString()}))]".ToSymbol());
+            @namespace.Members.AddLast(@class);
+            @class.Inherits.AddLast(context.Type.ToDisplayString().ToSymbol());
             foreach (var member in context.Type.GetMembers().Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
             {
                 switch (member)
@@ -34,83 +31,67 @@ namespace Norns.DestinyLoom
                         var m = GenerateProxyMethod(methodGeneratorContext);
                         if (m != null)
                         {
-                            @class.Methods.Add(m);
+                            @class.Members.AddLast(m);
                         }
                         break;
 
                     case IPropertySymbol property:
                         var propertyGeneratorContext = new ProxyPropertyGeneratorContext(property, context);
-                        @class.Properties.Add(GenerateProxyProperty(propertyGeneratorContext));
+                        @class.Members.AddLast(GenerateProxyProperty(propertyGeneratorContext));
                         break;
 
                     default:
                         break;
                 }
             }
-            @namespace.Generate(context.Content);
+            return @namespace;
         }
 
-        public override PropertyNode GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
+        public override PropertySymbol GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
         {
             var p = propertyGeneratorContext.Property;
-            var node = new PropertyNode()
+            var node = Symbol.CreateProperty(p.DeclaredAccessibility.ToString().ToLower(), p.Type.ToDisplayString(), p.Name);
+            if (p.IsIndexer)
             {
-                Accessibility = p.DeclaredAccessibility.ToString().ToLower(),
-                Type = p.Type.ToDisplayString(),
-                Name = p.IsIndexer ? p.Name.Replace("]", string.Join(",", p.Parameters.Select(i => i.Type.ToDisplayString() + " " + i.Name)) + "]") : p.Name
-            };
-
+                node.IsIndexer = true;
+                foreach (var parameter in p.Parameters)
+                {
+                    node.Parameters.AddLast(Symbol.CreateParameter(parameter.Type.ToDisplayString(), parameter.Name));
+                }
+            }
             if (!p.IsWriteOnly)
             {
-                node.Getter = new PropertyMethodNode()
-                {
-                    Name = "get",
-                    Accessibility = p.GetMethod.DeclaredAccessibility.ToString().ToLower(),
-                };
-                if (node.Accessibility == node.Getter.Accessibility)
-                {
-                    node.Getter.Accessibility = string.Empty;
-                }
+                node.CanRead = true;
+                node.SetGetterAccessibility(p.GetMethod.DeclaredAccessibility.ToString().ToLower());
                 if (p.IsIndexer)
                 {
-                    node.Getter.Body.Add("return default");
-                    node.Getter.Body.Add("(");
-                    node.Getter.Body.Add(p.Type.ToDisplayString());
-                    node.Getter.Body.Add(");");
+                    node.Getter.Body.AddLast("return default".ToSymbol());
+                    node.Getter.Body.AddLast(Symbol.KeyOpenParen);
+                    node.Getter.Body.AddLast(p.Type.ToDisplayString().ToSymbol());
+                    node.Getter.Body.AddLast(Symbol.KeyCloseParen);
+                    node.Getter.Body.AddLast(Symbol.KeySemicolon);
                 }
             }
             if (!p.IsReadOnly)
             {
-                node.Setter = new PropertyMethodNode()
-                {
-                    Name = "set",
-                    Accessibility = p.SetMethod.DeclaredAccessibility.ToString().ToLower(),
-                };
-                if (node.Accessibility == node.Setter.Accessibility)
-                {
-                    node.Setter.Accessibility = string.Empty;
-                }
+                node.CanWrite = true;
+                node.SetSetterAccessibility(p.SetMethod.DeclaredAccessibility.ToString().ToLower());
                 if (p.IsIndexer)
                 {
-                    node.Setter.Body.Add(" ");
+                    node.Setter.Body.AddLast(Symbol.KeyBlank);
                 }
             }
             return node;
         }
 
-        public override MethodNode GenerateProxyMethod(ProxyMethodGeneratorContext context)
+        public override MethodSymbol GenerateProxyMethod(ProxyMethodGeneratorContext context)
         {
             var method = context.Method;
             if (!method.IsAbstract) return null;
-            var methodNode = new MethodNode()
-            {
-                Accessibility = method.DeclaredAccessibility.ToString().ToLower(),
-                Return = method.ReturnType.ToDisplayString(),
-                Name = method.Name,
-            };
+            var methodNode = Symbol.CreateMethod(method.DeclaredAccessibility.ToString().ToLower(), method.ReturnType.ToDisplayString(), method.Name);
             foreach (var p in method.Parameters)
             {
-                methodNode.Parameters.Add(new ParameterNode() { Type = p.Type.ToDisplayString(), Name = p.Name });
+                methodNode.Parameters.AddLast(Symbol.CreateParameter(p.Type.ToDisplayString(), p.Name));
             }
 
             if (context.HasReturnValue || context.IsAsync)
@@ -118,17 +99,17 @@ namespace Norns.DestinyLoom
                 var returnTypeStr = context.Method.ReturnType.ToDisplayString();
                 if (context.IsAsyncValue)
                 {
-                    methodNode.Body.Add("return ");
-                    methodNode.Body.Add(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"));
-                    methodNode.Body.Add("(default);");
+                    methodNode.Body.AddLast("return ".ToSymbol());
+                    methodNode.Body.AddLast(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult").ToSymbol());
+                    methodNode.Body.AddLast("(default);".ToSymbol());
                 }
                 else if (context.IsAsync)
                 {
-                    methodNode.Body.Add("return System.Threading.Tasks.Task.CompletedTask;");
+                    methodNode.Body.AddLast("return System.Threading.Tasks.Task.CompletedTask;".ToSymbol());
                 }
                 else
                 {
-                    methodNode.Body.Add("return default;");
+                    methodNode.Body.AddLast("return default;".ToSymbol());
                 }
             }
             return methodNode;

@@ -29,9 +29,9 @@ namespace Norns.DestinyLoom.Test
         }
     }
 
-    public class ConsoleCall : IInterceptorGenerator
+    public class ConsoleCall : AbstractInterceptorGenerator
     {
-        public IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
+        public override IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
         {
             if (!context.Method.Parameters.IsEmpty)
             {
@@ -58,7 +58,7 @@ namespace Norns.DestinyLoom.Test
             }
         }
 
-        public IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
+        public override IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
         {
             if (context.HasReturnValue)
             {
