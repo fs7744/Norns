@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Fate\" />
+  </ItemGroup>
+
 </Project>

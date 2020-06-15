@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.DestinyLoom.Samples;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Norns.DestinyLoom.Test
 {
@@ -9,13 +9,11 @@ namespace Norns.DestinyLoom.Test
     {
         public override IEnumerable<IInterceptorGenerator> FindInterceptorGenerators()
         {
-            yield return new ConsoleCall();
+            yield return new ConsoleCallMethodGenerator();
         }
 
         public override bool CanProxy(INamedTypeSymbol @type)
         {
-            //return false;
-            //return @type.ToDisplayString().StartsWith("Norns.Benchmark.IC");
             return @type.ToDisplayString().StartsWith("Norns");
         }
 
@@ -23,47 +21,6 @@ namespace Norns.DestinyLoom.Test
         {
             yield return new DefaultInterfaceImplementClassGenerator(interceptors);
             yield return new InterfaceProxyClassGenerator(interceptors);
-            //yield return new ClassProxyClassGenerator(interceptors);
-        }
-    }
-
-    public class ConsoleCall : AbstractInterceptorGenerator
-    {
-        public override IEnumerable<string> BeforeMethod(ProxyMethodGeneratorContext context)
-        {
-            if (!context.Method.Parameters.IsEmpty)
-            {
-                yield return "System.Console.WriteLine($\"Call Method ";
-                yield return context.Method.Name;
-                yield return " ";
-                yield return context.Method.Parameters[0].Type.ToDisplayString();
-                yield return " ";
-                yield return context.Method.Parameters[0].Name;
-                yield return " = {";
-                yield return context.Method.Parameters[0].Name;
-                yield return "}";
-                foreach (var item in context.Method.Parameters.Skip(1))
-                {
-                    yield return ", ";
-                    yield return item.ToDisplayString();
-                    yield return " ";
-                    yield return item.Name;
-                    yield return " = {";
-                    yield return item.Name;
-                    yield return "}";
-                }
-                yield return "\");";
-            }
-        }
-
-        public override IEnumerable<string> AfterMethod(ProxyMethodGeneratorContext context)
-        {
-            if (context.HasReturnValue)
-            {
-                yield return "System.Console.WriteLine($\"";
-                yield return $"return {{{context.ReturnValueParameterName}}}";
-                yield return "\");";
-            }
         }
     }
 }
