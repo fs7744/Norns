@@ -17,14 +17,14 @@ namespace Norns.DestinyLoom
         public override MethodSymbol GenerateProxyMethod(ProxyMethodGeneratorContext context)
         {
             var m = base.GenerateProxyMethod(context);
-            m.Symbols.AddLast(Symbol.KeyOverride);
+            m.Symbols.Add(Symbol.KeyOverride);
             return m;
         }
 
         public override PropertySymbol GenerateProxyProperty(ProxyPropertyGeneratorContext propertyGeneratorContext)
         {
             var p = base.GenerateProxyProperty(propertyGeneratorContext);
-            p.Symbols.AddLast(Symbol.KeyOverride);
+            p.Symbols.Add(Symbol.KeyOverride);
             return p;
         }
     }

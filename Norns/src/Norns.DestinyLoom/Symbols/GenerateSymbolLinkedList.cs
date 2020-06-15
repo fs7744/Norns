@@ -22,5 +22,31 @@ namespace Norns.DestinyLoom.Symbols
                 node = node.Next;
             }
         }
+
+        public void Add(string value)
+        {
+            AddLast(value.ToSymbol());
+        }
+
+        public void Add(IGenerateSymbol value)
+        {
+            AddLast(value);
+        }
+
+        public void Add(params string[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Add(item);
+            }
+        }
+
+        public void Add(params IGenerateSymbol[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Add(item);
+            }
+        }
     }
 }

@@ -20,5 +20,21 @@
                 Symbol.Merge(() => Body.Count > 0, Symbol.KeyOpenBrace.WithFullBlank(),Body,Symbol.KeyCloseBrace.WithBlank())
             });
         }
+
+        public void AddBody(params string[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Body.Add(item);
+            }
+        }
+
+        public void AddBody(params IGenerateSymbol[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Body.Add(item);
+            }
+        }
     }
 }

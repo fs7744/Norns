@@ -1,7 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Norns.DestinyLoom.Symbols;
-using System.Linq;
-using System.Text;
 
 namespace Norns.DestinyLoom
 {

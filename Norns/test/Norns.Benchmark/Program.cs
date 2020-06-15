@@ -1,5 +1,4 @@
-﻿using BenchmarkDotNet.Running;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -28,7 +27,6 @@ namespace ProxyGenerators.Test.Proxyc713170faed04810ab2c37adc1214595
         {
             return System.Threading.Tasks.Task.FromResult<ValueTuple<int, int>>(default);
         }
-
 
         public Task<ValueTuple<int, int>> AddOne2(int v)
         {
@@ -100,9 +98,9 @@ namespace Norns.Benchmark
     //    }
     //}
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var p = new ServiceCollection()
                 //.AddSingleton<IC, DsProxy>()

@@ -40,8 +40,24 @@ namespace Norns.DestinyLoom.Symbols
                 Symbol.KeyOpenBrace.WithFullBlank(),
                 Body,
                 Symbol.KeyCloseBrace.WithBlank()
-            }); 
-            CallParameters = Symbol.Merge(Symbol.KeyOpenParen, Symbol.Create(() => Symbol.Merge(Parameters.Select(i => i as ParameterSymbol).Where(i => i != null).Select(i => Symbol.CreateParameter(null, i.Name)).ToArray())), Symbol.KeyCloseParen);
+            });
+            CallParameters = Symbol.Merge(Symbol.KeyOpenParen, Symbol.Create(() => Symbol.Merge(Symbol.KeyComma, () => true , Parameters.Select(i => i as ParameterSymbol).Where(i => i != null).Select(i => Symbol.CreateParameter(null, i.Name)).ToArray())), Symbol.KeyCloseParen);
+        }
+
+        public void AddBody(params string[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Body.Add(item);
+            }
+        }
+
+        public void AddBody(params IGenerateSymbol[] bodys)
+        {
+            foreach (var item in bodys)
+            {
+                Body.Add(item);
+            }
         }
     }
 }

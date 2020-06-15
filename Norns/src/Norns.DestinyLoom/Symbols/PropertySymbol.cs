@@ -50,5 +50,29 @@ namespace Norns.DestinyLoom.Symbols
                 Setter.Accessibility = string.Empty;
             }
         }
+
+        public void AddCallGetter()
+        {
+            if (IsIndexer)
+            {
+                Getter.AddBody(CallIndexerParameters);
+            }
+            else
+            {
+                Getter.AddBody(".", Name);
+            }
+        }
+
+        public void AddCallSetter()
+        {
+            if (IsIndexer)
+            {
+                Setter.AddBody(CallIndexerParameters);
+            }
+            else
+            {
+                Setter.AddBody(".", Name);
+            }
+        }
     }
 }

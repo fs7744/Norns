@@ -125,7 +125,7 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("= default(int)", str);
             Assert.Contains("return r", str);
         }
-         
+
         [Fact]
         public void GenerateProxyClassWhenClassAndOverrideMethod()
         {

@@ -8,12 +8,12 @@
 
         public NamespaceSymbol()
         {
-            this.AddSymbols(new IGenerateSymbol[] 
+            this.AddSymbols(new IGenerateSymbol[]
             {
-                Symbol.KeyNamespace.WithBlank(), 
-                Symbol.Create(() => Name.ToSymbol().WithBlank()), 
-                Symbol.KeyOpenBrace.WithBlank(), 
-                Members, 
+                Symbol.KeyNamespace.WithBlank(),
+                Symbol.Create(() => Name.ToSymbol().WithBlank()),
+                Symbol.KeyOpenBrace.WithBlank(),
+                Members,
                 Symbol.KeyCloseBrace.WithBlank()
             });
         }

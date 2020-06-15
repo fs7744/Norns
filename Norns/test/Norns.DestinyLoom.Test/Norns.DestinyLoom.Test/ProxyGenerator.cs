@@ -1,6 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +16,7 @@ namespace Norns.DestinyLoom.Test
         {
             //return false;
             //return @type.ToDisplayString().StartsWith("Norns.Benchmark.IC");
-           return @type.ToDisplayString().StartsWith("Norns");
+            return @type.ToDisplayString().StartsWith("Norns");
         }
 
         public override IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors)

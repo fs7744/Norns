@@ -5,11 +5,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
 
-namespace Norns.CompilerTestds { public class A : Norns.CompilerTest.IC { public int V { get; } = 5; public string P()
+namespace Norns.CompilerTestds
+{
+    public class A : Norns.CompilerTest.IC
+    {
+        public int V { get; } = 5; public string P()
         {
             return V.ToString();
         }
-    } }
+    }
+}
 
 namespace Norns.CompilerTest
 {

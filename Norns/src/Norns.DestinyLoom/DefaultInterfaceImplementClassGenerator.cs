@@ -20,8 +20,8 @@ namespace Norns.DestinyLoom
             var @namespace = Symbol.CreateNamespace(context.Namespace);
             var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Type.DeclaredAccessibility.ToString().ToLower());
             @class.CustomAttributes.AddLast($"[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof({context.Type.ToDisplayString()}))]".ToSymbol());
-            @namespace.Members.AddLast(@class);
-            @class.Inherits.AddLast(context.Type.ToDisplayString().ToSymbol());
+            @namespace.Members.Add(@class);
+            @class.Inherits.Add(context.Type.ToDisplayString());
             foreach (var member in context.Type.GetMembers().Union(context.Type.AllInterfaces.SelectMany(i => i.GetMembers())).Distinct())
             {
                 switch (member)
@@ -31,13 +31,13 @@ namespace Norns.DestinyLoom
                         var m = GenerateProxyMethod(methodGeneratorContext);
                         if (m != null)
                         {
-                            @class.Members.AddLast(m);
+                            @class.Members.Add(m);
                         }
                         break;
 
                     case IPropertySymbol property:
                         var propertyGeneratorContext = new ProxyPropertyGeneratorContext(property, context);
-                        @class.Members.AddLast(GenerateProxyProperty(propertyGeneratorContext));
+                        @class.Members.Add(GenerateProxyProperty(propertyGeneratorContext));
                         break;
 
                     default:
@@ -56,7 +56,7 @@ namespace Norns.DestinyLoom
                 node.IsIndexer = true;
                 foreach (var parameter in p.Parameters)
                 {
-                    node.Parameters.AddLast(Symbol.CreateParameter(parameter.Type.ToDisplayString(), parameter.Name));
+                    node.Parameters.Add(Symbol.CreateParameter(parameter.Type.ToDisplayString(), parameter.Name));
                 }
             }
             if (!p.IsWriteOnly)
@@ -65,11 +65,7 @@ namespace Norns.DestinyLoom
                 node.SetGetterAccessibility(p.GetMethod.DeclaredAccessibility.ToString().ToLower());
                 if (p.IsIndexer)
                 {
-                    node.Getter.Body.AddLast("return default".ToSymbol());
-                    node.Getter.Body.AddLast(Symbol.KeyOpenParen);
-                    node.Getter.Body.AddLast(p.Type.ToDisplayString().ToSymbol());
-                    node.Getter.Body.AddLast(Symbol.KeyCloseParen);
-                    node.Getter.Body.AddLast(Symbol.KeySemicolon);
+                    node.Getter.AddBody("return default(", p.Type.ToDisplayString(), ");");
                 }
             }
             if (!p.IsReadOnly)
@@ -78,7 +74,7 @@ namespace Norns.DestinyLoom
                 node.SetSetterAccessibility(p.SetMethod.DeclaredAccessibility.ToString().ToLower());
                 if (p.IsIndexer)
                 {
-                    node.Setter.Body.AddLast(Symbol.KeyBlank);
+                    node.Setter.AddBody(Symbol.KeyBlank);
                 }
             }
             return node;
@@ -91,7 +87,7 @@ namespace Norns.DestinyLoom
             var methodNode = Symbol.CreateMethod(method.DeclaredAccessibility.ToString().ToLower(), method.ReturnType.ToDisplayString(), method.Name);
             foreach (var p in method.Parameters)
             {
-                methodNode.Parameters.AddLast(Symbol.CreateParameter(p.Type.ToDisplayString(), p.Name));
+                methodNode.Parameters.Add(Symbol.CreateParameter(p.Type.ToDisplayString(), p.Name));
             }
 
             if (context.HasReturnValue || context.IsAsync)
@@ -99,17 +95,15 @@ namespace Norns.DestinyLoom
                 var returnTypeStr = context.Method.ReturnType.ToDisplayString();
                 if (context.IsAsyncValue)
                 {
-                    methodNode.Body.AddLast("return ".ToSymbol());
-                    methodNode.Body.AddLast(returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult").ToSymbol());
-                    methodNode.Body.AddLast("(default);".ToSymbol());
+                    methodNode.AddBody("return ", returnTypeStr.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"), "(default);");
                 }
                 else if (context.IsAsync)
                 {
-                    methodNode.Body.AddLast("return System.Threading.Tasks.Task.CompletedTask;".ToSymbol());
+                    methodNode.AddBody("return System.Threading.Tasks.Task.CompletedTask;");
                 }
                 else
                 {
-                    methodNode.Body.AddLast("return default;".ToSymbol());
+                    methodNode.AddBody("return default;");
                 }
             }
             return methodNode;
