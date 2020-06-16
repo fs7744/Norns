@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +25,28 @@ namespace Norns.DestinyLoom.Symbols
         public static readonly StringSymbol KeyAsync = "async".ToSymbol();
         public static readonly StringSymbol KeyOverride = "override".ToSymbol();
         public static readonly StringSymbol KeyUsing = "using".ToSymbol();
-        
+
+        public static string ToDisplayString(this Accessibility accessibility)
+        {
+            switch (accessibility)
+            {
+                case Accessibility.Private:
+                    return "private";
+                case Accessibility.ProtectedAndInternal:
+                    return "private protected"; 
+                case Accessibility.Protected:
+                    return "protected";
+                case Accessibility.Internal:
+                    return "internal";
+                case Accessibility.ProtectedOrInternal:
+                    return "protected internal";
+                case Accessibility.Public:
+                    return "public";
+                default:
+                    return string.Empty;
+            }
+        }
+
         public static IGenerateSymbol Create(Func<IGenerateSymbol> func)
         {
             return new SymbolLazyCreater(func);

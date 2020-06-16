@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.DestinyLoom.Symbols;
 
 namespace Norns.DestinyLoom
 {
@@ -23,12 +24,14 @@ namespace Norns.DestinyLoom
             }
             HasReturnValue = IsAsync ? IsAsyncValue : !method.ReturnsVoid;
             ReturnValueParameterName = $"r{GuidHelper.NewGuidName()}";
+            Accessibility = method.DeclaredAccessibility.ToDisplayString();
         }
 
         public IMethodSymbol Method { get; }
         public ProxyGeneratorContext ClassGeneratorContext { get; }
         public bool HasReturnValue { get; }
         public string ReturnValueParameterName { get; }
+        public string Accessibility { get; }
         public bool IsAsync { get; }
         public bool IsAsyncValue { get; }
         public string AsyncValueType { get; }

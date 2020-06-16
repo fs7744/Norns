@@ -18,7 +18,7 @@ namespace Norns.DestinyLoom
         public override NamespaceSymbol GenerateProxyClass(ProxyGeneratorContext context)
         {
             var @namespace = Symbol.CreateNamespace(context.Namespace);
-            var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Type.DeclaredAccessibility.ToString().ToLower());
+            var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Accessibility);
             @class.CustomAttributes.AddLast($"[Norns.Fate.Abstraction.DefaultInterfaceImplement(typeof({context.Type.ToDisplayString()}))]".ToSymbol());
             @namespace.Members.Add(@class);
             @class.Inherits.Add(context.Type.ToDisplayString());
@@ -84,7 +84,7 @@ namespace Norns.DestinyLoom
         {
             var method = context.Method;
             if (!method.IsAbstract) return null;
-            var methodNode = Symbol.CreateMethod(method.DeclaredAccessibility.ToString().ToLower(), method.ReturnType.ToDisplayString(), method.Name);
+            var methodNode = Symbol.CreateMethod(context.Accessibility, method.ReturnType.ToDisplayString(), method.Name);
             foreach (var p in method.Parameters)
             {
                 methodNode.Parameters.Add(Symbol.CreateParameter(p.Type.ToDisplayString(), p.Name));

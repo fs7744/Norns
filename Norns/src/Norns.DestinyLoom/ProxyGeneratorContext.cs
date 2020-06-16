@@ -12,12 +12,14 @@ namespace Norns.DestinyLoom
             SourceGeneratorContext = context;
             Namespace = @namespace;
             ProxyFieldName = $"proxy{GuidHelper.NewGuidName()}";
+            Accessibility = typeSymbol.DeclaredAccessibility.ToDisplayString();
         }
 
         public INamedTypeSymbol Type { get; }
         public SourceGeneratorContext SourceGeneratorContext { get; }
         public string Namespace { get; }
         public string ProxyFieldName { get; }
+        public string Accessibility { get; }
         public Dictionary<string, FieldSymbol> DIFields { get; } = new Dictionary<string, FieldSymbol>();
         public Dictionary<string, UsingSymbol> Usings { get; } = new Dictionary<string, UsingSymbol>();
 

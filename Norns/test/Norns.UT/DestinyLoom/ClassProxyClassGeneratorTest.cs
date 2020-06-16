@@ -39,7 +39,13 @@ namespace Norns.UT.DestinyLoom
             yield return new ClassProxyClassGenerator(interceptors);
         }
     }
-
+    namespace Norns.ProxyGenerators.Test
+    {
+        internal class C 
+        {
+            protected void AddOne() { }
+        }
+    }
     public class ClassProxyClassGeneratorTest
     {
         private static Compilation GenerateSource(string source)
@@ -71,6 +77,60 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("private System.IServiceProvider f", str);
             Assert.Contains("= serviceProvider.GetService(typeof(System.IServiceProvider)) as System.IServiceProvider;", str);
             Assert.Contains("using System.Linq;", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenInternalClassAndGetFromDIMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    internal class C
+    {
+        public void AddOne() {};
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.DoesNotContain("AddOne()", str);
+            Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
+            Assert.Contains("proxy", str);
+            Assert.Contains("private System.IServiceProvider f", str);
+            Assert.Contains("= serviceProvider.GetService(typeof(System.IServiceProvider)) as System.IServiceProvider;", str);
+            Assert.Contains("using System.Linq;", str);
+            Assert.Contains("internal class ", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenPrivateClassAndGetFromDIMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    private class C
+    {
+        public void AddOne() {};
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.DoesNotContain("AddOne()", str);
+            Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
+            Assert.Contains("proxy", str);
+            Assert.Contains("private System.IServiceProvider f", str);
+            Assert.Contains("= serviceProvider.GetService(typeof(System.IServiceProvider)) as System.IServiceProvider;", str);
+            Assert.Contains("using System.Linq;", str);
+            Assert.Contains("private class ", str);
         }
 
         [Fact]
@@ -161,6 +221,58 @@ namespace Norns.ProxyGenerators.Test
             Assert.Contains("ProxyC", str);
             Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
             Assert.Contains("public override int AddOne()", str);
+            Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
+            Assert.Contains("= proxy", str);
+            Assert.Contains(".AddOne();", str);
+            Assert.Contains("= default(int)", str);
+            Assert.Contains("return r", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassAndProtectedInternalVirtualMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        protected internal virtual int AddOne() => 1;
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("protected internal override int AddOne()", str);
+            Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
+            Assert.Contains("= proxy", str);
+            Assert.Contains(".AddOne();", str);
+            Assert.Contains("= default(int)", str);
+            Assert.Contains("return r", str);
+        }
+
+        [Fact]
+        public void GenerateProxyClassWhenClassAndPrivateProtectedVirtualMethod()
+        {
+            var source = @"
+namespace Norns.ProxyGenerators.Test
+{
+    public class C
+    {
+        private protected virtual int AddOne() => 1;
+    }
+}
+";
+            Compilation outputCompilation = GenerateSource(source);
+            var array = outputCompilation.SyntaxTrees.ToArray();
+            Assert.Equal(2, array.Length);
+            var str = array[1].ToString();
+            Assert.Contains("ProxyC", str);
+            Assert.Contains(": Norns.ProxyGenerators.Test.C", str);
+            Assert.Contains("private protected override int AddOne()", str);
             Assert.Contains("[Norns.Fate.Abstraction.Proxy(typeof(Norns.ProxyGenerators.Test.C))]", str);
             Assert.Contains("= proxy", str);
             Assert.Contains(".AddOne();", str);

@@ -23,7 +23,7 @@ namespace Norns.DestinyLoom
         public virtual MethodSymbol GenerateProxyMethod(ProxyMethodGeneratorContext context)
         {
             var method = context.Method;
-            var methodNode = Symbol.CreateMethod(method.DeclaredAccessibility.ToString().ToLower(), method.ReturnType.ToDisplayString(), method.Name);
+            var methodNode = Symbol.CreateMethod(context.Accessibility, method.ReturnType.ToDisplayString(), method.Name);
             if (context.IsAsync)
             {
                 methodNode.Symbols.Add(Symbol.KeyAsync);
@@ -114,7 +114,7 @@ namespace Norns.DestinyLoom
         public virtual NamespaceSymbol GenerateProxyClass(ProxyGeneratorContext context)
         {
             var @namespace = Symbol.CreateNamespace(context.Namespace);
-            var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Type.DeclaredAccessibility.ToString().ToLower());
+            var @class = Symbol.CreateClass($"Proxy{context.Type.Name}{GuidHelper.NewGuidName()}", context.Accessibility);
             @class.CustomAttributes.Add($"[Norns.Fate.Abstraction.Proxy(typeof({context.Type.ToDisplayString()}))]");
             @class.Inherits.Add(context.Type.ToDisplayString());
             @namespace.Members.Add(@class);
@@ -161,7 +161,7 @@ namespace Norns.DestinyLoom
         public virtual MethodSymbol GenerateProxyConstructor(ProxyMethodGeneratorContext context)
         {
             var method = context.Method;
-            var methodNode = Symbol.CreateMethod(method.DeclaredAccessibility.ToString().ToLower(), string.Empty, context.ClassName);
+            var methodNode = Symbol.CreateMethod(context.Accessibility, string.Empty, context.ClassName);
             foreach (var parameter in method.Parameters)
             {
                 methodNode.Parameters.Add(Symbol.CreateParameter(parameter.Type.ToDisplayString(), parameter.Name));
