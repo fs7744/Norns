@@ -17,8 +17,4 @@
     <ProjectReference Include="..\..\src\Norns.Destiny\Norns.Destiny.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="JIT\Structure\" />
-  </ItemGroup>
-
 </Project>

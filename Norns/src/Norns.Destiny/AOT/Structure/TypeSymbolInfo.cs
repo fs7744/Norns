@@ -1,16 +1,16 @@
-﻿using Norns.Destiny.Abstraction.Structure;
-using System;
+﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Abstraction.Structure;
 
 namespace Norns.Destiny.AOT.Structure
 {
     public class TypeSymbolInfo : ITypeSymbolInfo
     {
-        private readonly Type type;
+        private readonly ITypeSymbol type;
 
-        public TypeSymbolInfo(Type type)
+        public TypeSymbolInfo(ITypeSymbol type)
         {
             this.type = type;
-            Accessibility = type.ConvertToStructure();
+            Accessibility = type.DeclaredAccessibility.ConvertToStructure();
         }
 
         public AccessibilityInfo Accessibility { get; }

@@ -7,4 +7,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.6.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AOP\JIT\" />
+  </ItemGroup>
 </Project>
