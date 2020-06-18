@@ -20,10 +20,7 @@ namespace Norns.Destiny.AOT.Coder
             return syntaxNode is TypeDeclarationSyntax;
         }
 
-        protected virtual bool Filter(ITypeSymbolInfo type)
-        {
-            return true;
-        }
+        protected abstract bool Filter(ITypeSymbolInfo type);
 
         protected virtual ISymbolSource CreateGenerateSymbolSource(IEnumerable<SyntaxNode> syntaxNodes, SourceGeneratorContext context)
         {
