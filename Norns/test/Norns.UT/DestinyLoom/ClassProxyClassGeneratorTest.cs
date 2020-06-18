@@ -39,13 +39,17 @@ namespace Norns.UT.DestinyLoom
             yield return new ClassProxyClassGenerator(interceptors);
         }
     }
+
     namespace Norns.ProxyGenerators.Test
     {
-        internal class C 
+        internal class C
         {
-            protected void AddOne() { }
+            protected void AddOne()
+            {
+            }
         }
     }
+
     public class ClassProxyClassGeneratorTest
     {
         private static Compilation GenerateSource(string source)

@@ -6,9 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.6.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AOP\JIT\" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 </Project>

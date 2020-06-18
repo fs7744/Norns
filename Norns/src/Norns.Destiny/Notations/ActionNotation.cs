@@ -1,6 +1,5 @@
-﻿using System.Text;
-using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Text;
 
 namespace Norns.Destiny.Notations
 {

@@ -32,16 +32,22 @@ namespace Norns.DestinyLoom.Symbols
             {
                 case Accessibility.Private:
                     return "private";
+
                 case Accessibility.ProtectedAndInternal:
-                    return "private protected"; 
+                    return "private protected";
+
                 case Accessibility.Protected:
                     return "protected";
+
                 case Accessibility.Internal:
                     return "internal";
+
                 case Accessibility.ProtectedOrInternal:
                     return "protected internal";
+
                 case Accessibility.Public:
                     return "public";
+
                 default:
                     return string.Empty;
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Norns.DestinyLoom.Symbols
+﻿namespace Norns.DestinyLoom.Symbols
 {
     public class UsingSymbol : GenerateSymbolLinkedList
     {

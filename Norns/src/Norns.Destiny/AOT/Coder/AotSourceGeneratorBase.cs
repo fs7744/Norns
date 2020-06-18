@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Norns.Destiny.Abstraction.Coder;
+using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System;
@@ -19,9 +20,14 @@ namespace Norns.Destiny.AOT.Coder
             return syntaxNode is TypeDeclarationSyntax;
         }
 
+        protected virtual bool Filter(ITypeSymbolInfo type)
+        {
+            return true;
+        }
+
         protected virtual ISymbolSource CreateGenerateSymbolSource(IEnumerable<SyntaxNode> syntaxNodes, SourceGeneratorContext context)
         {
-            return new AotSyntaxNodeSymbolSource(syntaxNodes, context);
+            return new AotSyntaxNodeSymbolSource(syntaxNodes, context, Filter);
         }
 
         protected virtual SourceText CreateSourceText(INotation notation)
