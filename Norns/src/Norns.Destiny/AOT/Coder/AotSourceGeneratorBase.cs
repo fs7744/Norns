@@ -8,12 +8,13 @@ using Norns.Destiny.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Norns.Destiny.AOT.Coder
 {
     public abstract class AotSourceGeneratorBase : ISourceGenerator
     {
-        protected abstract INotationGenerator CreateNotationGenerator();
+        protected abstract IEnumerable<INotationGenerator> CreateNotationGenerators();
 
         protected virtual bool FilterSyntaxNode(SyntaxNode syntaxNode)
         {
@@ -39,7 +40,9 @@ namespace Norns.Destiny.AOT.Coder
             if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
                 return;
             var source = CreateGenerateSymbolSource(receiver.SyntaxNodes, context);
-            var notations = CreateNotationGenerator().GenerateNotations(source);
+            var notations = CreateNotationGenerators()
+                .Select(i => i.GenerateNotations(source))
+                .Aggregate(Notation.Combine);
             context.AddSource(RandomUtils.NewCSFileName(), CreateSourceText(notations));
         }
 

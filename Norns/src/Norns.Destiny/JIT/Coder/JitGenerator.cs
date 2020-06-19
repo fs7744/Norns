@@ -1,7 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Norns.Destiny.Abstraction.Coder;
+using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Norns.Destiny.JIT.Coder
@@ -10,13 +13,15 @@ namespace Norns.Destiny.JIT.Coder
     {
         protected abstract JitOptions CreateOptions();
 
-        protected abstract INotationGenerator CreateNotationGenerator();
+        protected abstract IEnumerable<INotationGenerator> CreateNotationGenerators();
 
         protected abstract T Complie(CSharpCompilation compilation);
 
         public T Generate(ISymbolSource source)
         {
-            var notation = CreateNotationGenerator().GenerateNotations(source);
+            var notation = CreateNotationGenerators()
+                .Select(i => i.GenerateNotations(source))
+                .Aggregate(Notation.Combine);
             var sb = new StringBuilder();
             notation.Record(sb);
             var options = CreateOptions();
