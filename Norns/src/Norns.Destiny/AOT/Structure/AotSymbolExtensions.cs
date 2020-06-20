@@ -38,8 +38,10 @@ namespace Norns.Destiny.AOT.Structure
             {
                 case VarianceKind.Out:
                     return VarianceKindInfo.Out;
+
                 case VarianceKind.In:
                     return VarianceKindInfo.In;
+
                 default:
                     return VarianceKindInfo.None;
             }

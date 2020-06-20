@@ -7,8 +7,8 @@ using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
 namespace Norns.Destiny.AOT.Coder
 {

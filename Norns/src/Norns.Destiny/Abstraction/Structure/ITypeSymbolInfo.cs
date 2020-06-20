@@ -20,5 +20,7 @@ namespace Norns.Destiny.Abstraction.Structure
         ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         bool IsAbstract { get; }
         bool IsAnonymousType { get; }
+        bool IsClass { get; }
+        bool IsInterface { get; }
     }
 }

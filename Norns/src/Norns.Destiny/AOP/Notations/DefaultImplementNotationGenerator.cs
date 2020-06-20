@@ -1,8 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Coder;
 using Norns.Destiny.Notations;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Norns.Destiny.AOP.Notations
 {

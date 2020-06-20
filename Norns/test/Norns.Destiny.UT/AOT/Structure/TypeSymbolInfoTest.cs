@@ -113,6 +113,7 @@ public class GenericClass<T> where T : ClassT, new()
 }";
             var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
             Assert.True(types["GenericClass"].IsGenericType);
+            Assert.True(types["GenericClass"].IsClass);
             Assert.False(types["ClassT"].IsGenericType);
         }
     }

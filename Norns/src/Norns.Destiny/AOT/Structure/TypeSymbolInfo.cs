@@ -39,7 +39,8 @@ namespace Norns.Destiny.AOT.Structure
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsAbstract { get; }
         public bool IsAnonymousType => RealType.IsAnonymousType;
-
         public object Origin { get; }
+        public bool IsClass => RealType.TypeKind == TypeKind.Class;
+        public bool IsInterface => RealType.TypeKind == TypeKind.Interface;
     }
 }

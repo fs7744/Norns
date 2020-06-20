@@ -216,6 +216,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var iaTypeDefinition = new TypeSymbolInfo(typeof(IB<Test>));
             Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.True(iaTypeDefinition.IsInterface);
             Assert.Single(iaTypeDefinition.TypeArguments);
             var ta = iaTypeDefinition.TypeArguments.First();
             Assert.Equal(nameof(Test), ta.Name);
@@ -235,6 +236,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var iaTypeDefinition = new TypeSymbolInfo(typeof(GenericClass<Test, B>));
             Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.True(iaTypeDefinition.IsClass);
             Assert.Equal(2, iaTypeDefinition.TypeArguments.Length);
             var ta = iaTypeDefinition.TypeArguments.First();
             Assert.Equal(nameof(Test), ta.Name);
