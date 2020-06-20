@@ -116,6 +116,21 @@ namespace Norns.Destiny.UT.JIT.Structure
         public (T, Y) A() => default;
     }
 
+    public class FieldTest
+    {
+        public const int A = 3;
+        internal static readonly string B = "3";
+        protected volatile string C;
+        protected internal long D;
+        private protected long E;
+        private long F;
+    }
+
+    public unsafe struct StructFieldTest
+    {
+        internal fixed char name[30];
+    }
+
     public class TypeSymbolInfoTest
     {
         #region Accessibility
@@ -285,14 +300,23 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenInterfaces()
         {
-            var interfaces = new TypeSymbolInfo(typeof(object)).Interfaces;
+            var interfaces = new TypeSymbolInfo(typeof(object)).GetInterfaces();
             Assert.Empty(interfaces);
-            interfaces = new TypeSymbolInfo(typeof(int)).Interfaces;
+            interfaces = new TypeSymbolInfo(typeof(int)).GetInterfaces();
             Assert.Contains(nameof(IComparable), interfaces.Select(i => i.Name));
-            interfaces = new TypeSymbolInfo(typeof(Test)).Interfaces;
+            interfaces = new TypeSymbolInfo(typeof(Test)).GetInterfaces();
             Assert.Empty(interfaces);
-            interfaces = new TypeSymbolInfo(typeof(A)).Interfaces;
+            interfaces = new TypeSymbolInfo(typeof(A)).GetInterfaces();
             Assert.Empty(interfaces);
+        }
+
+        [Fact]
+        public void WhenFields()
+        {
+            var fields = new TypeSymbolInfo(typeof(FieldTest)).GetMembers().Select(i => i as IFieldSymbolInfo)
+                .Where(i => i != null)
+                .ToArray();
+            Assert.Equal(6, fields.Length);
         }
     }
 }

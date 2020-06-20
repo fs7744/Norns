@@ -44,6 +44,14 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsInterface => RealType.TypeKind == TypeKind.Interface;
         public string FullName => RealType.ToDisplayString();
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public ImmutableArray<ITypeSymbolInfo> Interfaces => RealType.AllInterfaces.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+
+        public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.AllInterfaces
+            .Select(i => new TypeSymbolInfo(i))
+            .ToImmutableArray<ITypeSymbolInfo>();
+
+        public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

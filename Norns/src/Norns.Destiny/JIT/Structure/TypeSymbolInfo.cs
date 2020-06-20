@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Norns.Destiny.JIT.Structure
@@ -47,6 +48,14 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsInterface => RealType.IsInterface;
         public string FullName => RealType.FullName;
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public ImmutableArray<ITypeSymbolInfo> Interfaces => RealType.GetInterfaces().Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+
+        public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.GetInterfaces()
+            .Select(i => new TypeSymbolInfo(i))
+            .ToImmutableArray<ITypeSymbolInfo>();
+
+        public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+            .Select(JitSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

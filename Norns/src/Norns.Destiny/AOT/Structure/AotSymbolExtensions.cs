@@ -3,7 +3,7 @@ using Norns.Destiny.Abstraction.Structure;
 
 namespace Norns.Destiny.AOT.Structure
 {
-    public static class JitSymbolExtensions
+    public static class AotSymbolExtensions
     {
         public static AccessibilityInfo ConvertToStructure(this Accessibility accessibility)
         {
@@ -44,6 +44,17 @@ namespace Norns.Destiny.AOT.Structure
 
                 default:
                     return VarianceKindInfo.None;
+            }
+        }
+
+        public static ISymbolInfo ConvertToStructure(this ISymbol symbol)
+        {
+            switch (symbol)
+            {
+                case IFieldSymbol f:
+                    return new FieldSymbolInfo(f);
+                default:
+                    return null;
             }
         }
     }

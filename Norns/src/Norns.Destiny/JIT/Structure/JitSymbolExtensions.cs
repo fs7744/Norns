@@ -53,5 +53,48 @@ namespace Norns.Destiny.JIT.Structure
                 return VarianceKindInfo.None;
             }
         }
+
+        public static ISymbolInfo ConvertToStructure(this MemberInfo member)
+        {
+            switch (member)
+            {
+                case FieldInfo f:
+                    return new FieldSymbolInfo(f);
+                default:
+                    return null;
+            }
+        }
+
+        public static AccessibilityInfo ConvertAccessibilityInfo(this FieldInfo type)
+        {
+            if (type.IsPublic)
+            {
+                return AccessibilityInfo.Public;
+            }
+            else if (type.IsPrivate)
+            {
+                return AccessibilityInfo.Private;
+            }
+            else if (type.IsAssembly)
+            {
+                return AccessibilityInfo.Internal;
+            }
+            else if (type.IsFamily)
+            {
+                return AccessibilityInfo.Protected;
+            }
+            else if (type.IsFamilyAndAssembly)
+            {
+                return AccessibilityInfo.ProtectedAndInternal;
+            }
+            else if (type.IsFamilyOrAssembly)
+            {
+                return AccessibilityInfo.ProtectedOrInternal;
+            }
+            else
+            {
+                return AccessibilityInfo.NotApplicable;
+            }
+        }
     }
 }

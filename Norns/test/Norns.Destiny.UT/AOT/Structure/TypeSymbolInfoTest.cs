@@ -167,12 +167,20 @@ public class C : ClassT {}";
             var code = @"public class ClassT { } public struct A {} interface IB {}
 public class C : IB {}";
             var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
-            Assert.Empty(types["ClassT"].Interfaces);
-            Assert.Single(types["C"].Interfaces);
-            Assert.Equal("IB", types["C"].Interfaces.First().Name);
-            Assert.Empty(types["A"].Interfaces);
-            Assert.Empty(types["IB"].Interfaces);
+            Assert.Empty(types["ClassT"].GetInterfaces());
+            Assert.Single(types["C"].GetInterfaces());
+            Assert.Equal("IB", types["C"].GetInterfaces().First().Name);
+            Assert.Empty(types["A"].GetInterfaces());
+            Assert.Empty(types["IB"].GetInterfaces());
             Assert.True(types["IB"].IsInterface);
+        }
+
+        [Fact]
+        public void WhenFields()
+        {
+            var code = @"public class ClassT { public int x, y; }";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            Assert.Empty(types["ClassT"].GetInterfaces());
         }
     }
 }

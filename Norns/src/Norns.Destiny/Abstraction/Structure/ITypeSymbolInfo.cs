@@ -2,24 +2,20 @@
 
 namespace Norns.Destiny.Abstraction.Structure
 {
-    public interface ITypeSymbolInfo
+    public interface ITypeSymbolInfo : ISymbolInfo
     {
-        object Origin { get; }
         string Namespace { get; }
-        AccessibilityInfo Accessibility { get; }
-        string Name { get; }
-        bool IsStatic { get; }
+        bool IsAbstract { get; }
         bool IsSealed { get; }
         bool IsValueType { get; }
         bool IsGenericType { get; }
         ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
         ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
-        bool IsAbstract { get; }
         bool IsAnonymousType { get; }
         bool IsClass { get; }
         bool IsInterface { get; }
         string FullName { get; }
         ITypeSymbolInfo BaseType { get; }
-        ImmutableArray<ITypeSymbolInfo> Interfaces { get; }
+        ImmutableArray<ITypeSymbolInfo> GetInterfaces();
     }
 }
