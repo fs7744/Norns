@@ -89,6 +89,10 @@ namespace Norns.Destiny.UT.JIT.Structure
     {
     }
 
+    public interface IA
+    {
+    }
+
     public interface IA<out T> where T : AbstractPublicClass, new()
     {
         public T A() => default;
@@ -121,6 +125,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var dict = typeof(AbstractPublicClass).GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
                 .ToDictionary(i => i.Name, i => new TypeSymbolInfo(i as TypeInfo));
+            Assert.Equal("Norns.Destiny.UT.JIT.Structure.AbstractPublicClass+PrivateClass", dict["PrivateClass"].FullName);
             Assert.Equal(AccessibilityInfo.Private, dict["PrivateClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Protected, dict["ProtectedClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Internal, dict["InternalClass"].Accessibility);
@@ -266,5 +271,28 @@ namespace Norns.Destiny.UT.JIT.Structure
         }
 
         #endregion IsGenericType
+
+        [Fact]
+        public void WhenBaseType()
+        {
+            Assert.Null(new TypeSymbolInfo(typeof(object)).BaseType);
+            Assert.Equal(nameof(ValueType), new TypeSymbolInfo(typeof(int)).BaseType.Name);
+            Assert.Equal(nameof(Object), new TypeSymbolInfo(typeof(AbstractPublicClass)).BaseType.Name);
+            Assert.Equal(nameof(AbstractPublicClass), new TypeSymbolInfo(typeof(Test)).BaseType.Name);
+            Assert.Equal(nameof(ValueType), new TypeSymbolInfo(typeof(A)).BaseType.Name);
+        }
+
+        [Fact]
+        public void WhenInterfaces()
+        {
+            var interfaces = new TypeSymbolInfo(typeof(object)).Interfaces;
+            Assert.Empty(interfaces);
+            interfaces = new TypeSymbolInfo(typeof(int)).Interfaces;
+            Assert.Contains(nameof(IComparable), interfaces.Select(i => i.Name));
+            interfaces = new TypeSymbolInfo(typeof(Test)).Interfaces;
+            Assert.Empty(interfaces);
+            interfaces = new TypeSymbolInfo(typeof(A)).Interfaces;
+            Assert.Empty(interfaces);
+        }
     }
 }

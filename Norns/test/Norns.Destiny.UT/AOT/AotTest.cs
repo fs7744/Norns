@@ -41,11 +41,11 @@ namespace Norns.Destiny.UT.AOT
             return collector.Infos;
         }
 
-        public static Dictionary<string, ITypeSymbolInfo> SimpleGenerateTypeSymbolInfos(string code)
+        public static Dictionary<string, ITypeSymbolInfo> SimpleGenerateTypeSymbolInfos(string code, bool isUseShortName = true)
         {
             var collector = new TypeSymbolInfoCollector(i => i.Namespace == "Norns.Destiny.UT.AOT.Generated");
             GenerateCode($"namespace Norns.Destiny.UT.AOT.Generated {{ {code} }}", collector);
-            return collector.Infos.ToDictionary(i => i.Name, i => i);
+            return collector.Infos.ToDictionary(i => isUseShortName ? i.Name : i.FullName, i => i);
         }
     }
 

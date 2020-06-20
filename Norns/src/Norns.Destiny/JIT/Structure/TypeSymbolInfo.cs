@@ -45,5 +45,8 @@ namespace Norns.Destiny.JIT.Structure
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsClass => RealType.IsClass;
         public bool IsInterface => RealType.IsInterface;
+        public string FullName => RealType.FullName;
+        public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
+        public ImmutableArray<ITypeSymbolInfo> Interfaces => RealType.GetInterfaces().Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
     }
 }

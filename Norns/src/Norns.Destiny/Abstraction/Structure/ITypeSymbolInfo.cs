@@ -6,13 +6,9 @@ namespace Norns.Destiny.Abstraction.Structure
     {
         object Origin { get; }
         string Namespace { get; }
-
         AccessibilityInfo Accessibility { get; }
-
         string Name { get; }
-
         bool IsStatic { get; }
-
         bool IsSealed { get; }
         bool IsValueType { get; }
         bool IsGenericType { get; }
@@ -22,5 +18,8 @@ namespace Norns.Destiny.Abstraction.Structure
         bool IsAnonymousType { get; }
         bool IsClass { get; }
         bool IsInterface { get; }
+        string FullName { get; }
+        ITypeSymbolInfo BaseType { get; }
+        ImmutableArray<ITypeSymbolInfo> Interfaces { get; }
     }
 }

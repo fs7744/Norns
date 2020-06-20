@@ -1,4 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace Norns.Destiny.UT.AOT.Structure
@@ -83,7 +85,7 @@ namespace Norns.Destiny.UT.AOT.Structure
             Assert.True(types["SealedClass"].IsSealed);
             Assert.False(types["NonSealedClass"].IsSealed);
         }
-        
+
         [Fact]
         public void WhenIsAbstract()
         {
@@ -102,6 +104,34 @@ namespace Norns.Destiny.UT.AOT.Structure
             Assert.False(types["ClassT"].IsValueType);
         }
 
+        #region IsGenericType
+
+        [Fact]
+        public void IsGenericTypeWhenIA()
+        {
+            var code = @"public class PublicClass
+    { }     public class IA<out T> where T : PublicClass, new()
+    {
+        public T A() => new IA<PublicClass>();
+    }
+            ";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code, false);
+            var iaTypeDefinition = types["Norns.Destiny.UT.AOT.Generated.IA<T>"];
+            Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.Single(iaTypeDefinition.TypeArguments);
+            Assert.Single(iaTypeDefinition.TypeParameters);
+            var tp = iaTypeDefinition.TypeParameters.First();
+            Assert.Equal(0, tp.Ordinal);
+            Assert.Equal("T", tp.Name);
+            Assert.Equal(VarianceKindInfo.Out, tp.VarianceKind);
+            Assert.True(tp.HasConstructorConstraint);
+            Assert.False(tp.HasReferenceTypeConstraint);
+            Assert.False(tp.HasValueTypeConstraint);
+            Assert.Single(tp.ConstraintTypes);
+            var tpc = tp.ConstraintTypes.First();
+            Assert.Equal("PublicClass", tpc.Name);
+        }
+
         [Fact]
         public void WhenIsGenericType()
         {
@@ -115,6 +145,34 @@ public class GenericClass<T> where T : ClassT, new()
             Assert.True(types["GenericClass"].IsGenericType);
             Assert.True(types["GenericClass"].IsClass);
             Assert.False(types["ClassT"].IsGenericType);
+        }
+
+        #endregion IsGenericType
+
+        [Fact]  
+        public void WhenBaseType()
+        {
+            var code = @"public class ClassT { } public struct A {} interface IB {}
+public class C : ClassT {}";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            Assert.Equal(nameof(Object), types["ClassT"].BaseType.Name);
+            Assert.Equal("ClassT", types["C"].BaseType.Name);
+            Assert.Equal("ValueType", types["A"].BaseType.Name);
+            Assert.Null(types["IB"].BaseType);
+        }
+
+        [Fact]
+        public void WhenInterfaces()
+        {
+            var code = @"public class ClassT { } public struct A {} interface IB {}
+public class C : IB {}";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            Assert.Empty(types["ClassT"].Interfaces);
+            Assert.Single(types["C"].Interfaces);
+            Assert.Equal("IB", types["C"].Interfaces.First().Name);
+            Assert.Empty(types["A"].Interfaces);
+            Assert.Empty(types["IB"].Interfaces);
+            Assert.True(types["IB"].IsInterface);
         }
     }
 }
