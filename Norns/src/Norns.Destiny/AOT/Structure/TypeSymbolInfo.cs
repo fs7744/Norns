@@ -1,34 +1,45 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Norns.Destiny.AOT.Structure
 {
     public class TypeSymbolInfo : ITypeSymbolInfo
     {
-        private readonly ITypeSymbol type;
-
         public TypeSymbolInfo(ITypeSymbol type)
         {
-            this.type = type;
+            Origin = type;
+            RealType = type;
             Accessibility = type.DeclaredAccessibility.ConvertToStructure();
             Namespace = type.ContainingNamespace.ToDisplayString();
-            if ((type is INamedTypeSymbol namedType))
+            if (type is INamedTypeSymbol namedType)
             {
                 IsGenericType = namedType.IsGenericType;
                 IsAbstract = namedType.IsAbstract;
-                Arity = namedType.Arity;
+                TypeArguments = namedType.TypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+                TypeParameters = namedType.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
+            }
+            else
+            {
+                TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
+                TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
         }
 
+        public ITypeSymbol RealType { get; }
         public string Namespace { get; }
         public AccessibilityInfo Accessibility { get; }
-        public string Name => type.Name;
-        public bool IsStatic => type.IsStatic;
-        public bool IsSealed => type.IsSealed;
-        public bool IsValueType => type.IsValueType;
+        public string Name => RealType.Name;
+        public bool IsStatic => RealType.IsStatic;
+        public bool IsSealed => RealType.IsSealed;
+        public bool IsValueType => RealType.IsValueType;
         public bool IsGenericType { get; }
-        public int Arity { get; }
+        public ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
+        public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsAbstract { get; }
-        public bool IsAnonymousType => type.IsAnonymousType;
+        public bool IsAnonymousType => RealType.IsAnonymousType;
+
+        public object Origin { get; }
     }
 }

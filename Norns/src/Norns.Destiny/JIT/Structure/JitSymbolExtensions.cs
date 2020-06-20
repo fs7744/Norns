@@ -1,11 +1,12 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System;
+using System.Reflection;
 
 namespace Norns.Destiny.JIT.Structure
 {
     public static class JitSymbolExtensions
     {
-        public static AccessibilityInfo ConvertToStructure(this Type type)
+        public static AccessibilityInfo ConvertAccessibilityInfo(this Type type)
         {
             if (type.IsPublic || (type.IsNested && type.IsNestedPublic))
             {
@@ -34,6 +35,22 @@ namespace Norns.Destiny.JIT.Structure
             else
             {
                 return AccessibilityInfo.NotApplicable;
+            }
+        }
+
+        public static VarianceKindInfo ConvertToStructure(this GenericParameterAttributes attributes)
+        {
+            if ((attributes & GenericParameterAttributes.Covariant) == GenericParameterAttributes.Covariant)
+            {
+                return VarianceKindInfo.Out;
+            }
+            else if ((attributes & GenericParameterAttributes.Contravariant) == GenericParameterAttributes.Contravariant)
+            {
+                return VarianceKindInfo.In;
+            }
+            else
+            {
+                return VarianceKindInfo.None;
             }
         }
     }

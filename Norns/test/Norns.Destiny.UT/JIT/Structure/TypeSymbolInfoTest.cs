@@ -85,6 +85,33 @@ namespace Norns.Destiny.UT.JIT.Structure
     {
     }
 
+    public sealed class SealedClass
+    {
+    }
+
+    public interface IA<out T> where T : AbstractPublicClass, new()
+    {
+        public T A() => default;
+    }
+
+    public interface IB<in T>
+    {
+    }
+
+    public struct A
+    { }
+
+    public enum B
+    {
+        One,
+        Two
+    }
+
+    public class GenericClass<T, Y> where T : class, new() where Y : struct, Enum
+    {
+        public (T, Y) A() => default;
+    }
+
     public class TypeSymbolInfoTest
     {
         #region Accessibility
@@ -117,6 +144,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         public void WhenIsStatic()
         {
             Assert.True(new TypeSymbolInfo(typeof(StaticClass)).IsStatic);
+            Assert.True(new TypeSymbolInfo(typeof(StaticClass)).IsSealed);
             Assert.False(new TypeSymbolInfo(typeof(AbstractPublicClass)).IsStatic);
             Assert.False(new TypeSymbolInfo(typeof(InternalClass)).IsStatic);
             Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsStatic);
@@ -130,5 +158,111 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(new TypeSymbolInfo(typeof(StaticClass)).IsAnonymousType);
             Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsAnonymousType);
         }
+
+        [Fact]
+        public void WhenNameAndNamespace()
+        {
+            var type = new TypeSymbolInfo(typeof(StaticClass));
+            Assert.Equal("StaticClass", type.Name);
+            Assert.Equal("Norns.Destiny.UT.JIT.Structure", type.Namespace);
+        }
+
+        [Fact]
+        public void WhenIsSealed()
+        {
+            Assert.True(new TypeSymbolInfo(typeof(SealedClass)).IsSealed);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsSealed);
+        }
+
+        [Fact]
+        public void WhenIsAbstract()
+        {
+            Assert.True(new TypeSymbolInfo(typeof(AbstractPublicClass)).IsAbstract);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsAbstract);
+        }
+
+        [Fact]
+        public void WhenIsValueType()
+        {
+            Assert.True(new TypeSymbolInfo(typeof(int)).IsValueType);
+            Assert.True(new TypeSymbolInfo(typeof(IntPtr)).IsValueType);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsValueType);
+        }
+
+        #region IsGenericType
+
+        [Fact]
+        public void IsGenericTypeWhenIA()
+        {
+            var iaTypeDefinition = new TypeSymbolInfo(typeof(IA<>));
+            Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.Empty(iaTypeDefinition.TypeArguments);
+            Assert.Single(iaTypeDefinition.TypeParameters);
+            var tp = iaTypeDefinition.TypeParameters.First();
+            Assert.Equal(0, tp.Ordinal);
+            Assert.Equal("T", tp.Name);
+            Assert.Equal(VarianceKindInfo.Out, tp.VarianceKind);
+            Assert.True(tp.HasConstructorConstraint);
+            Assert.False(tp.HasReferenceTypeConstraint);
+            Assert.False(tp.HasValueTypeConstraint);
+            Assert.Single(tp.ConstraintTypes);
+            var tpc = tp.ConstraintTypes.First();
+            Assert.Equal(nameof(AbstractPublicClass), tpc.Name);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsGenericType);
+        }
+
+        [Fact]
+        public void IsGenericTypeWhenIB()
+        {
+            var iaTypeDefinition = new TypeSymbolInfo(typeof(IB<Test>));
+            Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.Single(iaTypeDefinition.TypeArguments);
+            var ta = iaTypeDefinition.TypeArguments.First();
+            Assert.Equal(nameof(Test), ta.Name);
+            Assert.Single(iaTypeDefinition.TypeParameters);
+            var tp = iaTypeDefinition.TypeParameters.First();
+            Assert.Equal(0, tp.Ordinal);
+            Assert.Equal("T", tp.Name);
+            Assert.Equal(VarianceKindInfo.In, tp.VarianceKind);
+            Assert.False(tp.HasConstructorConstraint);
+            Assert.False(tp.HasReferenceTypeConstraint);
+            Assert.False(tp.HasValueTypeConstraint);
+            Assert.Empty(tp.ConstraintTypes);
+        }
+
+        [Fact]
+        public void IsGenericTypeWhenGenericClass()
+        {
+            var iaTypeDefinition = new TypeSymbolInfo(typeof(GenericClass<Test, B>));
+            Assert.True(iaTypeDefinition.IsGenericType);
+            Assert.Equal(2, iaTypeDefinition.TypeArguments.Length);
+            var ta = iaTypeDefinition.TypeArguments.First();
+            Assert.Equal(nameof(Test), ta.Name);
+            Assert.Equal(2, iaTypeDefinition.TypeParameters.Length);
+            var tp = iaTypeDefinition.TypeParameters.First();
+            Assert.Equal(0, tp.Ordinal);
+            Assert.Equal("T", tp.Name);
+            Assert.Equal(VarianceKindInfo.None, tp.VarianceKind);
+            Assert.True(tp.HasConstructorConstraint);
+            Assert.True(tp.HasReferenceTypeConstraint);
+            Assert.False(tp.HasValueTypeConstraint);
+            Assert.Empty(tp.ConstraintTypes);
+
+            ta = iaTypeDefinition.TypeArguments[1];
+            Assert.Equal(nameof(B), ta.Name);
+            Assert.Equal(2, iaTypeDefinition.TypeParameters.Length);
+            tp = iaTypeDefinition.TypeParameters[1];
+            Assert.Equal(1, tp.Ordinal);
+            Assert.Equal("Y", tp.Name);
+            Assert.Equal(VarianceKindInfo.None, tp.VarianceKind);
+            Assert.True(tp.HasConstructorConstraint);
+            Assert.False(tp.HasReferenceTypeConstraint);
+            Assert.True(tp.HasValueTypeConstraint);
+            Assert.Single(tp.ConstraintTypes);
+            var tpc = tp.ConstraintTypes.First();
+            Assert.Equal(nameof(Enum), tpc.Name);
+        }
+
+        #endregion IsGenericType
     }
 }
