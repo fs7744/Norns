@@ -81,8 +81,14 @@ namespace Norns.Destiny.UT.JIT.Structure
         }
     }
 
+    public static class StaticClass
+    {
+    }
+
     public class TypeSymbolInfoTest
     {
+        #region Accessibility
+
         [Fact]
         public void AccessibilityWhenNestedClass()
         {
@@ -103,6 +109,26 @@ namespace Norns.Destiny.UT.JIT.Structure
                    .ToDictionary(i => i.FullName, i => new TypeSymbolInfo(i));
             Assert.Equal(AccessibilityInfo.Internal, dict["Norns.Destiny.UT.JIT.Structure.InternalClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Public, dict["Norns.Destiny.UT.JIT.Structure.PublicClass"].Accessibility);
+        }
+
+        #endregion Accessibility
+
+        [Fact]
+        public void WhenIsStatic()
+        {
+            Assert.True(new TypeSymbolInfo(typeof(StaticClass)).IsStatic);
+            Assert.False(new TypeSymbolInfo(typeof(AbstractPublicClass)).IsStatic);
+            Assert.False(new TypeSymbolInfo(typeof(InternalClass)).IsStatic);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsStatic);
+        }
+
+        [Fact]
+        public void WhenIsAnonymousType()
+        {
+            Assert.True(new TypeSymbolInfo(new { }.GetType()).IsAnonymousType);
+            Assert.True(new TypeSymbolInfo(new { A = 9 }.GetType()).IsAnonymousType);
+            Assert.False(new TypeSymbolInfo(typeof(StaticClass)).IsAnonymousType);
+            Assert.False(new TypeSymbolInfo(typeof(PublicClass)).IsAnonymousType);
         }
     }
 }

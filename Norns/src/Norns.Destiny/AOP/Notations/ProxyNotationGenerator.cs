@@ -20,7 +20,7 @@ namespace Norns.Destiny.AOP.Notations
         {
             return source.GetTypes()
                 .Select(GenerateProxyType)
-                .Aggregate(Notation.Combine);
+                .Combine();
         }
 
         private INotation GenerateProxyType(ITypeSymbolInfo type)

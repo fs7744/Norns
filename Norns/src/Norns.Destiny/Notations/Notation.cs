@@ -1,4 +1,7 @@
-﻿namespace Norns.Destiny.Notations
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Norns.Destiny.Notations
 {
     public static class Notation
     {
@@ -10,5 +13,19 @@
                 y.Record(sb);
             });
         }
+
+        public static INotation Combine(this IEnumerable<INotation> notations)
+        {
+            return notations.DefaultIfEmpty(ConstNotations.Nothing).Aggregate(Combine);
+        }
+
+        #region ToNotation
+
+        public static INotation ToNotation(this string value)
+        {
+            return new StringNotation(value);
+        }
+
+        #endregion ToNotation
     }
 }

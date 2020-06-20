@@ -42,7 +42,7 @@ namespace Norns.Destiny.AOT.Coder
             var source = CreateGenerateSymbolSource(receiver.SyntaxNodes, context);
             var notations = CreateNotationGenerators()
                 .Select(i => i.GenerateNotations(source))
-                .Aggregate(Notation.Combine);
+                .Combine();
             context.AddSource(RandomUtils.NewCSFileName(), CreateSourceText(notations));
         }
 

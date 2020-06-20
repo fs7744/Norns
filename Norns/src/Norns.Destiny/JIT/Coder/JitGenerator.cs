@@ -21,7 +21,7 @@ namespace Norns.Destiny.JIT.Coder
         {
             var notation = CreateNotationGenerators()
                 .Select(i => i.GenerateNotations(source))
-                .Aggregate(Notation.Combine);
+                .Combine();
             var sb = new StringBuilder();
             notation.Record(sb);
             var options = CreateOptions();
