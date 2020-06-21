@@ -19,9 +19,9 @@ namespace Norns.Destiny.JIT.Structure
         public string Name => RealField.Name;
         public ITypeSymbolInfo FieldType { get; }
         public bool IsConst => RealField.IsLiteral;
-        public bool IsReadOnly => RealField.IsLiteral || RealField.IsInitOnly;
+        public bool IsReadOnly => RealField.IsInitOnly;
         public bool IsVolatile => RealField.GetRequiredCustomModifiers().Any(i => i == typeof(System.Runtime.CompilerServices.IsVolatile));
-        public bool IsFixedSizeBuffer => RealField.IsLiteral;
+        public bool IsFixedSizeBuffer => RealField.IsDefined(typeof(System.Runtime.CompilerServices.FixedBufferAttribute));
         public bool HasConstantValue => (RealField.Attributes & FieldAttributes.HasDefault) == FieldAttributes.HasDefault;
         public object ConstantValue => RealField.GetRawConstantValue();
         public bool IsStatic => RealField.IsStatic;

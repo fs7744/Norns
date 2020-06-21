@@ -27,7 +27,7 @@ namespace Norns.Destiny.JIT.Structure
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
         }
-
+        
         public Type RealType { get; }
         public string Namespace => RealType.Namespace;
         public AccessibilityInfo Accessibility { get; }

@@ -12,7 +12,7 @@ namespace Norns.Destiny.AOT.Structure
             Origin = type;
             RealType = type;
             Accessibility = type.DeclaredAccessibility.ConvertToStructure();
-            Namespace = type.ContainingNamespace.ToDisplayString();
+            Namespace = type.ContainingNamespace?.ToDisplayString();
             if (type is INamedTypeSymbol namedType)
             {
                 IsGenericType = namedType.IsGenericType;

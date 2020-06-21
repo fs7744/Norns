@@ -311,12 +311,85 @@ namespace Norns.Destiny.UT.JIT.Structure
         }
 
         [Fact]
-        public void WhenFields()
+        public void WhenClassFields()
         {
-            var fields = new TypeSymbolInfo(typeof(FieldTest)).GetMembers().Select(i => i as IFieldSymbolInfo)
+            var fields = new TypeSymbolInfo(typeof(FieldTest)).GetMembers()
+                .Select(i => i as IFieldSymbolInfo)
                 .Where(i => i != null)
-                .ToArray();
-            Assert.Equal(6, fields.Length);
+                .ToDictionary(i => i.Name, i => i);
+            Assert.Equal(6, fields.Count);
+            var f = fields["A"];
+            Assert.Equal(3, f.ConstantValue);
+            Assert.True(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.True(f.HasConstantValue);
+            Assert.True(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Public , f.Accessibility);
+
+            f = fields["B"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.True(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.True(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Internal, f.Accessibility);
+
+            f = fields["C"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.True(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Protected, f.Accessibility);
+
+            f = fields["D"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.ProtectedOrInternal, f.Accessibility);
+
+            f = fields["E"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.ProtectedAndInternal, f.Accessibility);
+
+            f = fields["F"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Private, f.Accessibility);
+        }
+
+        [Fact]
+        public void WhenStructFields()
+        {
+            var fields = new TypeSymbolInfo(typeof(StructFieldTest)).GetMembers()
+                .Select(i => i as IFieldSymbolInfo)
+                .Where(i => i != null)
+                .ToDictionary(i => i.Name, i => i);
+            Assert.Single(fields);
+            var f = fields["name"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.True(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Internal, f.Accessibility);
         }
     }
 }

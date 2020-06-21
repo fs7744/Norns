@@ -182,5 +182,103 @@ public class C : IB {}";
             var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
             Assert.Empty(types["ClassT"].GetInterfaces());
         }
+
+
+        [Fact]
+        public void WhenClassFields()
+        {
+            var code = @"public class FieldTest
+        {
+            public const int A = 3;
+            internal static readonly string B = ""3"";
+            protected volatile string C;
+        protected internal long D;
+        private protected long E;
+        private long F;
+    }";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            var fields = types["FieldTest"].GetMembers()
+                .Select(i => i as IFieldSymbolInfo)
+                .Where(i => i != null)
+                .ToDictionary(i => i.Name, i => i);
+            Assert.Equal(6, fields.Count);
+            var f = fields["A"];
+            Assert.Equal(3, f.ConstantValue);
+            Assert.True(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.True(f.HasConstantValue);
+            Assert.True(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Public, f.Accessibility);
+
+            f = fields["B"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.True(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.True(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Internal, f.Accessibility);
+
+            f = fields["C"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.True(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Protected, f.Accessibility);
+
+            f = fields["D"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.ProtectedOrInternal, f.Accessibility);
+
+            f = fields["E"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.ProtectedAndInternal, f.Accessibility);
+
+            f = fields["F"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.False(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Private, f.Accessibility);
+        }
+        
+        [Fact]
+        public void WhenStructFields()
+        {
+            var code = @"public unsafe struct StructFieldTest
+        {
+            internal fixed char name[30];
+        }";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            var fields = types["StructFieldTest"].GetMembers()
+                .Select(i => i as IFieldSymbolInfo)
+                .Where(i => i != null)
+                .ToDictionary(i => i.Name, i => i);
+            Assert.Single(fields);
+            var f = fields["name"];
+            Assert.False(f.HasConstantValue);
+            Assert.False(f.IsConst);
+            Assert.False(f.IsReadOnly);
+            Assert.False(f.IsVolatile);
+            Assert.True(f.IsFixedSizeBuffer);
+            Assert.False(f.IsStatic);
+            Assert.Equal(AccessibilityInfo.Internal, f.Accessibility);
+        }
     }
 }
