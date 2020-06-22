@@ -25,5 +25,6 @@ namespace Norns.Destiny.JIT.Structure
         public object ConstantValue => RealField.GetRawConstantValue();
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
+        public string FullName => $"{RealField.DeclaringType.FullName}.{RealField.Name}";
     }
 }

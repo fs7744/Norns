@@ -4,5 +4,6 @@
     {
         object Origin { get; }
         string Name { get; }
+        string FullName { get; }
     }
 }

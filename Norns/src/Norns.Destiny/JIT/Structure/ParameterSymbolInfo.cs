@@ -24,5 +24,6 @@ namespace Norns.Destiny.JIT.Structure
         public string Name => RealParameter.Name;
         public RefKindInfo RefKind { get; }
         public ITypeSymbolInfo Type { get; }
+        public string FullName => RealParameter.Name;
     }
 }

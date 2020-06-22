@@ -24,5 +24,6 @@ namespace Norns.Destiny.AOT.Structure
         public object ConstantValue => RealField.ConstantValue;
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
+        public string FullName => RealField.ToDisplayString();
     }
 }

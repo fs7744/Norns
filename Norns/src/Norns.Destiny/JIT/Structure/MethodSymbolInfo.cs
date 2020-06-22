@@ -36,8 +36,9 @@ namespace Norns.Destiny.JIT.Structure
         public AccessibilityInfo Accessibility { get; }
         public bool IsSealed => RealMethod.IsFinal;
         public bool IsAbstract => RealMethod.IsAbstract;
-        public bool IsOverride => RealMethod.IsVirtual && RealMethod.IsHideBySig;
-        public bool IsVirtual => RealMethod.IsVirtual;
+        public bool IsOverride => RealMethod.IsVirtual && (RealMethod.Attributes & MethodAttributes.NewSlot) != MethodAttributes.NewSlot;
+        public bool IsVirtual => RealMethod.IsVirtual && !RealMethod.IsAbstract;
         public bool IsNew => !RealMethod.IsVirtual && RealMethod.IsHideBySig;
+        public string FullName => $"{RealMethod.DeclaringType.FullName}.{RealMethod.Name}";
     }
 }

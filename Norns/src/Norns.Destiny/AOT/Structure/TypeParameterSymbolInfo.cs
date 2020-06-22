@@ -18,15 +18,10 @@ namespace Norns.Destiny.AOT.Structure
         }
 
         public int Ordinal { get; }
-
         public VarianceKindInfo VarianceKind { get; }
-
         public bool HasReferenceTypeConstraint { get; }
-
         public bool HasValueTypeConstraint { get; }
-
         public bool HasConstructorConstraint { get; }
-
         public ImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
     }
 }

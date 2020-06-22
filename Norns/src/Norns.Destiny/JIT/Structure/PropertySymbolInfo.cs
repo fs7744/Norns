@@ -37,5 +37,6 @@ namespace Norns.Destiny.JIT.Structure
         public string Name => RealProperty.Name;
         public IMethodSymbolInfo GetMethod { get; }
         public IMethodSymbolInfo SetMethod { get; }
+        public string FullName => $"{RealProperty.DeclaringType.FullName}.{Name}";
     }
 }

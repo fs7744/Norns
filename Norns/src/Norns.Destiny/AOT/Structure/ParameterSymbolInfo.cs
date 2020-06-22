@@ -22,5 +22,6 @@ namespace Norns.Destiny.AOT.Structure
         public string Name => RealParameter.Name;
         public ITypeSymbolInfo Type { get; }
         public RefKindInfo RefKind { get; }
+        public string FullName => RealParameter.ToDisplayString();
     }
 }

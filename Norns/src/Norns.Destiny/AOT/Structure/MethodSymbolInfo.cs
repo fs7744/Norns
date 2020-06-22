@@ -30,5 +30,6 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsOverride => RealMethod.IsVirtual && RealMethod.IsOverride;
         public bool IsVirtual => RealMethod.IsVirtual;
         public bool IsNew => !RealMethod.IsVirtual && RealMethod.IsOverride;
+        public string FullName => RealMethod.ToDisplayString();
     }
 }
