@@ -26,7 +26,7 @@ namespace Norns.Destiny.JIT.Structure
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
         }
-        
+
         public Type RealType { get; }
         public string Namespace => RealType.Namespace;
         public AccessibilityInfo Accessibility { get; }
@@ -37,9 +37,11 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsGenericType => RealType.IsGenericType;
         public int Arity { get; }
         public bool IsAbstract => RealType.IsAbstract;
+
         public bool IsAnonymousType => Attribute.IsDefined(RealType, typeof(CompilerGeneratedAttribute), false)
             && RealType.Name.Contains("AnonymousType")
             && RealType.Name.StartsWith("<>");
+
         public ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
         public object Origin => RealType;
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }

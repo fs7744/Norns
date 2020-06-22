@@ -53,10 +53,13 @@ namespace Norns.Destiny.AOT.Structure
             {
                 case IFieldSymbol f:
                     return new FieldSymbolInfo(f);
+
                 case IMethodSymbol m:
                     return new MethodSymbolInfo(m);
+
                 case IPropertySymbol p:
                     return new PropertySymbolInfo(p);
+
                 default:
                     return null;
             }
@@ -68,10 +71,13 @@ namespace Norns.Destiny.AOT.Structure
             {
                 case RefKind.Ref:
                     return RefKindInfo.Ref;
+
                 case RefKind.In:
                     return RefKindInfo.In;
+
                 case RefKind.Out:
                     return RefKindInfo.Out;
+
                 default:
                     return RefKindInfo.None;
             }

@@ -1,18 +1,22 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.JIT.Structure;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Norns.Destiny.UT.JIT.Structure
 {
     public static class ParameterTest
     {
-        public static void A(params int[] vs) { }
-        public static void B(this int _) { }
+        public static void A(params int[] vs)
+        {
+        }
+
+        public static void B(this int _)
+        {
+        }
     }
+
     public class ParameterSymbolInfoTest
     {
         [Fact]

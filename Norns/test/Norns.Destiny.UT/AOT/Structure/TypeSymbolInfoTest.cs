@@ -149,7 +149,7 @@ public class GenericClass<T> where T : ClassT, new()
 
         #endregion IsGenericType
 
-        [Fact]  
+        [Fact]
         public void WhenBaseType()
         {
             var code = @"public class ClassT { } public struct A {} interface IB {}
@@ -182,7 +182,6 @@ public class C : IB {}";
             var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
             Assert.Empty(types["ClassT"].GetInterfaces());
         }
-
 
         [Fact]
         public void WhenClassFields()
@@ -257,7 +256,7 @@ public class C : IB {}";
             Assert.False(f.IsStatic);
             Assert.Equal(AccessibilityInfo.Private, f.Accessibility);
         }
-        
+
         [Fact]
         public void WhenStructFields()
         {

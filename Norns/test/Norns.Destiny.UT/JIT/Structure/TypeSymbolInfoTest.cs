@@ -326,7 +326,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(f.IsFixedSizeBuffer);
             Assert.True(f.HasConstantValue);
             Assert.True(f.IsStatic);
-            Assert.Equal(AccessibilityInfo.Public , f.Accessibility);
+            Assert.Equal(AccessibilityInfo.Public, f.Accessibility);
 
             f = fields["B"];
             Assert.False(f.HasConstantValue);

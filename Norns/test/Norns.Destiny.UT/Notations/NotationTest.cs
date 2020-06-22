@@ -16,7 +16,6 @@ namespace Norns.Destiny.UT.Notations
             Assert.Empty(sb.ToString());
         }
 
-
         [Fact]
         public void CombineWhenListNotEmpty()
         {

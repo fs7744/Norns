@@ -20,6 +20,7 @@ namespace Norns.Destiny.Abstraction.Structure
         AccessibilityInfo Accessibility { get; }
 
         ImmutableArray<ITypeSymbolInfo> GetInterfaces();
+
         ImmutableArray<ISymbolInfo> GetMembers();
     }
 }

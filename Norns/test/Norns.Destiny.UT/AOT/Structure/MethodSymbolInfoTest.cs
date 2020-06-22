@@ -1,15 +1,11 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.AOT.Structure;
 using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Norns.Destiny.UT.AOT.Structure
 {
     public class MethodSymbolInfoTest
     {
-        
-
         [Fact]
         public void WhenMethods()
         {
