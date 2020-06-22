@@ -55,6 +55,8 @@ namespace Norns.Destiny.AOT.Structure
                     return new FieldSymbolInfo(f);
                 case IMethodSymbol m:
                     return new MethodSymbolInfo(m);
+                case IPropertySymbol p:
+                    return new PropertySymbolInfo(p);
                 default:
                     return null;
             }

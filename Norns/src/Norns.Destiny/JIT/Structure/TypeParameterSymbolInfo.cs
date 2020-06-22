@@ -22,19 +22,12 @@ namespace Norns.Destiny.JIT.Structure
         }
 
         public int Ordinal { get; }
-
         public VarianceKindInfo VarianceKind { get; }
-
         public bool HasReferenceTypeConstraint { get; }
-
         public bool HasValueTypeConstraint { get; }
-
         public bool HasUnmanagedTypeConstraint { get; }
-
         public bool HasNotNullConstraint { get; }
-
         public bool HasConstructorConstraint { get; }
-
         public ImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
     }
 }

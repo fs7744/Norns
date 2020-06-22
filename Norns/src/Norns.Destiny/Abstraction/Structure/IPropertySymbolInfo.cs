@@ -2,19 +2,22 @@
 
 namespace Norns.Destiny.Abstraction.Structure
 {
-    public interface IMethodSymbolInfo : ISymbolInfo
+    public interface IPropertySymbolInfo : ISymbolInfo
     {
-        ITypeSymbolInfo ReturnType { get; }
-        bool IsExtensionMethod { get; }
-        bool IsGenericMethod { get; }
-        ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
+        bool IsIndexer { get; }
+        bool CanWrite { get; }
+        bool CanRead { get; }
+        ITypeSymbolInfo Type { get; }
         ImmutableArray<IParameterSymbolInfo> Parameters { get; }
         AccessibilityInfo Accessibility { get; }
         bool IsStatic { get; }
+        bool IsExtern { get; }
         bool IsSealed { get; }
         bool IsAbstract { get; }
         bool IsOverride { get; }
         bool IsVirtual { get; }
         bool IsNew { get; }
+        IMethodSymbolInfo GetMethod { get; }
+        IMethodSymbolInfo SetMethod { get; }
     }
 }

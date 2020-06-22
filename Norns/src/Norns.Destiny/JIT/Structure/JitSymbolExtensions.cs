@@ -82,6 +82,8 @@ namespace Norns.Destiny.JIT.Structure
                     return new FieldSymbolInfo(f);
                 case MethodInfo m:
                     return new MethodSymbolInfo(m);
+                case PropertyInfo p:
+                    return new PropertySymbolInfo(p);
                 default:
                     return null;
             }
