@@ -30,7 +30,6 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsAbstract => RealProperty.IsAbstract;
         public bool IsOverride => RealProperty.IsVirtual && RealProperty.IsOverride;
         public bool IsVirtual => RealProperty.IsVirtual;
-        public bool IsNew => !RealProperty.IsVirtual && RealProperty.IsOverride;
         public IMethodSymbolInfo GetMethod { get; }
         public IMethodSymbolInfo SetMethod { get; }
         public string FullName => RealProperty.ToDisplayString();

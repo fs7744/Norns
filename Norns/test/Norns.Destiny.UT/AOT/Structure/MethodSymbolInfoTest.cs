@@ -1,19 +1,24 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.JIT.Structure;
+using Norns.Destiny.AOT.Structure;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Norns.Destiny.UT.JIT.Structure
+namespace Norns.Destiny.UT.AOT.Structure
 {
+    public class MethodSymbolInfoTest
+    {
+        
+
+        [Fact]
+        public void WhenMethods()
+        {
+            var code = @"
     public static class Sta
     {
         public static int A(this int d) => d;
     }
-
-    public class MethodSymbolInfoTest
-    {
-        public abstract class A
+public abstract class A
         {
             private void PrivateM()
             {
@@ -68,16 +73,13 @@ namespace Norns.Destiny.UT.JIT.Structure
             {
                 return default;
             }
-        }
-
-        [Fact]
-        public void WhenMethods()
-        {
-            var ms = new TypeSymbolInfo(typeof(A)).GetMembers()
+        }";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            var ms = types["A"].GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
-            var m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.PrivateM"];
+            var m = ms["Norns.Destiny.UT.AOT.Generated.A.PrivateM()"];
             Assert.Equal(AccessibilityInfo.Private, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -88,9 +90,9 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.False(m.IsVirtual);
-            Assert.Equal("System.Void", m.ReturnType.FullName);
+            Assert.Equal("void", m.ReturnType.FullName);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.InternalM"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.InternalM()"];
             Assert.Equal(AccessibilityInfo.Internal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -101,9 +103,9 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.False(m.IsVirtual);
-            Assert.Equal("System.Int32", m.ReturnType.FullName);
+            Assert.Equal("int", m.ReturnType.FullName);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.ProtectedM"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.ProtectedM()"];
             Assert.Equal(AccessibilityInfo.Protected, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -114,9 +116,9 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.True(m.IsVirtual);
-            Assert.Equal("ValueTuple`2", m.ReturnType.Name);
+            Assert.Equal("ValueTuple", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.PIS"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.PIS()"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -129,7 +131,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.PPS"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.PPS()"];
             Assert.Equal(AccessibilityInfo.ProtectedAndInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -142,7 +144,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.ToString"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.ToString()"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -152,10 +154,10 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsSealed);
             Assert.False(m.IsAbstract);
             Assert.True(m.IsOverride);
-            Assert.True(m.IsVirtual);
+            Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.GetTask"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.GetTask()"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -168,7 +170,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsVirtual);
             Assert.Equal("Task", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.GetT"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.A.GetT<T>()"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.True(m.IsGenericMethod);
@@ -182,11 +184,11 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.Single(m.TypeParameters);
             Assert.True(m.TypeParameters.First().HasReferenceTypeConstraint);
 
-            ms = new TypeSymbolInfo(typeof(B)).GetMembers()
+            ms = types["B"].GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+B.ProtectedM"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.B.ProtectedM()"];
             Assert.Equal(AccessibilityInfo.Protected, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -196,10 +198,10 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.True(m.IsSealed);
             Assert.False(m.IsAbstract);
             Assert.True(m.IsOverride);
-            Assert.True(m.IsVirtual);
-            Assert.Equal("ValueTuple`2", m.ReturnType.Name);
+            Assert.False(m.IsVirtual);
+            Assert.Equal("ValueTuple", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+B.PIS"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.B.PIS()"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -209,10 +211,10 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsSealed);
             Assert.False(m.IsAbstract);
             Assert.True(m.IsOverride);
-            Assert.True(m.IsVirtual);
+            Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+B.GetTask"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.B.GetTask()"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -225,11 +227,11 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsVirtual);
             Assert.Equal("Task", m.ReturnType.Name);
 
-            ms = new TypeSymbolInfo(typeof(Sta)).GetMembers()
+            ms = types["Sta"].GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
-            m = ms["Norns.Destiny.UT.JIT.Structure.Sta.A"];
+            m = ms["Norns.Destiny.UT.AOT.Generated.Sta.A(int)"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.TypeParameters);
             Assert.False(m.IsGenericMethod);

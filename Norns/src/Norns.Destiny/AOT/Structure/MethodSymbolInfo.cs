@@ -27,9 +27,8 @@ namespace Norns.Destiny.AOT.Structure
         public ImmutableArray<IParameterSymbolInfo> Parameters => RealMethod.Parameters.Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
         public bool IsSealed => RealMethod.IsSealed;
         public bool IsAbstract => RealMethod.IsAbstract;
-        public bool IsOverride => RealMethod.IsVirtual && RealMethod.IsOverride;
+        public bool IsOverride => RealMethod.IsOverride;
         public bool IsVirtual => RealMethod.IsVirtual;
-        public bool IsNew => !RealMethod.IsVirtual && RealMethod.IsOverride;
         public string FullName => RealMethod.ToDisplayString();
     }
 }

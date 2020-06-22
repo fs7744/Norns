@@ -32,7 +32,6 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsAbstract => CanRead ? GetMethod.IsAbstract : SetMethod.IsAbstract;
         public bool IsOverride => CanRead ? GetMethod.IsOverride : SetMethod.IsOverride;
         public bool IsVirtual => CanRead ? GetMethod.IsVirtual : SetMethod.IsVirtual;
-        public bool IsNew => CanRead ? GetMethod.IsNew : SetMethod.IsNew;
         public object Origin => RealProperty;
         public string Name => RealProperty.Name;
         public IMethodSymbolInfo GetMethod { get; }

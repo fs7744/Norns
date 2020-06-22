@@ -15,6 +15,5 @@ namespace Norns.Destiny.Abstraction.Structure
         bool IsAbstract { get; }
         bool IsOverride { get; }
         bool IsVirtual { get; }
-        bool IsNew { get; }
     }
 }
