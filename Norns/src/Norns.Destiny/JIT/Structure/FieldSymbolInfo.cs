@@ -9,13 +9,12 @@ namespace Norns.Destiny.JIT.Structure
         public FieldSymbolInfo(FieldInfo f)
         {
             RealField = f;
-            Origin = f;
             FieldType = new TypeSymbolInfo(f.FieldType);
             Accessibility = f.ConvertAccessibilityInfo();
         }
 
         public FieldInfo RealField { get; }
-        public object Origin { get; }
+        public object Origin => RealField;
         public string Name => RealField.Name;
         public ITypeSymbolInfo FieldType { get; }
         public bool IsConst => RealField.IsLiteral;

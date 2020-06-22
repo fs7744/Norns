@@ -8,13 +8,12 @@ namespace Norns.Destiny.AOT.Structure
         public FieldSymbolInfo(IFieldSymbol f)
         {
             RealField = f;
-            Origin = f;
             FieldType = new TypeSymbolInfo(f.Type);
             Accessibility = f.DeclaredAccessibility.ConvertToStructure();
         }
 
         public IFieldSymbol RealField { get; }
-        public object Origin { get; }
+        public object Origin => RealField;
         public string Name => RealField.Name;
         public ITypeSymbolInfo FieldType { get; }
         public bool IsConst => RealField.IsConst;

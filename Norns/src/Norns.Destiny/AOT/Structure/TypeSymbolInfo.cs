@@ -9,7 +9,6 @@ namespace Norns.Destiny.AOT.Structure
     {
         public TypeSymbolInfo(ITypeSymbol type)
         {
-            Origin = type;
             RealType = type;
             Accessibility = type.DeclaredAccessibility.ConvertToStructure();
             Namespace = type.ContainingNamespace?.ToDisplayString();
@@ -39,7 +38,7 @@ namespace Norns.Destiny.AOT.Structure
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsAbstract { get; }
         public bool IsAnonymousType => RealType.IsAnonymousType;
-        public object Origin { get; }
+        public object Origin => RealType;
         public bool IsClass => RealType.TypeKind == TypeKind.Class;
         public bool IsInterface => RealType.TypeKind == TypeKind.Interface;
         public string FullName => RealType.ToDisplayString();

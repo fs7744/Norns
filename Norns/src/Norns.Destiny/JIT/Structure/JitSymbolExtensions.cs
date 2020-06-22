@@ -54,12 +54,34 @@ namespace Norns.Destiny.JIT.Structure
             }
         }
 
+        public static RefKindInfo ConvertToStructure(this ParameterInfo p)
+        {
+            if (p.IsOut)
+            {
+                return RefKindInfo.Out;
+            }
+            else if (p.IsIn)
+            {
+                return RefKindInfo.In;
+            }
+            else if (p.IsRetval)
+            {
+                return RefKindInfo.Ref;
+            }
+            else
+            {
+                return RefKindInfo.None;
+            }
+        }
+
         public static ISymbolInfo ConvertToStructure(this MemberInfo member)
         {
             switch (member)
             {
                 case FieldInfo f:
                     return new FieldSymbolInfo(f);
+                case MethodInfo m:
+                    return new MethodSymbolInfo(m);
                 default:
                     return null;
             }
@@ -88,6 +110,38 @@ namespace Norns.Destiny.JIT.Structure
                 return AccessibilityInfo.ProtectedAndInternal;
             }
             else if (type.IsFamilyOrAssembly)
+            {
+                return AccessibilityInfo.ProtectedOrInternal;
+            }
+            else
+            {
+                return AccessibilityInfo.NotApplicable;
+            }
+        }
+
+        public static AccessibilityInfo ConvertAccessibilityInfo(this MethodBase method)
+        {
+            if (method.IsPublic)
+            {
+                return AccessibilityInfo.Public;
+            }
+            else if (method.IsPrivate)
+            {
+                return AccessibilityInfo.Private;
+            }
+            else if (method.IsAssembly)
+            {
+                return AccessibilityInfo.Internal;
+            }
+            else if (method.IsFamily)
+            {
+                return AccessibilityInfo.Protected;
+            }
+            else if (method.IsFamilyAndAssembly)
+            {
+                return AccessibilityInfo.ProtectedAndInternal;
+            }
+            else if (method.IsFamilyOrAssembly)
             {
                 return AccessibilityInfo.ProtectedOrInternal;
             }

@@ -1,0 +1,29 @@
+﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Immutable;
+using System.Linq;
+
+namespace Norns.Destiny.AOT.Structure
+{
+    public class MethodSymbolInfo : IMethodSymbolInfo
+    {
+        public MethodSymbolInfo(IMethodSymbol m)
+        {
+            RealMethod = m;
+            Origin = m;
+            Accessibility = m.DeclaredAccessibility.ConvertToStructure();
+            ReturnType = new TypeSymbolInfo(m.ReturnType);
+        }
+
+        public IMethodSymbol RealMethod { get; }
+        public object Origin { get; }
+        public string Name => RealMethod.Name;
+        public bool IsStatic => RealMethod.IsStatic;
+        public AccessibilityInfo Accessibility { get; }
+        public ITypeSymbolInfo ReturnType { get; }
+        public bool IsExtensionMethod => RealMethod.IsExtensionMethod;
+        public bool IsGenericMethod => RealMethod.IsGenericMethod;
+        public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters => RealMethod.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
+        public ImmutableArray<IParameterSymbolInfo> Parameters => RealMethod.Parameters.Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
+    }
+}

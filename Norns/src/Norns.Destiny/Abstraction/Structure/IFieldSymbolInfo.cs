@@ -9,5 +9,7 @@
         bool IsFixedSizeBuffer { get; }
         bool HasConstantValue { get; }
         object ConstantValue { get; }
+        bool IsStatic { get; }
+        AccessibilityInfo Accessibility { get; }
     }
 }

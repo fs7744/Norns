@@ -11,7 +11,6 @@ namespace Norns.Destiny.JIT.Structure
     {
         public TypeSymbolInfo(Type type)
         {
-            Origin = type;
             RealType = type;
             Accessibility = type.ConvertAccessibilityInfo();
             IsStatic = type.IsAbstract && type.IsSealed;
@@ -42,7 +41,7 @@ namespace Norns.Destiny.JIT.Structure
             && RealType.Name.Contains("AnonymousType")
             && RealType.Name.StartsWith("<>");
         public ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
-        public object Origin { get; }
+        public object Origin => RealType;
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsClass => RealType.IsClass;
         public bool IsInterface => RealType.IsInterface;

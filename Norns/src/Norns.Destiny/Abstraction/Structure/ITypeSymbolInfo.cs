@@ -16,6 +16,8 @@ namespace Norns.Destiny.Abstraction.Structure
         bool IsInterface { get; }
         string FullName { get; }
         ITypeSymbolInfo BaseType { get; }
+        bool IsStatic { get; }
+        AccessibilityInfo Accessibility { get; }
 
         ImmutableArray<ITypeSymbolInfo> GetInterfaces();
         ImmutableArray<ISymbolInfo> GetMembers();

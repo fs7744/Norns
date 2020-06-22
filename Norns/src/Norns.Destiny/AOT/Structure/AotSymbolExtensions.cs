@@ -53,8 +53,25 @@ namespace Norns.Destiny.AOT.Structure
             {
                 case IFieldSymbol f:
                     return new FieldSymbolInfo(f);
+                case IMethodSymbol m:
+                    return new MethodSymbolInfo(m);
                 default:
                     return null;
+            }
+        }
+
+        public static RefKindInfo ConvertToStructure(this RefKind refKind)
+        {
+            switch (refKind)
+            {
+                case RefKind.Ref:
+                    return RefKindInfo.Ref;
+                case RefKind.In:
+                    return RefKindInfo.In;
+                case RefKind.Out:
+                    return RefKindInfo.Out;
+                default:
+                    return RefKindInfo.None;
             }
         }
     }
