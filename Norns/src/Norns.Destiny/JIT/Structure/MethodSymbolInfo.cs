@@ -7,12 +7,12 @@ namespace Norns.Destiny.JIT.Structure
 {
     public class MethodSymbolInfo : IMethodSymbolInfo
     {
-        public MethodSymbolInfo(MethodInfo m)
+        public MethodSymbolInfo(MethodBase m)
         {
             RealMethod = m;
-            if (IsGenericMethod)
+            if (IsGenericMethod && m is MethodInfo mi)
             {
-                var generic = (RealMethod.IsGenericMethodDefinition ? RealMethod : RealMethod.GetGenericMethodDefinition());
+                var generic = (mi.IsGenericMethodDefinition ? mi : mi.GetGenericMethodDefinition());
                 TypeParameters = generic.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
             }
             else
@@ -20,11 +20,12 @@ namespace Norns.Destiny.JIT.Structure
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
             Parameters = RealMethod.GetParameters().Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
-            ReturnType = new TypeSymbolInfo(RealMethod.ReturnType);
+            ReturnType = m is MethodInfo mei ? new TypeSymbolInfo(mei.ReturnType) : null;
             Accessibility = RealMethod.ConvertAccessibilityInfo();
+            MethodKind = RealMethod.ConvertMethodKindInfo();
         }
 
-        public MethodInfo RealMethod { get; }
+        public MethodBase RealMethod { get; }
         public ITypeSymbolInfo ReturnType { get; }
         public bool IsExtensionMethod => RealMethod.CustomAttributes.Any(i => i.AttributeType == typeof(System.Runtime.CompilerServices.ExtensionAttribute));
         public bool IsGenericMethod => RealMethod.IsGenericMethod;
@@ -39,5 +40,6 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsOverride => RealMethod.IsVirtual && (RealMethod.Attributes & MethodAttributes.NewSlot) != MethodAttributes.NewSlot;
         public bool IsVirtual => RealMethod.IsVirtual && !RealMethod.IsAbstract;
         public string FullName => $"{RealMethod.DeclaringType.FullName}.{RealMethod.Name}";
+        public MethodKindInfo MethodKind { get; }
     }
 }

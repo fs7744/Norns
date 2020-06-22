@@ -82,5 +82,35 @@ namespace Norns.Destiny.AOT.Structure
                     return RefKindInfo.None;
             }
         }
+
+        public static MethodKindInfo ConvertToStructure(this MethodKind methodKind)
+        {
+            switch (methodKind)
+            {
+                case MethodKind.DeclareMethod:
+                    return MethodKindInfo.DeclareMethod;
+
+                case MethodKind.PropertyGet:
+                    return MethodKindInfo.PropertyGet;
+
+                case MethodKind.PropertySet:
+                    return MethodKindInfo.PropertySet;
+
+                case MethodKind.Constructor:
+                    return MethodKindInfo.Constructor;
+
+                case MethodKind.EventAdd:
+                    return MethodKindInfo.EventAdd;
+
+                case MethodKind.EventRemove:
+                    return MethodKindInfo.EventRemove;
+
+                case MethodKind.EventRaise:
+                    return MethodKindInfo.EventRaise;
+
+                default:
+                    return MethodKindInfo.AnonymousFunction;
+            }
+        }
     }
 }

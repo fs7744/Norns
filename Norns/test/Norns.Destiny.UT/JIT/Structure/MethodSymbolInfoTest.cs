@@ -11,12 +11,17 @@ namespace Norns.Destiny.UT.JIT.Structure
         public static int A(this int d) => d;
     }
 
+    public delegate void TestA(int a);
+
     public class MethodSymbolInfoTest
     {
         public abstract class A
         {
+            public event TestA EventTestA;
+
             private void PrivateM()
             {
+                EventTestA(3);
             }
 
             internal int InternalM()
@@ -46,10 +51,7 @@ namespace Norns.Destiny.UT.JIT.Structure
                 return default;
             }
 
-            public override string ToString()
-            {
-                return base.ToString();
-            }
+            public override string ToString() => nameof(A);
         }
 
         public class B : A

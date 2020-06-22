@@ -46,6 +46,7 @@ namespace Norns.UT.DestinyLoom
         {
             protected void AddOne()
             {
+                // Method intentionally left empty.
             }
         }
     }

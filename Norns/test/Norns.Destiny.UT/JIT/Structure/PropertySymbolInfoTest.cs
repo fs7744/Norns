@@ -12,7 +12,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             public object this[int index]
             {
                 private get { return null; }
-                set { }
+                set { value?.ToString(); }
             }
         }
 

@@ -10,10 +10,12 @@ namespace Norns.Destiny.UT.JIT.Structure
     {
         public static void A(params int[] vs)
         {
+            vs.ToString();
         }
 
         public static void B(this int _)
         {
+            _.ToString();
         }
     }
 

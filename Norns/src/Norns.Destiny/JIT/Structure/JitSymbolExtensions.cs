@@ -6,38 +6,6 @@ namespace Norns.Destiny.JIT.Structure
 {
     public static class JitSymbolExtensions
     {
-        public static AccessibilityInfo ConvertAccessibilityInfo(this Type type)
-        {
-            if (type.IsPublic || (type.IsNested && type.IsNestedPublic))
-            {
-                return AccessibilityInfo.Public;
-            }
-            else if (type.IsNotPublic || (type.IsNested && type.IsNestedAssembly))
-            {
-                return AccessibilityInfo.Internal;
-            }
-            else if (type.IsNested && type.IsNestedFamily)
-            {
-                return AccessibilityInfo.Protected;
-            }
-            else if (type.IsNested && type.IsNestedPrivate)
-            {
-                return AccessibilityInfo.Private;
-            }
-            else if (type.IsNested && type.IsNestedFamANDAssem)
-            {
-                return AccessibilityInfo.ProtectedAndInternal;
-            }
-            else if (type.IsNested && type.IsNestedFamORAssem)
-            {
-                return AccessibilityInfo.ProtectedOrInternal;
-            }
-            else
-            {
-                return AccessibilityInfo.NotApplicable;
-            }
-        }
-
         public static VarianceKindInfo ConvertToStructure(this GenericParameterAttributes attributes)
         {
             if ((attributes & GenericParameterAttributes.Covariant) == GenericParameterAttributes.Covariant)
@@ -81,7 +49,7 @@ namespace Norns.Destiny.JIT.Structure
                 case FieldInfo f:
                     return new FieldSymbolInfo(f);
 
-                case MethodInfo m:
+                case MethodBase m:
                     return new MethodSymbolInfo(m);
 
                 case PropertyInfo p:
@@ -89,6 +57,38 @@ namespace Norns.Destiny.JIT.Structure
 
                 default:
                     return null;
+            }
+        }
+
+        public static AccessibilityInfo ConvertAccessibilityInfo(this Type type)
+        {
+            if (type.IsPublic || (type.IsNested && type.IsNestedPublic))
+            {
+                return AccessibilityInfo.Public;
+            }
+            else if (type.IsNotPublic || (type.IsNested && type.IsNestedAssembly))
+            {
+                return AccessibilityInfo.Internal;
+            }
+            else if (type.IsNested && type.IsNestedFamily)
+            {
+                return AccessibilityInfo.Protected;
+            }
+            else if (type.IsNested && type.IsNestedPrivate)
+            {
+                return AccessibilityInfo.Private;
+            }
+            else if (type.IsNested && type.IsNestedFamANDAssem)
+            {
+                return AccessibilityInfo.ProtectedAndInternal;
+            }
+            else if (type.IsNested && type.IsNestedFamORAssem)
+            {
+                return AccessibilityInfo.ProtectedOrInternal;
+            }
+            else
+            {
+                return AccessibilityInfo.NotApplicable;
             }
         }
 
@@ -153,6 +153,45 @@ namespace Norns.Destiny.JIT.Structure
             else
             {
                 return AccessibilityInfo.NotApplicable;
+            }
+        }
+
+        public static MethodKindInfo ConvertMethodKindInfo(this MethodBase method)
+        {
+            if (method.IsConstructor)
+            {
+                return method.IsStatic ? MethodKindInfo.StaticConstructor : MethodKindInfo.Constructor;
+            }
+            else if (method.IsSpecialName)
+            {
+                if (method.Name.StartsWith("get_"))
+                {
+                    return MethodKindInfo.PropertyGet;
+                }
+                else if (method.Name.StartsWith("set_"))
+                {
+                    return MethodKindInfo.PropertySet;
+                }
+                else if (method.Name.StartsWith("add_"))
+                {
+                    return MethodKindInfo.EventAdd;
+                }
+                else if (method.Name.StartsWith("remove_"))
+                {
+                    return MethodKindInfo.EventRemove;
+                }
+                else if (method.Name.StartsWith("raise_"))
+                {
+                    return MethodKindInfo.EventRaise;
+                }
+                else
+                {
+                    return MethodKindInfo.AnonymousFunction;
+                }
+            }
+            else
+            {
+                return MethodKindInfo.DeclareMethod;
             }
         }
     }

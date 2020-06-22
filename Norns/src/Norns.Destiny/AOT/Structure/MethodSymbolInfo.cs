@@ -13,6 +13,7 @@ namespace Norns.Destiny.AOT.Structure
             Origin = m;
             Accessibility = m.DeclaredAccessibility.ConvertToStructure();
             ReturnType = new TypeSymbolInfo(m.ReturnType);
+            MethodKind = m.MethodKind.ConvertToStructure();
         }
 
         public IMethodSymbol RealMethod { get; }
@@ -30,5 +31,6 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsOverride => RealMethod.IsOverride;
         public bool IsVirtual => RealMethod.IsVirtual;
         public string FullName => RealMethod.ToDisplayString();
+        public MethodKindInfo MethodKind { get; }
     }
 }
