@@ -23,7 +23,7 @@ namespace Norns.Destiny.AOT.Structure
             {
                 TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
-            }
+            }          
         }
 
         public ITypeSymbol RealType { get; }
@@ -49,6 +49,11 @@ namespace Norns.Destiny.AOT.Structure
             .ToImmutableArray<ITypeSymbolInfo>();
 
         public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetAttributes()
             .Select(AotSymbolExtensions.ConvertToStructure)
             .Where(i => i != null)
             .ToImmutableArray();

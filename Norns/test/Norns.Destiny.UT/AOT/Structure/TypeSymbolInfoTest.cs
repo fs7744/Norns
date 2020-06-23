@@ -7,6 +7,25 @@ namespace Norns.Destiny.UT.AOT.Structure
 {
     public class TypeSymbolInfoTest
     {
+        [Fact]
+        public void WhenAttribute()
+        {
+            var code = @"
+using Xunit;
+[Collection(""a"")]
+        public class PublicClass
+        { }
+    }";
+            var attrs = AotTest.SimpleGenerateTypeSymbolInfos(code).First().Value.GetAttributes();
+            Assert.Single(attrs);
+            var a = attrs.First();
+            Assert.Equal(@"Xunit.CollectionAttribute(""a"")", a.FullName);
+            Assert.Equal(@"Xunit.CollectionAttribute", a.AttributeType.FullName);
+            Assert.Single(a.ConstructorArguments);
+            var ca = a.ConstructorArguments.First();
+            Assert.Equal("a", ca.Value);
+        }
+
         #region Accessibility
 
         [Fact]

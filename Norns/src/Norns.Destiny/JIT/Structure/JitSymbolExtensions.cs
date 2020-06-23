@@ -60,6 +60,25 @@ namespace Norns.Destiny.JIT.Structure
             }
         }
 
+        public static ITypedConstantInfo ConvertToStructure(this CustomAttributeTypedArgument arg)
+        {
+            return new TypedConstantInfo()
+            {
+                Type = new TypeSymbolInfo(arg.ArgumentType),
+                Value = arg.Value
+            };
+        }
+
+        public static INamedConstantInfo ConvertToStructure(this CustomAttributeNamedArgument arg)
+        {
+            return new TypedConstantInfo()
+            {
+                Type = new TypeSymbolInfo(arg.TypedValue.ArgumentType),
+                Value = arg.TypedValue.Value,
+                Name = arg.MemberName
+            };
+        }
+
         public static AccessibilityInfo ConvertAccessibilityInfo(this Type type)
         {
             if (type.IsPublic || (type.IsNested && type.IsNestedPublic))

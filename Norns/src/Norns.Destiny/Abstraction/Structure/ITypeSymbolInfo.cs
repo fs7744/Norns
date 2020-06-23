@@ -21,5 +21,7 @@ namespace Norns.Destiny.Abstraction.Structure
         ImmutableArray<ITypeSymbolInfo> GetInterfaces();
 
         ImmutableArray<ISymbolInfo> GetMembers();
+
+        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
     }
 }

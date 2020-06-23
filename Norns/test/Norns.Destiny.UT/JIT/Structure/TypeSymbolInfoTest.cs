@@ -54,6 +54,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         protected internal class ProtectedInternalClass
         { }
 
+        [Collection("a")]
         public class PublicClass
         { }
     }
@@ -390,6 +391,19 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.True(f.IsFixedSizeBuffer);
             Assert.False(f.IsStatic);
             Assert.Equal(AccessibilityInfo.Internal, f.Accessibility);
+        }
+
+        [Fact]
+        public void WhenAttribute()
+        {
+            var attrs = new TypeSymbolInfo(typeof(AbstractPublicClass.PublicClass)).GetAttributes();
+            Assert.Single(attrs);
+            var a = attrs.First();
+            Assert.Equal(@"[Xunit.CollectionAttribute(""a"")]", a.FullName);
+            Assert.Equal(@"Xunit.CollectionAttribute", a.AttributeType.FullName);
+            Assert.Single(a.ConstructorArguments);
+            var ca = a.ConstructorArguments.First();
+            Assert.Equal("a", ca.Value);
         }
     }
 }

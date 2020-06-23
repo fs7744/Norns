@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Generic;
 
 namespace Norns.Destiny.AOT.Structure
 {
@@ -111,6 +112,30 @@ namespace Norns.Destiny.AOT.Structure
                 default:
                     return MethodKindInfo.AnonymousFunction;
             }
+        }
+
+        public static ITypedConstantInfo ConvertToStructure(this TypedConstant constant)
+        {
+            return new TypedConstantInfo()
+            { 
+                Type = new TypeSymbolInfo(constant.Type),
+                Value = constant.Value
+            };
+        }
+
+        public static INamedConstantInfo ConvertToStructure(this KeyValuePair<string, TypedConstant> constant)
+        {
+            return new TypedConstantInfo()
+            {
+                Type = new TypeSymbolInfo(constant.Value.Type),
+                Value = constant.Value.Value,
+                Name = constant.Key
+            };
+        }
+
+        public static IAttributeSymbolInfo ConvertToStructure(this AttributeData attributeData)
+        {
+            return new AttributeSymbolInfo(attributeData);
         }
     }
 }
