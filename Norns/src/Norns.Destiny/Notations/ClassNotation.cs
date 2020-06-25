@@ -14,7 +14,7 @@ namespace Norns.Destiny.Notations
 
         public override IEnumerable<INotation> GetMembers()
         {
-            yield return CustomAttributes.Combine();
+            yield return CustomAttributes.InsertBlank().Combine();
             yield return Accessibility.ToDisplayString().ToNotation();
             yield return ConstNotations.Blank;
             yield return "class".ToNotation();
