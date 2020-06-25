@@ -1,4 +1,5 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -26,5 +27,9 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
         public string FullName => $"{RealField.DeclaringType.FullName}.{RealField.Name}";
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealField.GetCustomAttributesData()
+            .Select(i => new AttributeSymbolInfo(i))
+            .ToImmutableArray<IAttributeSymbolInfo>();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Norns.Destiny.Abstraction.Structure
+﻿using System.Collections.Immutable;
+
+namespace Norns.Destiny.Abstraction.Structure
 {
     public interface IParameterSymbolInfo : ISymbolInfo
     {
@@ -9,5 +11,7 @@
         bool HasExplicitDefaultValue { get; }
         object ExplicitDefaultValue { get; }
         ITypeSymbolInfo Type { get; }
+
+        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
     }
 }

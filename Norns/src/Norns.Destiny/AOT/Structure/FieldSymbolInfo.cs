@@ -1,5 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Norns.Destiny.AOT.Structure
 {
@@ -25,5 +27,10 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
         public string FullName => RealField.ToDisplayString();
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealField.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

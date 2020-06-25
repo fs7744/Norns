@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -25,5 +26,10 @@ namespace Norns.Destiny.JIT.Structure
         public RefKindInfo RefKind { get; }
         public ITypeSymbolInfo Type { get; }
         public string FullName => RealParameter.Name;
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealParameter
+            .GetCustomAttributesData()
+            .Select(i => new AttributeSymbolInfo(i))
+            .ToImmutableArray<IAttributeSymbolInfo>();
     }
 }

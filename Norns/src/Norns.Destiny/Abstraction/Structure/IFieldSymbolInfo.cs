@@ -1,4 +1,6 @@
-﻿namespace Norns.Destiny.Abstraction.Structure
+﻿using System.Collections.Immutable;
+
+namespace Norns.Destiny.Abstraction.Structure
 {
     public interface IFieldSymbolInfo : ISymbolInfo
     {
@@ -11,5 +13,7 @@
         object ConstantValue { get; }
         bool IsStatic { get; }
         AccessibilityInfo Accessibility { get; }
+
+        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
     }
 }

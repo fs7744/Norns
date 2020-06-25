@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace Norns.Destiny.AOT.Structure
 {
@@ -33,5 +34,10 @@ namespace Norns.Destiny.AOT.Structure
         public IMethodSymbolInfo GetMethod { get; }
         public IMethodSymbolInfo SetMethod { get; }
         public string FullName => RealProperty.ToDisplayString();
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealProperty.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

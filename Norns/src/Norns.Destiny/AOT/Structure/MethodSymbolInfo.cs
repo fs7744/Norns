@@ -32,5 +32,10 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsVirtual => RealMethod.IsVirtual;
         public string FullName => RealMethod.ToDisplayString();
         public MethodKindInfo MethodKind { get; }
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealMethod.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

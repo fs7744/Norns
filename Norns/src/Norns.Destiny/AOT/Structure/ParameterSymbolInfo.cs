@@ -1,5 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace Norns.Destiny.AOT.Structure
 {
@@ -23,5 +25,10 @@ namespace Norns.Destiny.AOT.Structure
         public ITypeSymbolInfo Type { get; }
         public RefKindInfo RefKind { get; }
         public string FullName => RealParameter.ToDisplayString();
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealParameter.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null)
+            .ToImmutableArray();
     }
 }

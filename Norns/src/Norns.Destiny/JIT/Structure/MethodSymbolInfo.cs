@@ -41,5 +41,10 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsVirtual => RealMethod.IsVirtual && !RealMethod.IsAbstract;
         public string FullName => $"{RealMethod.DeclaringType.FullName}.{RealMethod.Name}";
         public MethodKindInfo MethodKind { get; }
+
+        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealMethod
+            .GetCustomAttributesData()
+            .Select(i => new AttributeSymbolInfo(i))
+            .ToImmutableArray<IAttributeSymbolInfo>();
     }
 }
