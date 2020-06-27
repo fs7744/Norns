@@ -1,26 +1,22 @@
 ﻿using Microsoft.CodeAnalysis;
-using Norns.DestinyLoom.Samples;
+using Norns.Destiny.Abstraction.Structure;
+using Norns.Destiny.AOP;
 using System.Collections.Generic;
 
 namespace Norns.DestinyLoom.Test
 {
     [Generator]
-    public class ProxyGenerator : AbstractProxyGenerator
+    public class ProxyGenerator : AotAopSourceGenerator
     {
-        public override IEnumerable<IInterceptorGenerator> FindInterceptorGenerators()
+        protected override bool Filter(ITypeSymbolInfo type)
+        {
+            return false;
+            return base.Filter(type) && type.FullName.StartsWith("Norns");
+        }
+
+        protected override IEnumerable<IInterceptorGenerator> GetInterceptorGenerators()
         {
             yield return new ConsoleCallMethodGenerator();
-        }
-
-        public override bool CanProxy(INamedTypeSymbol @type)
-        {
-            return @type.ToDisplayString().StartsWith("Norns");
-        }
-
-        public override IEnumerable<AbstractProxyClassGenerator> FindProxyClassGenerators(IInterceptorGenerator[] interceptors)
-        {
-            yield return new DefaultInterfaceImplementClassGenerator(interceptors);
-            yield return new InterfaceProxyClassGenerator(interceptors);
         }
     }
 }

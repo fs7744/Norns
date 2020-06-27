@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Norns.Fate.Abstraction
+namespace Norns.Destiny.AOP
 {
     public interface IInterceptProxy
     {

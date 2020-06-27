@@ -6,9 +6,9 @@ namespace Norns.Destiny.AOP
     {
         public static bool CanAopType(this ITypeSymbolInfo type)
         {
-            return !type.IsSealed
+            return type.IsInterface || (!type.IsSealed
                 && !type.IsValueType
-                && !type.IsStatic;
+                && !type.IsStatic);
         }
     }
 }

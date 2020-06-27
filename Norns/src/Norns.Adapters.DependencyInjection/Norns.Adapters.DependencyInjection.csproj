@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Norns.Destiny\Norns.Destiny.csproj" />
-    <ProjectReference Include="..\Norns.Fate\Norns.Fate.csproj" />
   </ItemGroup>
 
 </Project>

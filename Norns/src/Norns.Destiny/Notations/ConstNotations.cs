@@ -1,4 +1,6 @@
-﻿namespace Norns.Destiny.Notations
+﻿using System.Collections.Generic;
+
+namespace Norns.Destiny.Notations
 {
     public static class ConstNotations
     {
@@ -83,5 +85,7 @@
         public static readonly INotation Using = "using".ToNotation();
 
         public static readonly INotation Nothing = string.Empty.ToNotation();
+
+        public static readonly IEnumerable<INotation> Nothings = new INotation[] { Nothing };
     }
 }

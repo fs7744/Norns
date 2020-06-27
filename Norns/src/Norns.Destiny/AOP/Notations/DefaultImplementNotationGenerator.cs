@@ -10,7 +10,7 @@ namespace Norns.Destiny.AOP.Notations
     {
         public INotation GenerateNotations(ISymbolSource source)
         {
-            return source.GetTypes().Select(CreateImplement).Combine();
+            return source.GetTypes().Where(i => i.IsInterface).Select(CreateImplement).Combine();
         }
 
         private INotation CreateImplement(ITypeSymbolInfo type)

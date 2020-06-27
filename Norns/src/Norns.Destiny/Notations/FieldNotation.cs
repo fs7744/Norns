@@ -5,6 +5,7 @@ namespace Norns.Destiny.Notations
 {
     public class FieldNotation : MembersNotation
     {
+        public bool IsFromDI { get; set; }
         public AccessibilityInfo Accessibility { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }

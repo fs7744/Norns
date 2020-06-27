@@ -1,5 +1,6 @@
-﻿using Norns.Fate;
-using Norns.Fate.Abstraction;
+﻿using Norns.Destiny.AOP;
+using Norns.Destiny.Attributes;
+using Norns.Destiny.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static bool TryCreateProxyDescriptor(Dictionary<Type, Type> defaultInterfaceImplementDict, Dictionary<Type, Type> proxyDict, ServiceDescriptor origin, out ServiceDescriptor proxy)
         {
             proxy = origin;
-            if (proxy.ImplementationType == typeof(DefaultInterfaceImplementAttribute)
+            if (proxy.ImplementationType == typeof(DefaultImplementAttribute)
                 && defaultInterfaceImplementDict.TryGetValue(proxy.ServiceType, out var implementType))
             {
                 proxy = ServiceDescriptor.Describe(proxy.ServiceType, implementType, proxy.Lifetime);
@@ -27,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceProvider BuildAopServiceProvider(this IServiceCollection sc, params Assembly[] assemblies)
         {
-            var (defaultInterfaceImplementDict, proxyDict) = FateExtensions.FindProxyTypes(assemblies);
+            var (defaultInterfaceImplementDict, proxyDict) = DestinyExtensions.FindProxyTypes(AppDomain.CurrentDomain.GetAssemblies().Union(assemblies).Distinct().ToArray());
 
             foreach (var c in sc.ToArray())
             {
@@ -40,9 +41,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildServiceProvider();
         }
 
-        public static IServiceCollection AddFateInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        public static IServiceCollection AddDestinyInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
-            sc.Add(ServiceDescriptor.Describe(typeof(T), typeof(DefaultInterfaceImplementAttribute), lifetime));
+            sc.Add(ServiceDescriptor.Describe(typeof(T), typeof(DefaultImplementAttribute), lifetime));
             return sc;
         }
 

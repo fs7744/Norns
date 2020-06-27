@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Norns.Fate\Norns.Fate.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Destiny\Norns.Destiny.csproj" />
     <ProjectReference Include="..\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test\Norns.DestinyLoom.Test.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
