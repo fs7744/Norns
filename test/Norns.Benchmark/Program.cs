@@ -17,7 +17,7 @@ namespace Norns.Benchmark
         private static void Main(string[] args)
         {
             var p = new ServiceCollection()
-                //.AddSingleton<IC, DsProxy>()
+                //.AddSingleton<IC, DsProxy>() sd
                 .AddDestinyInterface<IC>(ServiceLifetime.Scoped)
                 .BuildAopServiceProvider()
                 .GetRequiredService<IC>();

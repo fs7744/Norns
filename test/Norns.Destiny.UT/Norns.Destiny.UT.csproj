@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Norns.Destiny\Norns.Destiny.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Destiny.AOT\Norns.Destiny.AOT.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Destiny.JIT\Norns.Destiny.JIT.csproj" />
   </ItemGroup>
 
 </Project>

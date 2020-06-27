@@ -1,6 +1,6 @@
 ﻿namespace Norns.Destiny.Abstraction.Structure
 {
-    internal class TypedConstantInfo : INamedConstantInfo
+    public class TypedConstantInfo : INamedConstantInfo
     {
         public ITypeSymbolInfo Type { get; set; }
 

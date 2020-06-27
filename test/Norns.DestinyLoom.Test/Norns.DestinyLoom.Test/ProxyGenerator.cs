@@ -10,8 +10,8 @@ namespace Norns.DestinyLoom.Test
     {
         protected override bool Filter(ITypeSymbolInfo type)
         {
-            return false;
-            return base.Filter(type) && type.FullName.StartsWith("Norns");
+            return true;
+            return type.FullName.StartsWith("Norns");
         }
 
         protected override IEnumerable<IInterceptorGenerator> GetInterceptorGenerators()
