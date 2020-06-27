@@ -47,6 +47,11 @@ namespace Norns.Destiny.Notations
             return new StringNotation(value);
         }
 
+        public static INotation ToCallParameters(this IEnumerable<ParameterNotation> values)
+        {
+            return values.Select(i => i.ToCallParameter()).InsertComma().Combine();
+        }
+
         public static IEnumerable<INotation> ToNotations(this IEnumerable<string> values)
         {
             return values.Select(i => i.ToNotation());

@@ -13,5 +13,23 @@ namespace Norns.Destiny.Notations
             yield return ConstNotations.Blank;
             yield return Name.ToNotation();
         }
+
+        public CallParameterNotation ToCallParameter()
+        {
+            return new CallParameterNotation()
+            {
+                   Name = Name
+            };
+        }
+    }
+
+    public class CallParameterNotation : MembersNotation
+    {
+        public string Name { get; set; }
+
+        public override IEnumerable<INotation> GetMembers()
+        {
+            yield return Name.ToNotation();
+        }
     }
 }

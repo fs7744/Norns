@@ -10,16 +10,16 @@ namespace Norns.Destiny.AOP.Notations
     {
         public INotation GenerateNotations(ISymbolSource source)
         {
-            return source.GetTypes().Select(CreateProxyImplement).Combine();
+            return source.GetTypes().Select(CreateImplement).Combine();
         }
 
-        private INotation CreateProxyImplement(ITypeSymbolInfo type)
+        private INotation CreateImplement(ITypeSymbolInfo type)
         {
             var @namespace = new NamespaceNotation() { Name = type.Namespace };
             var @class = new ClassNotation()
             {
                 Accessibility = type.Accessibility,
-                Name = $"Proxy{type.Name}{RandomUtils.NewName()}"
+                Name = $"DefaultImplement{type.Name}{RandomUtils.NewName()}"
             };
             @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.DefaultImplement(typeof({type.FullName}))]".ToNotation());
             @namespace.Members.Add(@class);

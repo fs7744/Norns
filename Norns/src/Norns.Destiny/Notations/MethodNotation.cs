@@ -7,17 +7,29 @@ namespace Norns.Destiny.Notations
     {
         public List<INotation> CustomAttributes { get; } = new List<INotation>();
         public AccessibilityInfo Accessibility { get; set; }
+        public bool IsAsync { get; set; }
+        public bool IsOverride { get; set; }
         public string ReturnType { get; set; }
         public string Name { get; set; }
         public List<INotation> TypeParameters { get; } = new List<INotation>();
         public List<INotation> Constraints { get; } = new List<INotation>();
-        public List<INotation> Parameters { get; } = new List<INotation>();
+        public List<ParameterNotation> Parameters { get; } = new List<ParameterNotation>();
         public List<INotation> Body { get; } = new List<INotation>();
 
         public override IEnumerable<INotation> GetMembers()
         {
             yield return CustomAttributes.InsertBlank().Combine();
             yield return Accessibility.ToDisplayString().ToNotation();
+            if (IsAsync)
+            {
+                yield return ConstNotations.Blank;
+                yield return ConstNotations.Async;
+            }
+            if (IsOverride)
+            {
+                yield return ConstNotations.Blank;
+                yield return ConstNotations.Override;
+            }
             yield return ConstNotations.Blank;
             yield return ReturnType.ToNotation();
             yield return ConstNotations.Blank;
