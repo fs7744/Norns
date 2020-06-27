@@ -14,6 +14,9 @@ namespace Norns.Destiny.AOT.Structure
             Accessibility = m.DeclaredAccessibility.ConvertToStructure();
             ReturnType = new TypeSymbolInfo(m.ReturnType);
             MethodKind = m.MethodKind.ConvertToStructure();
+            var (isAsync, hasReturnValue) = this.GetMethodExtensionInfo();
+            IsAsync = isAsync;
+            HasReturnValue = hasReturnValue;
         }
 
         public IMethodSymbol RealMethod { get; }
@@ -32,6 +35,8 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsVirtual => RealMethod.IsVirtual;
         public string FullName => RealMethod.ToDisplayString();
         public MethodKindInfo MethodKind { get; }
+        public bool IsAsync { get; }
+        public bool HasReturnValue { get; }
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealMethod.GetAttributes()
             .Select(AotSymbolExtensions.ConvertToStructure)

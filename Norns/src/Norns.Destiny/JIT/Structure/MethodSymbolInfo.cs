@@ -23,6 +23,9 @@ namespace Norns.Destiny.JIT.Structure
             ReturnType = m is MethodInfo mei ? new TypeSymbolInfo(mei.ReturnType) : null;
             Accessibility = RealMethod.ConvertAccessibilityInfo();
             MethodKind = RealMethod.ConvertMethodKindInfo();
+            var (isAsync, hasReturnValue) = this.GetMethodExtensionInfo();
+            IsAsync = isAsync;
+            HasReturnValue = hasReturnValue;
         }
 
         public MethodBase RealMethod { get; }
@@ -41,6 +44,8 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsVirtual => RealMethod.IsVirtual && !RealMethod.IsAbstract;
         public string FullName => $"{RealMethod.DeclaringType.FullName}.{RealMethod.Name}";
         public MethodKindInfo MethodKind { get; }
+        public bool IsAsync { get; }
+        public bool HasReturnValue { get; }
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealMethod
             .GetCustomAttributesData()

@@ -16,6 +16,8 @@ namespace Norns.Destiny.Abstraction.Structure
         bool IsOverride { get; }
         bool IsVirtual { get; }
         MethodKindInfo MethodKind { get; }
+        bool IsAsync { get; }
+        bool HasReturnValue { get; }
 
         ImmutableArray<IAttributeSymbolInfo> GetAttributes();
     }

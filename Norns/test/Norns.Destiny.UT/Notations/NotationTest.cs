@@ -10,7 +10,7 @@ namespace Norns.Destiny.UT.Notations
         public void CombineWhenListEmpty()
         {
             var result = new INotation[0].Combine();
-            Assert.Same(ConstNotations.Nothing, result);
+            Assert.IsType<ActionNotation>(result);
             var sb = new StringBuilder();
             result.Record(sb);
             Assert.Empty(sb.ToString());

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.Notations
 {
@@ -44,6 +45,16 @@ namespace Norns.Destiny.Notations
         public static INotation ToNotation(this string value)
         {
             return new StringNotation(value);
+        }
+
+        public static IEnumerable<INotation> ToNotations(this IEnumerable<string> values)
+        {
+            return values.Select(i => i.ToNotation());
+        }
+
+        public static IEnumerable<INotation> Create(params string[] values)
+        {
+            return ToNotations(values);
         }
 
         #endregion ToNotation
