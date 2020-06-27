@@ -1,9 +1,10 @@
 ﻿using Norns.Destiny.Abstraction.Coder;
+using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.JIT.Coder;
 using System.Collections.Generic;
 
-namespace Norns.Destiny.AOP.JIT
+namespace Norns.Destiny.JIT.AOP
 {
     public class JitAopSourceGenerator : JitAssemblyGenerator
     {

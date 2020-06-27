@@ -1,5 +1,4 @@
-﻿using Norns.Destiny.Abstraction.Coder;
-using Norns.Destiny.Abstraction.Structure;
+﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
 {
-    public class ProxyNotationGenerator : INotationGenerator
+    public class ProxyNotationGenerator : AbstractNotationGenerator
     {
         private readonly IEnumerable<IInterceptorGenerator> interceptors;
 
@@ -16,14 +15,12 @@ namespace Norns.Destiny.AOP.Notations
             this.interceptors = interceptors;
         }
 
-        public INotation GenerateNotations(ISymbolSource source)
+        public override bool Filter(ITypeSymbolInfo type)
         {
-            return source.GetTypes()
-                .Select(CreateProxy)
-                .Combine();
+            return true;
         }
 
-        private INotation CreateProxy(ITypeSymbolInfo type)
+        public override INotation CreateImplement(ITypeSymbolInfo type)
         {
             var @namespace = new NamespaceNotation() { Name = type.Namespace };
             var @class = new ClassNotation()
@@ -137,20 +134,10 @@ namespace Norns.Destiny.AOP.Notations
             {
                 Parent = typeContext
             };
-            var notation = new MethodNotation()
-            {
-                Accessibility = method.Accessibility,
-                ReturnType = method.ReturnType.FullName,
-                Name = method.Name
-            };
+
+            var notation = method.ToNotationDefinition();
             context.SetCurrentMethodNotation(notation);
             notation.IsOverride = true;
-            notation.IsAsync = method.IsAsync;
-            notation.Parameters.AddRange(method.Parameters.Select(i => new ParameterNotation()
-            {
-                Type = i.Type.FullName,
-                Name = i.Name
-            }));
             var returnValueParameterName = context.GetReturnValueParameterName();
             if (method.HasReturnValue)
             {

@@ -1,19 +1,18 @@
-﻿using Norns.Destiny.Abstraction.Coder;
-using Norns.Destiny.Abstraction.Structure;
+﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
 {
-    public class DefaultImplementNotationGenerator : INotationGenerator
+    public class DefaultImplementNotationGenerator : AbstractNotationGenerator
     {
-        public INotation GenerateNotations(ISymbolSource source)
+        public override bool Filter(ITypeSymbolInfo type)
         {
-            return source.GetTypes().Where(i => i.IsInterface).Select(CreateImplement).Combine();
+            return type.IsInterface;
         }
 
-        private INotation CreateImplement(ITypeSymbolInfo type)
+        public override INotation CreateImplement(ITypeSymbolInfo type)
         {
             var @namespace = new NamespaceNotation() { Name = type.Namespace };
             var @class = new ClassNotation()
@@ -28,7 +27,7 @@ namespace Norns.Destiny.AOP.Notations
             {
                 switch (member)
                 {
-                    case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet && method.MethodKind != MethodKindInfo.PropertySet && !method.IsAbstract:
+                    case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet && method.MethodKind != MethodKindInfo.PropertySet:
                         @class.Members.Add(GenerateImplementMethod(method));
                         break;
 
@@ -45,32 +44,10 @@ namespace Norns.Destiny.AOP.Notations
 
         private INotation GenerateImplementMethod(IMethodSymbolInfo method)
         {
-            var notation = new MethodNotation()
-            {
-                Accessibility = method.Accessibility,
-                ReturnType = method.FullName,
-                Name = method.Name
-            };
-            notation.Parameters.AddRange(method.Parameters.Select(i => new ParameterNotation()
-            {
-                Type = i.Type.FullName,
-                Name = i.Name
-            }));
-
+            var notation = method.ToNotationDefinition();
             if (method.HasReturnValue)
             {
-                if (method.IsAsync)
-                {
-                    notation.Body.AddRange(Notation.Create("return ", notation.ReturnType.Replace("System.Threading.Tasks.Task", "System.Threading.Tasks.Task.FromResult"), "(default);"));
-                }
-                else
-                {
-                    notation.Body.Add("return default;".ToNotation());
-                }
-            }
-            else if (method.IsAsync)
-            {
-                notation.Body.Add("return System.Threading.Tasks.Task.CompletedTask;".ToNotation());
+                notation.Body.Add("return default;".ToNotation());
             }
             return notation;
         }

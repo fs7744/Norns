@@ -241,5 +241,44 @@ public abstract class A
             Assert.Single(m.Parameters);
             Assert.Equal("d", m.Parameters.First().Name);
         }
+
+        [Fact]
+        public void MethodWhenHasReturnValue()
+        {
+            var code = @"
+using System.Threading.Tasks;
+    public interface IC
+    {
+        int AddOne(int v);
+        void AddVoid(int v);
+        Task AddTask(int v);
+Task<int> AddVTask(int v);
+ValueTask<int> AddValueTask(int v);
+    }";
+            var types = AotTest.SimpleGenerateTypeSymbolInfos(code);
+            var ms = types["IC"].GetMembers()
+                 .Select(i => i as IMethodSymbolInfo)
+                 .Where(i => i != null)
+                 .ToDictionary(i => i.FullName, i => i);
+            var m = ms["Norns.Destiny.UT.AOT.Generated.IC.AddOne(int)"];
+            Assert.True(m.HasReturnValue);
+            Assert.False(m.IsAsync);
+
+            m = ms["Norns.Destiny.UT.AOT.Generated.IC.AddVoid(int)"];
+            Assert.False(m.HasReturnValue);
+            Assert.False(m.IsAsync);
+
+            m = ms["Norns.Destiny.UT.AOT.Generated.IC.AddTask(int)"];
+            Assert.False(m.HasReturnValue);
+            Assert.True(m.IsAsync);
+
+            m = ms["Norns.Destiny.UT.AOT.Generated.IC.AddVTask(int)"];
+            Assert.True(m.HasReturnValue);
+            Assert.True(m.IsAsync);
+
+            m = ms["Norns.Destiny.UT.AOT.Generated.IC.AddValueTask(int)"];
+            Assert.True(m.HasReturnValue);
+            Assert.True(m.IsAsync);
+        }
     }
 }
