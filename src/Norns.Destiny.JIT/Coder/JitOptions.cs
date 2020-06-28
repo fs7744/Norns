@@ -1,11 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Norns.Destiny.Abstraction.Structure;
+using System;
 using System.Collections.Generic;
 
 namespace Norns.Destiny.JIT.Coder
 {
     public class JitOptions
     {
+        public Func<ITypeSymbolInfo, bool> FilterForDefaultImplement { get; set; }
+
         public CSharpCompilationOptions CompilationOptions { get; set; }
 
         public CSharpParseOptions ParseOptions { get; set; }

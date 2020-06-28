@@ -1,15 +1,23 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
+using System;
 using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
 {
     public class DefaultImplementNotationGenerator : AbstractNotationGenerator
     {
+        private readonly Func<ITypeSymbolInfo, bool> filter;
+
+        public DefaultImplementNotationGenerator(Func<ITypeSymbolInfo, bool> filter)
+        {
+            this.filter = filter;
+        }
+
         public override bool Filter(ITypeSymbolInfo type)
         {
-            return type.IsInterface;
+            return filter(type);
         }
 
         public override INotation CreateImplement(ITypeSymbolInfo type)
@@ -31,7 +39,7 @@ namespace Norns.Destiny.AOP.Notations
             {
                 switch (member)
                 {
-                    case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet && method.MethodKind != MethodKindInfo.PropertySet:
+                    case IMethodSymbolInfo method when method.IsAbstract && method.MethodKind != MethodKindInfo.PropertyGet && method.MethodKind != MethodKindInfo.PropertySet:
                         @class.Members.Add(GenerateImplementMethod(method));
                         break;
 

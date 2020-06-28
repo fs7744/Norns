@@ -23,7 +23,7 @@ namespace Norns.Destiny.AOT.Structure
             {
                 TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
-            }          
+            }
         }
 
         public ITypeSymbol RealType { get; }

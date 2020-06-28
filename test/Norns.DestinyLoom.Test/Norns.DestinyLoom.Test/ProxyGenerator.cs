@@ -15,6 +15,11 @@ namespace Norns.DestinyLoom.Test
             return type.FullName.StartsWith("Norns");
         }
 
+        protected override bool FilterForDefaultImplement(ITypeSymbolInfo type)
+        {
+            return type.IsInterface;
+        }
+
         protected override IEnumerable<IInterceptorGenerator> GetInterceptorGenerators()
         {
             yield return new ConsoleCallMethodGenerator();

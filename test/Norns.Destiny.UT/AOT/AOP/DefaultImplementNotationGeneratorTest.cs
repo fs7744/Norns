@@ -19,7 +19,7 @@ namespace Norns.Destiny.UT.AOT.AOP
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
-            yield return new DefaultImplementNotationGenerator();
+            yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement);
         }
     }
 
@@ -35,6 +35,8 @@ namespace Norns.Destiny.UT.AOT.AOP
         public void WhenSimpleInterfaceSyncMethodAndHasReturnValue()
         {
             var code = @"
+using Norns.Destiny.Attributes;
+    [Charon]
     public interface IC
     {
         int AddOne(int v);
@@ -51,6 +53,8 @@ namespace Norns.Destiny.UT.AOT.AOP
         public void WhenSimpleInterfaceSyncMethodAndVoid()
         {
             var code = @"
+using Norns.Destiny.Attributes;
+    [Charon]
     public interface IC
     {
         void AddVoid();
@@ -68,6 +72,8 @@ namespace Norns.Destiny.UT.AOT.AOP
         {
             var code = @"
 using System.Threading.Tasks;
+using Norns.Destiny.Attributes;
+    [Charon]
     public interface IC
     {
         Task AddTask(int v);
@@ -85,7 +91,9 @@ using System.Threading.Tasks;
         {
             var code = @"
 using System.Threading.Tasks;
-    public interface IC
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC
     {
         Task<int> AddVTask(int v);
     }";
@@ -102,7 +110,9 @@ using System.Threading.Tasks;
         {
             var code = @"
 using System.Threading.Tasks;
-    public interface IC
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC
     {
         ValueTask<int> AddValueTask(int v);
     }";
@@ -119,7 +129,9 @@ using System.Threading.Tasks;
         {
             var code = @"
 using System.Threading.Tasks;
-    public interface IC
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC
     {
         ValueTask<T> AddValueTask<T>(T v);
     }";
@@ -136,7 +148,9 @@ using System.Threading.Tasks;
         {
             var code = @"
 using System.Threading.Tasks;
-    public interface IC
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC
     {
         ValueTask<Task<T>> AddValueTask<T,V>(T v,V v1) where T : struct where V : class, IC;
     }";
@@ -154,7 +168,9 @@ using System.Threading.Tasks;
         {
             var code = @"
 using System.Threading.Tasks;
-    public interface IC
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC
     {
         ValueTask<Task<T>> AddValueTask<T,V>(T v,ref V v1);
 ValueTask<Task<T>> AddValueTask2<T,V>(T v,in V v1);
@@ -175,7 +191,9 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
         public void WhenGenericInterfaceSyncMethod()
         {
             var code = @"
-    public interface IC<T> where T : class
+    
+using Norns.Destiny.Attributes;
+    [Charon]public interface IC<T> where T : class
     {
         T A();
     }";
@@ -185,6 +203,67 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
             Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
             Assert.Contains("public T A()", output);
             Assert.Contains("return default;", output);
+        }
+
+        [Fact]
+        public void WhenOutGenericInterfaceSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+    [Charon]
+    public interface IC<out T> where T : class
+    {
+        T A();
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+            Assert.Contains("public T A()", output);
+            Assert.Contains("return default;", output);
+        }
+
+        [Fact]
+        public void WhenInterfaceHasDefaultSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+    [Charon]
+    public interface IC
+    {
+        public int A() => 3;
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
+            Assert.DoesNotContain("public int A()", output);
+            Assert.DoesNotContain("return default;", output);
+        }
+
+        [Fact]
+        public void WhenInterfaceHasInhertSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+
+public interface ID
+{
+    void B();
+}
+
+    [Charon]
+    public interface IC : ID
+    {
+        public int A() => 3;
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
+            Assert.DoesNotContain("public int A()", output);
+            Assert.Contains("public void B()", output);
+            Assert.DoesNotContain("return default;", output);
         }
     }
 }
