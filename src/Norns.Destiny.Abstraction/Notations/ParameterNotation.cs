@@ -1,6 +1,5 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Norns.Destiny.Notations
 {

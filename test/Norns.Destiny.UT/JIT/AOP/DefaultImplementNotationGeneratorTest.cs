@@ -51,9 +51,9 @@ namespace Norns.Destiny.UT.JIT.AOP
 
         Task<int> AddVTask(int v); 
         
-        //ValueTask<int> AddValueTask(int v);
+        ValueTask<int> AddValueTask(int v);
 
-        //ValueTask<T> AddValueTask<T>(T v);
+        ValueTask<T> AddValueTask<T>(T v);
     }
 
     public class DefaultImplementNotationGeneratorTest
@@ -70,8 +70,8 @@ namespace Norns.Destiny.UT.JIT.AOP
             instance.AddVoid();
             await instance.AddTask(66);
             Assert.Equal(0, await instance.AddVTask(44));
-            //Assert.Equal(0, await instance.AddValueTask(11));
-            //Assert.Null(await instance.AddValueTask(this));
+            Assert.Equal(0, await instance.AddValueTask(11));
+            Assert.Null(await instance.AddValueTask(this));
         }
 
         //        [Fact]

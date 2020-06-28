@@ -22,6 +22,10 @@ namespace Norns.Destiny.JIT.Structure
             {
                 FullName = Name = "void";
             }
+            else if (type.IsGenericParameter)
+            {
+                FullName = Name = RealType.Name;
+            }
             else if (type.IsNested)
             {
                 Name = RealType.Name.Replace('+', '.');
@@ -32,7 +36,7 @@ namespace Norns.Destiny.JIT.Structure
                 Name = RealType.Name;
                 FullName = RealType.FullName;
             }
-
+            
             if (IsGenericType)
             {
                 TypeArguments = type.GenericTypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
