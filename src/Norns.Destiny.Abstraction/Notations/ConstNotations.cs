@@ -87,5 +87,7 @@ namespace Norns.Destiny.Notations
         public static readonly INotation Nothing = string.Empty.ToNotation();
 
         public static readonly IEnumerable<INotation> Nothings = new INotation[] { Nothing };
+
+        internal static readonly INotation Where = "where".ToNotation();
     }
 }

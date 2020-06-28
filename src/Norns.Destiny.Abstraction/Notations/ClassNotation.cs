@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.Notations
 {
@@ -8,7 +9,7 @@ namespace Norns.Destiny.Notations
         public List<INotation> CustomAttributes { get; } = new List<INotation>();
         public AccessibilityInfo Accessibility { get; set; }
         public string Name { get; set; }
-        public List<INotation> TypeParameters { get; } = new List<INotation>();
+        public List<TypeParameterNotation> TypeParameters { get; } = new List<TypeParameterNotation>();
         public List<INotation> Inherits { get; } = new List<INotation>();
         public List<INotation> Members { get; } = new List<INotation>();
 
@@ -23,7 +24,7 @@ namespace Norns.Destiny.Notations
             if (TypeParameters.Count > 0)
             {
                 yield return ConstNotations.OpenAngleBracket;
-                yield return TypeParameters.InsertComma().Combine();
+                yield return TypeParameters.Select(i => i.ToOnlyTypeDefinitionNotation()).InsertComma().Combine();
                 yield return ConstNotations.CloseAngleBracket;
             }
             if (Inherits.Count > 0)
@@ -31,6 +32,7 @@ namespace Norns.Destiny.Notations
                 yield return ConstNotations.Colon;
                 yield return Inherits.InsertBlank().Combine();
             }
+            yield return TypeParameters.Select(i => i.ToConstantNotation()).InsertBlank().Combine();
             yield return ConstNotations.Blank;
             yield return ConstNotations.OpenBrace;
             yield return Members.Combine();

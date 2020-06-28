@@ -18,11 +18,11 @@ namespace Norns.Destiny.JIT.Structure
                 .Where(i => i != typeof(ValueType))
                 .Select(i => new TypeSymbolInfo(i))
                 .ToImmutableArray<ITypeSymbolInfo>();
-            VarianceKind = type.GenericParameterAttributes.ConvertToStructure();
+            RefKind = type.GenericParameterAttributes.ConvertToStructure();
         }
 
         public int Ordinal { get; }
-        public VarianceKindInfo VarianceKind { get; }
+        public RefKindInfo RefKind { get; }
         public bool HasReferenceTypeConstraint { get; }
         public bool HasValueTypeConstraint { get; }
         public bool HasUnmanagedTypeConstraint { get; }

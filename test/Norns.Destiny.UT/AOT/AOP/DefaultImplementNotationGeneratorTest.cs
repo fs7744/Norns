@@ -114,7 +114,6 @@ using System.Threading.Tasks;
             Assert.Contains("return default;", output);
         }
 
-
         [Fact]
         public void WhenSimpleInterfaceAsyncMethodAndValueTaskT()
         {
@@ -169,6 +168,22 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask2<T,V>(T v,in V v1)", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v1)", output);
             Assert.DoesNotContain("where", output);
+            Assert.Contains("return default;", output);
+        }
+
+        [Fact]
+        public void WhenGenericInterfaceSyncMethod()
+        {
+            var code = @"
+    public interface IC<T> where T : class
+    {
+        T A();
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+            Assert.Contains("public T A()", output);
             Assert.Contains("return default;", output);
         }
     }

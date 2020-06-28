@@ -142,7 +142,7 @@ using Xunit;
             var tp = iaTypeDefinition.TypeParameters.First();
             Assert.Equal(0, tp.Ordinal);
             Assert.Equal("T", tp.Name);
-            Assert.Equal(VarianceKindInfo.Out, tp.VarianceKind);
+            Assert.Equal(RefKindInfo.Out, tp.RefKind);
             Assert.True(tp.HasConstructorConstraint);
             Assert.False(tp.HasReferenceTypeConstraint);
             Assert.False(tp.HasValueTypeConstraint);

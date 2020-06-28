@@ -20,7 +20,11 @@ namespace Norns.Destiny.AOP.Notations
                 Accessibility = type.Accessibility,
                 Name = $"DefaultImplement{type.Name}{RandomUtils.NewName()}"
             };
-            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.DefaultImplement(typeof({type.FullName}))]".ToNotation());
+            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.DefaultImplement(typeof({(type.IsGenericType ? type.GenericDefinitionName : type.FullName)}))]".ToNotation());
+            if (type.IsGenericType)
+            {
+                @class.TypeParameters.AddRange(type.TypeParameters.Select(i => i.ToNotation()));
+            }
             @namespace.Members.Add(@class);
             @class.Inherits.Add(type.FullName.ToNotation());
             foreach (var member in type.GetMembers().Union(type.GetInterfaces().SelectMany(i => i.GetMembers())).Distinct())

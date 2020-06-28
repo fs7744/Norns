@@ -33,18 +33,18 @@ namespace Norns.Destiny.AOT.Structure
             }
         }
 
-        public static VarianceKindInfo ConvertToStructure(this VarianceKind variance)
+        public static RefKindInfo ConvertToStructure(this VarianceKind variance)
         {
             switch (variance)
             {
                 case VarianceKind.Out:
-                    return VarianceKindInfo.Out;
+                    return RefKindInfo.Out;
 
                 case VarianceKind.In:
-                    return VarianceKindInfo.In;
+                    return RefKindInfo.In;
 
                 default:
-                    return VarianceKindInfo.None;
+                    return RefKindInfo.None;
             }
         }
 

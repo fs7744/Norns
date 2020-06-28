@@ -6,19 +6,19 @@ namespace Norns.Destiny.JIT.Structure
 {
     public static class JitSymbolExtensions
     {
-        public static VarianceKindInfo ConvertToStructure(this GenericParameterAttributes attributes)
+        public static RefKindInfo ConvertToStructure(this GenericParameterAttributes attributes)
         {
             if ((attributes & GenericParameterAttributes.Covariant) == GenericParameterAttributes.Covariant)
             {
-                return VarianceKindInfo.Out;
+                return RefKindInfo.Out;
             }
             else if ((attributes & GenericParameterAttributes.Contravariant) == GenericParameterAttributes.Contravariant)
             {
-                return VarianceKindInfo.In;
+                return RefKindInfo.In;
             }
             else
             {
-                return VarianceKindInfo.None;
+                return RefKindInfo.None;
             }
         }
 

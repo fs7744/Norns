@@ -222,7 +222,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             var tp = iaTypeDefinition.TypeParameters.First();
             Assert.Equal(0, tp.Ordinal);
             Assert.Equal("T", tp.Name);
-            Assert.Equal(VarianceKindInfo.Out, tp.VarianceKind);
+            Assert.Equal(RefKindInfo.Out, tp.RefKind);
             Assert.True(tp.HasConstructorConstraint);
             Assert.False(tp.HasReferenceTypeConstraint);
             Assert.False(tp.HasValueTypeConstraint);
@@ -245,7 +245,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             var tp = iaTypeDefinition.TypeParameters.First();
             Assert.Equal(0, tp.Ordinal);
             Assert.Equal("T", tp.Name);
-            Assert.Equal(VarianceKindInfo.In, tp.VarianceKind);
+            Assert.Equal(RefKindInfo.In, tp.RefKind);
             Assert.False(tp.HasConstructorConstraint);
             Assert.False(tp.HasReferenceTypeConstraint);
             Assert.False(tp.HasValueTypeConstraint);
@@ -265,7 +265,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             var tp = iaTypeDefinition.TypeParameters.First();
             Assert.Equal(0, tp.Ordinal);
             Assert.Equal("T", tp.Name);
-            Assert.Equal(VarianceKindInfo.None, tp.VarianceKind);
+            Assert.Equal(RefKindInfo.None, tp.RefKind);
             Assert.True(tp.HasConstructorConstraint);
             Assert.True(tp.HasReferenceTypeConstraint);
             Assert.False(tp.HasValueTypeConstraint);
@@ -277,7 +277,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             tp = iaTypeDefinition.TypeParameters[1];
             Assert.Equal(1, tp.Ordinal);
             Assert.Equal("Y", tp.Name);
-            Assert.Equal(VarianceKindInfo.None, tp.VarianceKind);
+            Assert.Equal(RefKindInfo.None, tp.RefKind);
             Assert.True(tp.HasConstructorConstraint);
             Assert.False(tp.HasReferenceTypeConstraint);
             Assert.True(tp.HasValueTypeConstraint);

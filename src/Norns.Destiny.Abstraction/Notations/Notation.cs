@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Norns.Destiny.Abstraction.Structure;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.Destiny.Notations
@@ -45,6 +46,32 @@ namespace Norns.Destiny.Notations
         public static INotation ToNotation(this string value)
         {
             return new StringNotation(value);
+        }
+
+        public static TypeParameterNotation ToNotation(this ITypeParameterSymbolInfo value)
+        {
+            var notation = new TypeParameterNotation()
+            {
+                RefKind = value.RefKind,
+                Type = value.FullName,
+                Name = value.Name
+            };
+            if (value.HasConstructorConstraint)
+            {
+                notation.Constants.Add("new()");
+            }
+
+            if (value.HasReferenceTypeConstraint)
+            {
+                notation.Constants.Add("class");
+            }
+
+            if (value.HasValueTypeConstraint)
+            {
+                notation.Constants.Add("struct");
+            }
+            notation.Constants.AddRange(value.ConstraintTypes.Select(i => i.FullName));
+            return notation;
         }
 
         public static INotation ToCallParameters(this IEnumerable<ParameterNotation> values)

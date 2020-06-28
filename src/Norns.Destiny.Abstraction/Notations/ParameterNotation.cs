@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Norns.Destiny.Notations
 {
@@ -24,22 +25,17 @@ namespace Norns.Destiny.Notations
             }
         }
 
-        public CallParameterNotation ToCallParameter()
+        public FormatterNotation<ParameterNotation> ToCallParameter()
         {
-            return new CallParameterNotation()
-            {
-                Name = Name
-            };
+            return new FormatterNotation<ParameterNotation>(this, new CallParameterFormatter());
         }
     }
 
-    public class CallParameterNotation : MembersNotation
+    public class CallParameterFormatter : IFormatter<ParameterNotation>
     {
-        public string Name { get; set; }
-
-        public override IEnumerable<INotation> GetMembers()
+        public IEnumerable<INotation> Format(ParameterNotation value)
         {
-            yield return Name.ToNotation();
+            yield return value.Name.ToNotation();
         }
     }
 }

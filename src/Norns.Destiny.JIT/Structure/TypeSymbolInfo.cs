@@ -49,6 +49,7 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsInterface => RealType.IsInterface;
         public string FullName => RealType.FullName;
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
+        public string GenericDefinitionName => $"{RealType.Namespace}.{Name}<{TypeParameters.Skip(1).Select(i => ",").Aggregate((i, j) => i + j)}>";
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)).ToImmutableArray<IAttributeSymbolInfo>();
 
