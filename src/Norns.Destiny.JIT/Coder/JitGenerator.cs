@@ -19,11 +19,10 @@ namespace Norns.Destiny.JIT.Coder
 
         public T Generate(ISymbolSource source)
         {
-            var notation = CreateNotationGenerators()
-                .Select(i => i.GenerateNotations(source))
-                .Combine();
             var sb = new StringBuilder();
-            notation.Record(sb);
+            CreateNotationGenerators()
+                .Select(i => i.GenerateNotations(source))
+                .Combine().Record(sb);
             var options = CreateOptions();
             var compileTrees = CSharpSyntaxTree.ParseText(sb.ToString(), options.ParseOptions);
             var compilation = CSharpCompilation.Create(RandomUtils.NewName(), new SyntaxTree[] { compileTrees }, options.References, options.CompilationOptions);

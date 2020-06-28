@@ -8,8 +8,8 @@ namespace Norns.Destiny.JIT.AOP
 {
     public class JitAopSourceGenerator : JitAssemblyGenerator
     {
-        private readonly JitOptions options;
-        private readonly IEnumerable<IInterceptorGenerator> generators;
+        protected readonly JitOptions options;
+        protected readonly IEnumerable<IInterceptorGenerator> generators;
 
         public JitAopSourceGenerator(JitOptions options, IEnumerable<IInterceptorGenerator> generators)
         {

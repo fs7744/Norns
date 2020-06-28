@@ -1,35 +1,61 @@
-﻿//using Norns.Destiny.Abstraction.Coder;
-//using Norns.Destiny.AOP;
-//using Norns.Destiny.AOP.Notations;
-//using Norns.Destiny.AOT.AOP;
-//using System.Collections.Generic;
-//using Xunit;
+﻿using Norns.Destiny.Abstraction.Coder;
+using Norns.Destiny.Abstraction.Structure;
+using Norns.Destiny.AOP;
+using Norns.Destiny.AOP.Notations;
+using Norns.Destiny.Attributes;
+using Norns.Destiny.JIT.AOP;
+using Norns.Destiny.JIT.Coder;
+using Norns.Destiny.JIT.Structure;
+using Norns.Destiny.UT.AOT.AOP;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
-//namespace Norns.Destiny.UT.JIT.AOP
-//{
-//    public class DefaultImplementNotationGeneratorTest
-//    {
-//        public interface IC
-//        {
-//            int AddOne(int v);
-//        }
+namespace Norns.Destiny.UT.JIT.AOP
+{
+    public class OnlyDefaultImplementNotationGenerator : JitAopSourceGenerator
+    {
+        public OnlyDefaultImplementNotationGenerator(JitOptions options, IEnumerable<IInterceptorGenerator> generators) : base(options, generators)
+        {
+        }
 
-//        [Fact]
-//        public void WhenSimpleInterfaceSyncMethodAndHasReturnValue()
-//        {
-//            var ms = new TypeSymbolInfo(typeof(A)).GetMembers()
-//                 .Select(i => i as IMethodSymbolInfo)
-//                 .Where(i => i != null)
+        protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
+        {
+            yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement);
+        }
+    }
 
-//            var code = @"
-//    ";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public int AddOne(int v)", output);
-//            Assert.Contains("return default;", output);
-//        }
+    public static class JitTest
+    {
+        private static JitOptions options = JitOptions.CreateDefault();
+
+        public static Dictionary<string, TypeSymbolInfo> Generate(params Type[] types)
+        {
+            var generator = new OnlyDefaultImplementNotationGenerator(options, new IInterceptorGenerator[] { new EmptyInterceptorGenerator() });
+            var assembly = generator.Generate(new JitTypesSymbolSource(types));
+            return assembly.GetTypes().Select(i => new TypeSymbolInfo(i)).Where(i => i.HasAttribute<DefaultImplementAttribute>())
+                .ToDictionary(i => i.Name, i => i);
+        }
+    }
+
+    [Charon]
+    public interface IJitC
+    {
+        int AddOne(int v);
+    }
+
+    public class DefaultImplementNotationGeneratorTest
+    {
+        [Fact]
+        public void WhenSimpleInterfaceSyncMethodAndHasReturnValue()
+        {
+            var types = JitTest.Generate(typeof(IJitC));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True( t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC)));
+            Assert.Equal(0, (Activator.CreateInstance(t.RealType) as IJitC).AddOne(33));
+        }
 
 //        [Fact]
 //        public void WhenSimpleInterfaceSyncMethodAndVoid()
@@ -186,6 +212,5 @@
 //            Assert.Contains("public T A()", output);
 //            Assert.Contains("return default;", output);
 //        }
-//    }
-//}
-
+    }
+}

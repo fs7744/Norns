@@ -3,7 +3,6 @@ using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.AOT.Coder;
-using Norns.Destiny.Attributes;
 using System.Collections.Generic;
 
 namespace Norns.Destiny.AOT.AOP
@@ -14,7 +13,7 @@ namespace Norns.Destiny.AOT.AOP
 
         protected virtual bool FilterForDefaultImplement(ITypeSymbolInfo type)
         {
-            return (type.IsInterface || (type.IsClass && type.IsAbstract)) && type.HasAttribute<CharonAttribute>();
+            return AopUtils.CanDoDefaultImplement(type);
         }
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()

@@ -17,6 +17,7 @@ namespace Norns.Destiny.UT.AOT
 {
     public static class AotTest
     {
+        public static readonly IEnumerable<MetadataReference> References = AppDomain.CurrentDomain.GetAssemblies().Where(i => !i.IsDynamic).Select(i => AssemblyMetadata.CreateFromFile(i.Location).GetReference()).ToArray();
         public static readonly CSharpParseOptions Regular = new CSharpParseOptions(kind: SourceCodeKind.Regular, documentationMode: DocumentationMode.Parse);
         public static readonly CSharpCompilationOptions DebugDll = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release);
 
@@ -24,7 +25,7 @@ namespace Norns.Destiny.UT.AOT
         {
             Compilation compilation = CSharpCompilation.Create(RandomUtils.NewName(),
                 new[] { SyntaxFactory.ParseSyntaxTree(SourceText.From(code, Encoding.UTF8), Regular, "") },
-                AppDomain.CurrentDomain.GetAssemblies().Where(i => !i.IsDynamic).Select(i => AssemblyMetadata.CreateFromFile(i.Location).GetReference()),
+                References,
                 DebugDll);
 
             GeneratorDriver driver = new CSharpGeneratorDriver(Regular, ImmutableArray.Create(sourceGenerator), ImmutableArray<AdditionalText>.Empty);
