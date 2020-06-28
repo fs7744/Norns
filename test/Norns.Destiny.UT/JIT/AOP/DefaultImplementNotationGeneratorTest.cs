@@ -49,7 +49,7 @@ namespace Norns.Destiny.UT.JIT.AOP
 
         Task AddTask(int v);
 
-        //Task<int> AddVTask(int v); 
+        Task<int> AddVTask(int v); 
         
         //ValueTask<int> AddValueTask(int v);
 
@@ -69,7 +69,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, instance.AddOne(33));
             instance.AddVoid();
             await instance.AddTask(66);
-            //Assert.Equal(0, await instance.AddVTask(44));
+            Assert.Equal(0, await instance.AddVTask(44));
             //Assert.Equal(0, await instance.AddValueTask(11));
             //Assert.Null(await instance.AddValueTask(this));
         }

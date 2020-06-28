@@ -4,35 +4,47 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace Norns.Destiny.JIT.Structure
 {
     public class TypeSymbolInfo : ITypeSymbolInfo
     {
+        private static readonly Regex genericParamsNumber = new Regex("`{1}[0-9]{1,}"); 
+
         public TypeSymbolInfo(Type type)
         {
             RealType = type;
             Accessibility = type.ConvertAccessibilityInfo();
             IsStatic = type.IsAbstract && type.IsSealed;
-            if (IsGenericType)
-            {
-                TypeArguments = type.GenericTypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
-                var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
-                TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
-            }
-            else
-            {
-                TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
-                TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
-            }
+
             if (type.IsValueType && type.Name == "Void")
             {
                 FullName = Name = "void";
+            }
+            else if (type.IsNested)
+            {
+                Name = RealType.Name.Replace('+', '.');
+                FullName = $"{RealType.DeclaringType.FullName}.{Name}";
             }
             else
             {
                 Name = RealType.Name;
                 FullName = RealType.FullName;
+            }
+
+            if (IsGenericType)
+            {
+                TypeArguments = type.GenericTypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+                var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
+                TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
+                var genericParams = type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
+                FullName = $"{RealType.Namespace}.{genericParamsNumber.Replace(Name, string.Empty)}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+            }
+            else
+            {
+                TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
+                TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
         }
 
@@ -58,7 +70,7 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsInterface => RealType.IsInterface;
         public string FullName { get; }
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public string GenericDefinitionName => $"{RealType.Namespace}.{Name}<{TypeParameters.Skip(1).Select(i => ",").Aggregate((i, j) => i + j)}>";
+        public string GenericDefinitionName => $"{RealType.Namespace}.{Name}<{TypeParameters.Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)).ToImmutableArray<IAttributeSymbolInfo>();
 

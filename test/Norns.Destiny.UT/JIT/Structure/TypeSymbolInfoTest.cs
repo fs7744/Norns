@@ -141,7 +141,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var dict = typeof(AbstractPublicClass).GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
                 .ToDictionary(i => i.Name, i => new TypeSymbolInfo(i as TypeInfo));
-            Assert.Equal("Norns.Destiny.UT.JIT.Structure.AbstractPublicClass+PrivateClass", dict["PrivateClass"].FullName);
+            Assert.Equal("Norns.Destiny.UT.JIT.Structure.AbstractPublicClass.PrivateClass", dict["PrivateClass"].FullName);
             Assert.Equal(AccessibilityInfo.Private, dict["PrivateClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Protected, dict["ProtectedClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Internal, dict["InternalClass"].Accessibility);
