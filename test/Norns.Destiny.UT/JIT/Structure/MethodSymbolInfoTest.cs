@@ -90,7 +90,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.False(m.IsVirtual);
-            Assert.Equal("System.Void", m.ReturnType.FullName);
+            Assert.Equal("void", m.ReturnType.FullName);
 
             m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.InternalM"];
             Assert.Equal(AccessibilityInfo.Internal, m.Accessibility);

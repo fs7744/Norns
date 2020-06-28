@@ -25,12 +25,21 @@ namespace Norns.Destiny.JIT.Structure
                 TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
+            if (type.IsValueType && type.Name == "Void")
+            {
+                FullName = Name = "void";
+            }
+            else
+            {
+                Name = RealType.Name;
+                FullName = RealType.FullName;
+            }
         }
 
         public Type RealType { get; }
         public string Namespace => RealType.Namespace;
         public AccessibilityInfo Accessibility { get; }
-        public string Name => RealType.Name;
+        public string Name { get; } 
         public bool IsStatic { get; }
         public bool IsSealed => RealType.IsSealed;
         public bool IsValueType => RealType.IsValueType;
@@ -47,7 +56,7 @@ namespace Norns.Destiny.JIT.Structure
         public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsClass => RealType.IsClass;
         public bool IsInterface => RealType.IsInterface;
-        public string FullName => RealType.FullName;
+        public string FullName { get; }
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
         public string GenericDefinitionName => $"{RealType.Namespace}.{Name}<{TypeParameters.Skip(1).Select(i => ",").Aggregate((i, j) => i + j)}>";
 

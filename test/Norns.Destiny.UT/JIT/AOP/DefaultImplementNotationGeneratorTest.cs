@@ -10,6 +10,7 @@ using Norns.Destiny.UT.AOT.AOP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Norns.Destiny.UT.JIT.AOP
@@ -43,174 +44,106 @@ namespace Norns.Destiny.UT.JIT.AOP
     public interface IJitC
     {
         int AddOne(int v);
+
+        void AddVoid(); 
+
+        Task AddTask(int v);
+
+        //Task<int> AddVTask(int v); 
+        
+        //ValueTask<int> AddValueTask(int v);
+
+        //ValueTask<T> AddValueTask<T>(T v);
     }
 
     public class DefaultImplementNotationGeneratorTest
     {
         [Fact]
-        public void WhenSimpleInterfaceSyncMethodAndHasReturnValue()
+        public async Task WhenSimpleInterfaceAndSomeMethods()
         {
             var types = JitTest.Generate(typeof(IJitC));
             Assert.Single(types);
             var t = types.Values.First();
             Assert.True( t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC)));
-            Assert.Equal(0, (Activator.CreateInstance(t.RealType) as IJitC).AddOne(33));
+            var instance = Activator.CreateInstance(t.RealType) as IJitC;
+            Assert.Equal(0, instance.AddOne(33));
+            instance.AddVoid();
+            await instance.AddTask(66);
+            //Assert.Equal(0, await instance.AddVTask(44));
+            //Assert.Equal(0, await instance.AddValueTask(11));
+            //Assert.Null(await instance.AddValueTask(this));
         }
 
-//        [Fact]
-//        public void WhenSimpleInterfaceSyncMethodAndVoid()
-//        {
-//            var code = @"
-//    public interface IC
-//    {
-//        void AddVoid();
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public void AddVoid()", output);
-//            Assert.DoesNotContain("return", output);
-//        }
+        //        [Fact]
+        //        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTV()
+        //        {
+        //            var code = @"
+        //using System.Threading.Tasks;
+        //    public interface IC
+        //    {
+        //        ValueTask<Task<T>> AddValueTask<T,V>(T v,V v1) where T : struct where V : class, IC;
+        //    }";
+        //            var output = Generate(code);
+        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
+        //            Assert.Contains("public class DefaultImplement", output);
+        //            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
+        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)", output);
+        //            Assert.DoesNotContain("where", output);
+        //            Assert.Contains("return default;", output);
+        //        }
 
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndVoid()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        Task AddTask(int v);
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.Task AddTask(int v)", output);
-//            Assert.DoesNotContain("return", output);
-//        }
+        //        [Fact]
+        //        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTVAndRefKind()
+        //        {
+        //            var code = @"
+        //using System.Threading.Tasks;
+        //    public interface IC
+        //    {
+        //        ValueTask<Task<T>> AddValueTask<T,V>(T v,ref V v1);
+        //ValueTask<Task<T>> AddValueTask2<T,V>(T v,in V v1);
+        //ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
+        //    }";
+        //            var output = Generate(code);
+        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
+        //            Assert.Contains("public class DefaultImplement", output);
+        //            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
+        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,ref V v1)", output);
+        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask2<T,V>(T v,in V v1)", output);
+        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v1)", output);
+        //            Assert.DoesNotContain("where", output);
+        //            Assert.Contains("return default;", output);
+        //        }
 
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndTaskInt()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        Task<int> AddVTask(int v);
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.Task<int> AddVTask(int v)", output);
-//            Assert.Contains("return default;", output);
-//        }
+        //        [Fact]
+        //        public void WhenGenericInterfaceSyncMethod()
+        //        {
+        //            var code = @"
+        //    public interface IC<T> where T : class
+        //    {
+        //        T A();
+        //    }";
+        //            var output = Generate(code);
+        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
+        //            Assert.Contains("public class DefaultImplement", output);
+        //            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+        //            Assert.Contains("public T A()", output);
+        //            Assert.Contains("return default;", output);
+        //        }
 
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndValueTaskInt()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        ValueTask<int> AddValueTask(int v);
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<int> AddValueTask(int v)", output);
-//            Assert.Contains("return default;", output);
-//        }
-
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndValueTaskT()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        ValueTask<T> AddValueTask<T>(T v);
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<T> AddValueTask<T>(T v)", output);
-//            Assert.Contains("return default;", output);
-//        }
-
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTV()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        ValueTask<Task<T>> AddValueTask<T,V>(T v,V v1) where T : struct where V : class, IC;
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)", output);
-//            Assert.DoesNotContain("where", output);
-//            Assert.Contains("return default;", output);
-//        }
-
-//        [Fact]
-//        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTVAndRefKind()
-//        {
-//            var code = @"
-//using System.Threading.Tasks;
-//    public interface IC
-//    {
-//        ValueTask<Task<T>> AddValueTask<T,V>(T v,ref V v1);
-//ValueTask<Task<T>> AddValueTask2<T,V>(T v,in V v1);
-//ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,ref V v1)", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask2<T,V>(T v,in V v1)", output);
-//            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v1)", output);
-//            Assert.DoesNotContain("where", output);
-//            Assert.Contains("return default;", output);
-//        }
-
-//        [Fact]
-//        public void WhenGenericInterfaceSyncMethod()
-//        {
-//            var code = @"
-//    public interface IC<T> where T : class
-//    {
-//        T A();
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
-//            Assert.Contains("public T A()", output);
-//            Assert.Contains("return default;", output);
-//        }
-
-//        [Fact]
-//        public void WhenOutGenericInterfaceSyncMethod()
-//        {
-//            var code = @"
-//    public interface IC<out T> where T : class
-//    {
-//        T A();
-//    }";
-//            var output = Generate(code);
-//            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
-//            Assert.Contains("public class DefaultImplement", output);
-//            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
-//            Assert.Contains("public T A()", output);
-//            Assert.Contains("return default;", output);
-//        }
+        //        [Fact]
+        //        public void WhenOutGenericInterfaceSyncMethod()
+        //        {
+        //            var code = @"
+        //    public interface IC<out T> where T : class
+        //    {
+        //        T A();
+        //    }";
+        //            var output = Generate(code);
+        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
+        //            Assert.Contains("public class DefaultImplement", output);
+        //            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+        //            Assert.Contains("public T A()", output);
+        //            Assert.Contains("return default;", output);
+        //        }
     }
 }
