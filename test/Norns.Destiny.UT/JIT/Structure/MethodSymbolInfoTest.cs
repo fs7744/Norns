@@ -116,7 +116,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.True(m.IsVirtual);
-            Assert.Equal("ValueTuple`2", m.ReturnType.Name);
+            Assert.Equal("ValueTuple", m.ReturnType.Name);
 
             m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.PIS"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);
@@ -199,7 +199,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.True(m.IsOverride);
             Assert.True(m.IsVirtual);
-            Assert.Equal("ValueTuple`2", m.ReturnType.Name);
+            Assert.Equal("ValueTuple", m.ReturnType.Name);
 
             m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+B.PIS"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);

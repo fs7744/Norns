@@ -43,7 +43,8 @@ namespace Norns.Destiny.JIT.Structure
                 var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
                 TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
                 var genericParams = type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
-                FullName = $"{RealType.Namespace}.{genericParamsNumber.Replace(Name, string.Empty)}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+                Name = genericParamsNumber.Replace(Name, string.Empty);
+                FullName = $"{RealType.Namespace}.{Name}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
             }
             else
             {

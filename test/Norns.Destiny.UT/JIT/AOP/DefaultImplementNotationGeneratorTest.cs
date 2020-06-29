@@ -67,7 +67,14 @@ namespace Norns.Destiny.UT.JIT.AOP
     public struct A
     { }
 
-    public class DefaultImplementNotationGeneratorTest
+    [Charon]
+    public interface IJitD<out T> where T : class
+    {
+        T A();
+    }
+
+
+        public class DefaultImplementNotationGeneratorTest
     {
         [Fact]
         public async Task WhenSimpleInterfaceAndSomeMethods()
@@ -88,6 +95,17 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));
             Assert.Null(instance.AddValue3(new A(), out c));
+        }
+
+        [Fact]
+        public void WhenOutGenericInterfaceSyncMethod()
+        {
+            var types = JitTest.Generate(typeof(IJitD<>));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD<>)));
+            var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as IJitD<DefaultImplementNotationGeneratorTest>;
+            Assert.Null(instance.A());
         }
 
         //        [Fact]
