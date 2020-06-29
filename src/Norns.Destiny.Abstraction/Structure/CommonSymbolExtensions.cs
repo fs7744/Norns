@@ -87,10 +87,7 @@ namespace Norns.Destiny.Abstraction.Structure
             }));
             if (method.IsGenericMethod)
             {
-                notation.TypeParameters.AddRange(method.TypeParameters.Select(i => new ParameterNotation()
-                {
-                    Type = i.FullName
-                }));
+                notation.TypeParameters.AddRange(method.TypeParameters.Select(i => i.ToNotation()));
             }
             notation.IsAsync = method.IsAsync;
             return notation;

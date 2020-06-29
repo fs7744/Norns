@@ -158,8 +158,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)", output);
-            Assert.DoesNotContain("where", output);
+            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)where T : struct where V : class,Norns.Destiny.UT.AOT.Generated.IC", output);
             Assert.Contains("return default;", output);
         }
 

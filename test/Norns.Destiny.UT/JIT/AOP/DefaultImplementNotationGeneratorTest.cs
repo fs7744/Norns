@@ -54,7 +54,12 @@ namespace Norns.Destiny.UT.JIT.AOP
         ValueTask<int> AddValueTask(int v);
 
         ValueTask<T> AddValueTask<T>(T v);
+
+        ValueTask<Task<T>> AddValueTask<T, V>(T v, V v1) where T : struct where V : class, IJitC;
     }
+
+    public struct A
+    { }
 
     public class DefaultImplementNotationGeneratorTest
     {
@@ -72,25 +77,8 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddVTask(44));
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
+            Assert.Null(await instance.AddValueTask(new A(), instance));
         }
-
-        //        [Fact]
-        //        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTV()
-        //        {
-        //            var code = @"
-        //using System.Threading.Tasks;
-        //    public interface IC
-        //    {
-        //        ValueTask<Task<T>> AddValueTask<T,V>(T v,V v1) where T : struct where V : class, IC;
-        //    }";
-        //            var output = Generate(code);
-        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-        //            Assert.Contains("public class DefaultImplement", output);
-        //            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)", output);
-        //            Assert.DoesNotContain("where", output);
-        //            Assert.Contains("return default;", output);
-        //        }
 
         //        [Fact]
         //        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTVAndRefKind()

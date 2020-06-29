@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.Notations
 {
@@ -11,8 +12,7 @@ namespace Norns.Destiny.Notations
         public bool IsOverride { get; set; }
         public string ReturnType { get; set; }
         public string Name { get; set; }
-        public List<INotation> TypeParameters { get; } = new List<INotation>();
-        public List<INotation> Constraints { get; } = new List<INotation>();
+        public List<TypeParameterNotation> TypeParameters { get; } = new List<TypeParameterNotation>();
         public List<ParameterNotation> Parameters { get; } = new List<ParameterNotation>();
         public List<INotation> Body { get; } = new List<INotation>();
 
@@ -37,13 +37,13 @@ namespace Norns.Destiny.Notations
             if (TypeParameters.Count > 0)
             {
                 yield return ConstNotations.OpenAngleBracket;
-                yield return TypeParameters.InsertComma().Combine();
+                yield return TypeParameters.Select(i => i.ToOnlyTypeDefinitionNotation()).InsertComma().Combine();
                 yield return ConstNotations.CloseAngleBracket;
             }
             yield return ConstNotations.OpenParen;
             yield return Parameters.InsertComma().Combine();
             yield return ConstNotations.CloseParen;
-            yield return Constraints.InsertBlank().Combine();
+            yield return TypeParameters.Select(i => i.ToConstantNotation()).InsertBlank().Combine();
             yield return ConstNotations.OpenBrace;
             yield return Body.Combine();
             yield return ConstNotations.CloseBrace;

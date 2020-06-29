@@ -21,13 +21,16 @@ namespace Norns.Destiny.Notations
     {
         public IEnumerable<INotation> Format(TypeParameterNotation value)
         {
-            yield return ConstNotations.Where;
-            yield return ConstNotations.Blank;
-            yield return value.Type.ToNotation();
-            yield return ConstNotations.Blank;
-            yield return ConstNotations.Colon;
-            yield return ConstNotations.Blank;
-            yield return value.Constants.ToNotations().InsertComma().Combine();
+            if (value.Constants.Count > 0)
+            {
+                yield return ConstNotations.Where;
+                yield return ConstNotations.Blank;
+                yield return value.Type.ToNotation();
+                yield return ConstNotations.Blank;
+                yield return ConstNotations.Colon;
+                yield return ConstNotations.Blank;
+                yield return value.Constants.ToNotations().InsertComma().Combine();
+            }
         }
     }
 

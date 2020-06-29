@@ -42,10 +42,6 @@ namespace Norns.Destiny.Notations
                 Type = value.FullName,
                 Name = value.Name
             };
-            if (value.HasConstructorConstraint)
-            {
-                notation.Constants.Add("new()");
-            }
 
             if (value.HasReferenceTypeConstraint)
             {
@@ -57,6 +53,10 @@ namespace Norns.Destiny.Notations
                 notation.Constants.Add("struct");
             }
             notation.Constants.AddRange(value.ConstraintTypes.Select(i => i.FullName));
+            if (!value.HasValueTypeConstraint && value.HasConstructorConstraint)
+            {
+                notation.Constants.Add("new()");
+            }
             return notation;
         }
 
