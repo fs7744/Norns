@@ -244,6 +244,45 @@ using Norns.Destiny.Attributes;
         }
 
         [Fact]
+        public void WhenInGenericNestedInterfaceSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+    public class A {
+    [Charon]
+    public interface IC<R>
+    {
+        R A();
+    } }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.A.IC<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<R>:Norns.Destiny.UT.AOT.Generated.A.IC<R>", output);
+            Assert.Contains("public R A()", output);
+            Assert.Contains("return default;", output);
+        }
+
+        [Fact]
+        public void WhenInGenericNestedNestedInterfaceSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes; 
+public class B {
+    public class A {
+    [Charon]
+    public interface IC<R>
+    {
+        R A();
+    } } }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.B.A.IC<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<R>:Norns.Destiny.UT.AOT.Generated.B.A.IC<R>", output);
+            Assert.Contains("public R A()", output);
+            Assert.Contains("return default;", output);
+        }
+
+        [Fact]
         public void WhenInterfaceHasDefaultSyncMethod()
         {
             var code = @"
