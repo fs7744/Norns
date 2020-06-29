@@ -45,12 +45,12 @@ namespace Norns.Destiny.UT.JIT.AOP
     {
         int AddOne(int v);
 
-        void AddVoid(); 
+        void AddVoid();
 
         Task AddTask(int v);
 
-        Task<int> AddVTask(int v); 
-        
+        Task<int> AddVTask(int v);
+
         ValueTask<int> AddValueTask(int v);
 
         ValueTask<T> AddValueTask<T>(T v);
@@ -73,8 +73,13 @@ namespace Norns.Destiny.UT.JIT.AOP
         T A();
     }
 
+    [Charon]
+    public interface IJitDIn<in T, V, R> where T : JitAopSourceGenerator
+    {
+        OnlyDefaultImplementNotationGenerator A();
+    }
 
-        public class DefaultImplementNotationGeneratorTest
+    public class DefaultImplementNotationGeneratorTest
     {
         [Fact]
         public async Task WhenSimpleInterfaceAndSomeMethods()
@@ -82,7 +87,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             var types = JitTest.Generate(typeof(IJitC));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True( t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC)));
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC)));
             var instance = Activator.CreateInstance(t.RealType) as IJitC;
             Assert.Equal(0, instance.AddOne(33));
             instance.AddVoid();
@@ -108,36 +113,15 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(instance.A());
         }
 
-        //        [Fact]
-        //        public void WhenGenericInterfaceSyncMethod()
-        //        {
-        //            var code = @"
-        //    public interface IC<T> where T : class
-        //    {
-        //        T A();
-        //    }";
-        //            var output = Generate(code);
-        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
-        //            Assert.Contains("public class DefaultImplement", output);
-        //            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
-        //            Assert.Contains("public T A()", output);
-        //            Assert.Contains("return default;", output);
-        //        }
-
-        //        [Fact]
-        //        public void WhenOutGenericInterfaceSyncMethod()
-        //        {
-        //            var code = @"
-        //    public interface IC<out T> where T : class
-        //    {
-        //        T A();
-        //    }";
-        //            var output = Generate(code);
-        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
-        //            Assert.Contains("public class DefaultImplement", output);
-        //            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
-        //            Assert.Contains("public T A()", output);
-        //            Assert.Contains("return default;", output);
-        //        }
+        [Fact]
+        public void WhenInGenericInterfaceSyncMethod()
+        {
+            var types = JitTest.Generate(typeof(IJitDIn<,,>));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitDIn<,,>)));
+            var instance = Activator.CreateInstance(t.RealType.MakeGenericType(typeof(JitAopSourceGenerator), typeof(int), typeof(int))) as IJitDIn<JitAopSourceGenerator, int, int>;
+            Assert.Null(instance.A());
+        }
     }
 }

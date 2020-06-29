@@ -224,6 +224,26 @@ using Norns.Destiny.Attributes;
         }
 
         [Fact]
+        public void WhenInGenericInterfaceSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+    public class A {}
+    public class B : A {}
+    [Charon]
+    public interface IC<in T, V, R> where T : A
+    {
+        B A();
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<,,>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T,V,R>:Norns.Destiny.UT.AOT.Generated.IC<T, V, R>where T : Norns.Destiny.UT.AOT.Generated.A", output);
+            Assert.Contains("public Norns.Destiny.UT.AOT.Generated.B A()", output);
+            Assert.Contains("return default;", output);
+        }
+
+        [Fact]
         public void WhenInterfaceHasDefaultSyncMethod()
         {
             var code = @"
