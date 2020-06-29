@@ -14,6 +14,7 @@ namespace Norns.Destiny.AOT.Structure
             Accessibility = p.DeclaredAccessibility.ConvertToStructure();
             GetMethod = CanRead ? new MethodSymbolInfo(p.GetMethod) : null;
             SetMethod = CanWrite ? new MethodSymbolInfo(p.SetMethod) : null;
+            Parameters = RealProperty.Parameters.Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
         }
 
         private IPropertySymbol RealProperty { get; }

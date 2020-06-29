@@ -78,6 +78,8 @@ namespace Norns.Destiny.UT.JIT.AOP
         int PA { get; set; }
 
         int PD { set; }
+
+        string this[int v, string s] { get; set; }
     }
 
     [Charon]
@@ -110,6 +112,8 @@ namespace Norns.Destiny.UT.JIT.AOP
         public virtual int PA { get; set; }
 
         public virtual int PD { protected get; set; }
+
+        public abstract string this[int v, string s] { get;set; }
     }
 
     public struct A
@@ -195,6 +199,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(await instance.AddValueTask(new A(), instance));
             Assert.Equal(0, instance.PA);
             instance.PD = 55;
+            Assert.Null(instance[3, ""]);
             var c = instance;
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));
@@ -263,6 +268,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(await instance.AddValueTask(new A(), instance)); 
             Assert.Equal(0, instance.PA);
             instance.PD = 55;
+            Assert.Null(instance[3, ""]);
             var c = instance;
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));

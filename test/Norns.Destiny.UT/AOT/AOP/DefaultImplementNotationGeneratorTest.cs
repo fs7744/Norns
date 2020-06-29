@@ -42,6 +42,12 @@ using Norns.Destiny.Attributes;
     public interface IC
     {
         int AddOne(int v);
+
+        int PA { get; set; }
+
+        int PD { set; }
+
+        string this[int v, string s] { get; set; }
     }";
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
@@ -49,6 +55,9 @@ using Norns.Destiny.Attributes;
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public int AddOne(int v)", output);
             Assert.Contains("return default;", output);
+            Assert.Contains("public int PA", output);
+            Assert.Contains("public int PD", output);
+            Assert.Contains("public string this[int v,string s]", output);
         }
 
         [Fact]
@@ -364,6 +373,12 @@ using System.Threading.Tasks;
         public int A() => 3;
 
         public virtual int B() => 3;
+
+        public virtual int PA { get; set; }
+
+        public virtual int PD { protected get; set; }
+
+        public abstract string this[int v, string s] { get;set; }
     }";
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.JitCClass))]", output);
@@ -381,6 +396,9 @@ using System.Threading.Tasks;
             Assert.Contains("public override IEnumerable<T> AddValue3<T,V>(T v,out V v1)", output);
             Assert.DoesNotContain("B()", output);
             Assert.DoesNotContain("A()", output);
+            Assert.Contains("public override int PA", output);
+            Assert.Contains("public override int PD", output);
+            Assert.Contains("public override string this[int v,string s]", output);
         }
 
         [Fact]
