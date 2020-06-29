@@ -28,7 +28,7 @@ namespace Norns.Destiny.AOP.Notations
                 Accessibility = type.Accessibility,
                 Name = $"Proxy{type.Name}{RandomUtils.NewName()}"
             };
-            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.Proxy(typeof({type.FullName}))]".ToNotation());
+            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.Proxy(typeof({(type.IsGenericType ? type.GenericDefinitionName : type.FullName)}))]".ToNotation());
             @namespace.Members.Add(@class);
             @class.Inherits.Add(type.FullName.ToNotation());
             var context = new ProxyGeneratorContext()
@@ -43,11 +43,11 @@ namespace Norns.Destiny.AOP.Notations
                 {
                     case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet
                         && method.MethodKind != MethodKindInfo.PropertySet
-                        && (method.IsAbstract || method.IsVirtual || method.IsOverride):
+                        && method.CanOverride():
                         @class.Members.Add(CreateProxyMethod(method, context));
                         break;
 
-                    case IPropertySymbolInfo property when property.IsAbstract || property.IsVirtual || property.IsOverride:
+                    case IPropertySymbolInfo property when property.CanOverride():
                         @class.Members.Add(CreateProxyProperty(property, context));
                         break;
 

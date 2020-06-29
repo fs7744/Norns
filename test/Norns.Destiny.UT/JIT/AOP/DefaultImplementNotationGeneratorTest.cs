@@ -74,6 +74,10 @@ namespace Norns.Destiny.UT.JIT.AOP
         IEnumerable<T> AddValue3<T, V>(T v, out V v1);
 
         public int A() => 3;
+
+        int PA { get; set; }
+
+        int PD { set; }
     }
 
     [Charon]
@@ -102,6 +106,10 @@ namespace Norns.Destiny.UT.JIT.AOP
         public int A() => 3;
 
         public virtual int B() => 3;
+
+        public virtual int PA { get; set; }
+
+        public virtual int PD { protected get; set; }
     }
 
     public struct A
@@ -185,6 +193,8 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
             Assert.Null(await instance.AddValueTask(new A(), instance));
+            Assert.Equal(0, instance.PA);
+            instance.PD = 55;
             var c = instance;
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));
@@ -250,7 +260,9 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddVTask(44));
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
-            Assert.Null(await instance.AddValueTask(new A(), instance));
+            Assert.Null(await instance.AddValueTask(new A(), instance)); 
+            Assert.Equal(0, instance.PA);
+            instance.PD = 55;
             var c = instance;
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));

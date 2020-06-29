@@ -1,5 +1,4 @@
-﻿using Norns.Destiny.Notations;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Norns.Destiny.Abstraction.Structure
 {
@@ -74,6 +73,16 @@ namespace Norns.Destiny.Abstraction.Structure
         public static bool HasAttribute<T>(this ITypeSymbolInfo type)
         {
             return type.GetAttributes().Any(i => i.AttributeType.FullName == typeof(T).FullName);
+        }
+
+        public static bool CanOverride(this IMethodSymbolInfo method)
+        {
+            return method.IsAbstract || method.IsVirtual || method.IsOverride;
+        }
+
+        public static bool CanOverride(this IPropertySymbolInfo property)
+        {
+            return property.IsAbstract || property.IsVirtual || property.IsOverride;
         }
     }
 }

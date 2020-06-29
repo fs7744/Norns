@@ -44,7 +44,7 @@ namespace Norns.Destiny.AOP.Notations
                         break;
 
                     case IPropertySymbolInfo property:
-                        @class.Members.Add(GenerateImplementProperty(property));
+                        @class.Members.Add(GenerateImplementProperty(property, type.IsInterface));
                         break;
 
                     default:
@@ -57,7 +57,7 @@ namespace Norns.Destiny.AOP.Notations
         private INotation GenerateImplementMethod(IMethodSymbolInfo method, bool isInterface)
         {
             var notation = method.ToNotationDefinition();
-            notation.IsOverride = !isInterface && (method.IsAbstract || method.IsVirtual || method.IsOverride);
+            notation.IsOverride = !isInterface && method.CanOverride();
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             if (method.HasReturnValue)
             {
@@ -66,7 +66,7 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation GenerateImplementProperty(IPropertySymbolInfo property)
+        private INotation GenerateImplementProperty(IPropertySymbolInfo property, bool isInterface)
         {
             PropertyNotation notation;
             if (property.IsIndexer)
@@ -83,6 +83,7 @@ namespace Norns.Destiny.AOP.Notations
             {
                 notation = new PropertyNotation();
             }
+            notation.IsOverride = !isInterface && property.CanOverride();
             notation.Accessibility = property.Accessibility;
             notation.Name = property.Name;
             notation.Type = property.Type.FullName;

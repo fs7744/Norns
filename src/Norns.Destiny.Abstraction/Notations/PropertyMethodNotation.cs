@@ -26,6 +26,15 @@ namespace Norns.Destiny.Notations
             }
         }
 
+        public PropertyMethodNotation MakeAccessibilitySafe(AccessibilityInfo accessibility)
+        {
+            if (accessibility <= Accessibility)
+            {
+                Accessibility = AccessibilityInfo.NotApplicable;
+            }
+            return this;
+        }
+
         public static PropertyMethodNotation Create(bool isGetter)
         {
             return new PropertyMethodNotation() { Name = isGetter ? "get" : "set" };

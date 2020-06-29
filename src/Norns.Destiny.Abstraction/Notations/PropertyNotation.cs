@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.Notations
 {
@@ -10,7 +11,7 @@ namespace Norns.Destiny.Notations
         public bool IsOverride { get; set; }
         public string Type { get; set; }
         public string Name { get; set; }
-        public List<INotation> Accessers { get; } = new List<INotation>();
+        public List<PropertyMethodNotation> Accessers { get; } = new List<PropertyMethodNotation>();
 
         public override IEnumerable<INotation> GetMembers()
         {
@@ -26,7 +27,7 @@ namespace Norns.Destiny.Notations
             yield return ConstNotations.Blank;
             yield return GetName();
             yield return ConstNotations.OpenBrace;
-            yield return Accessers.Combine();
+            yield return Accessers.Select(i => i.MakeAccessibilitySafe(Accessibility)).Combine();
             yield return ConstNotations.CloseBrace;
         }
 
