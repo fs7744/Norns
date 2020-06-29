@@ -57,6 +57,7 @@ namespace Norns.Destiny.AOP.Notations
         private INotation GenerateImplementMethod(IMethodSymbolInfo method)
         {
             var notation = method.ToNotationDefinition();
+            notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             if (method.HasReturnValue)
             {
                 notation.Body.Add("return default;".ToNotation());

@@ -173,7 +173,7 @@ using Norns.Destiny.Attributes;
     {
         ValueTask<Task<T>> AddValueTask<T,V>(T v,ref V v1);
 ValueTask<Task<T>> AddValueTask2<T,V>(T v,in V v1);
-ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
+ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v3);
     }";
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
@@ -181,8 +181,9 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,ref V v1)", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask2<T,V>(T v,in V v1)", output);
-            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v1)", output);
+            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v3)", output);
             Assert.DoesNotContain("where", output);
+            Assert.Contains("v3 = default;", output);
             Assert.Contains("return default;", output);
         }
 

@@ -58,6 +58,10 @@ namespace Norns.Destiny.UT.JIT.AOP
         ValueTask<Task<T>> AddValueTask<T, V>(T v, V v1) where T : struct where V : class, IJitC;
 
         IEnumerable<T> AddValue1<T, V>(T v, ref V v1);
+
+        IEnumerable<T> AddValue2<T, V>(T v, in V v1);
+
+        IEnumerable<T> AddValue3<T, V>(T v, out V v1);
     }
 
     public struct A
@@ -82,29 +86,9 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(await instance.AddValueTask(new A(), instance));
             var c = instance;
             Assert.Null(instance.AddValue1(new A(), ref c));
+            Assert.Null(instance.AddValue2(new A(), in c));
+            Assert.Null(instance.AddValue3(new A(), out c));
         }
-
-        //        [Fact]
-        //        public void WhenSimpleInterfaceAsyncMethodAndValueTaskTVAndRefKind()
-        //        {
-        //            var code = @"
-        //using System.Threading.Tasks;
-        //    public interface IC
-        //    {
-        //        ValueTask<Task<T>> AddValueTask<T,V>(T v,ref V v1);
-        //ValueTask<Task<T>> AddValueTask2<T,V>(T v,in V v1);
-        //ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v1);
-        //    }";
-        //            var output = Generate(code);
-        //            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC))]", output);
-        //            Assert.Contains("public class DefaultImplement", output);
-        //            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
-        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,ref V v1)", output);
-        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask2<T,V>(T v,in V v1)", output);
-        //            Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v1)", output);
-        //            Assert.DoesNotContain("where", output);
-        //            Assert.Contains("return default;", output);
-        //        }
 
         //        [Fact]
         //        public void WhenGenericInterfaceSyncMethod()
