@@ -79,6 +79,24 @@ namespace Norns.Destiny.UT.JIT.AOP
         OnlyDefaultImplementNotationGenerator A();
     }
 
+    public class B
+    {
+        [Charon]
+        public interface IJitDB<out T> where T : class
+        {
+            T A();
+        }
+
+        public class A
+        {
+            [Charon]
+            public interface IJitDA<out T> where T : class
+            {
+                T A();
+            }
+        }
+    }
+
     public class DefaultImplementNotationGeneratorTest
     {
         [Fact]
@@ -111,6 +129,24 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD<>)));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as IJitD<DefaultImplementNotationGeneratorTest>;
             Assert.Null(instance.A());
+        }
+
+        [Fact]
+        public void WhenOutGenericInterfaceInClassBSyncMethod()
+        {
+            var types = JitTest.Generate(typeof(B.IJitDB<>));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.IJitDB<>)));
+            var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as B.IJitDB<DefaultImplementNotationGeneratorTest>;
+            Assert.Null(instance.A());
+
+            types = JitTest.Generate(typeof(B.A.IJitDA<>));
+            Assert.Single(types);
+            t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.IJitDA<>)));
+            var instance2 = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as B.A.IJitDA<DefaultImplementNotationGeneratorTest>;
+            Assert.Null(instance2.A());
         }
 
         [Fact]

@@ -10,7 +10,7 @@ namespace Norns.Destiny.JIT.Structure
 {
     public class TypeSymbolInfo : ITypeSymbolInfo
     {
-        private static readonly Regex genericParamsNumber = new Regex("`{1}[0-9]{1,}"); 
+        private static readonly Regex genericParamsNumber = new Regex("`{1}[0-9]{1,}");
 
         public TypeSymbolInfo(Type type)
         {
@@ -29,7 +29,7 @@ namespace Norns.Destiny.JIT.Structure
             else if (type.IsNested)
             {
                 Name = RealType.Name.Replace('+', '.');
-                FullName = $"{RealType.DeclaringType.FullName}.{Name}";
+                FullName = $"{new TypeSymbolInfo(RealType.DeclaringType).FullName}.{Name}";
             }
             else
             {
@@ -44,7 +44,9 @@ namespace Norns.Destiny.JIT.Structure
                 TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
                 var genericParams = type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
                 Name = genericParamsNumber.Replace(Name, string.Empty);
-                FullName = $"{RealType.Namespace}.{Name}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+                FullName = genericParamsNumber.Replace($"{(type.IsNested ? new TypeSymbolInfo(type.DeclaringType).FullName : Namespace)}.{Name}", string.Empty);
+                GenericDefinitionName = $"{FullName}<{genericParams.Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+                FullName = $"{FullName}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
             }
             else
             {
@@ -61,7 +63,7 @@ namespace Norns.Destiny.JIT.Structure
         public Type RealType { get; }
         public string Namespace => RealType.Namespace;
         public AccessibilityInfo Accessibility { get; }
-        public string Name { get; } 
+        public string Name { get; }
         public bool IsStatic { get; }
         public bool IsSealed => RealType.IsSealed;
         public bool IsValueType => RealType.IsValueType;
@@ -80,7 +82,7 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsInterface => RealType.IsInterface;
         public string FullName { get; }
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public string GenericDefinitionName => $"{RealType.Namespace}.{Name}<{TypeParameters.Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+        public string GenericDefinitionName { get; }
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)).ToImmutableArray<IAttributeSymbolInfo>();
 
