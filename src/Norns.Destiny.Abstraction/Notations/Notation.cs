@@ -45,17 +45,17 @@ namespace Norns.Destiny.Notations
 
             if (value.HasReferenceTypeConstraint)
             {
-                notation.Constants.Add("class");
+                notation.Constants.Add(ConstNotations.Class);
             }
 
             if (value.HasValueTypeConstraint)
             {
-                notation.Constants.Add("struct");
+                notation.Constants.Add(ConstNotations.Struct);
             }
-            notation.Constants.AddRange(value.ConstraintTypes.Select(i => i.FullName));
+            notation.Constants.AddRange(value.ConstraintTypes.Select(i => i.FullName.ToNotation()));
             if (!value.HasValueTypeConstraint && value.HasConstructorConstraint)
             {
-                notation.Constants.Add("new()");
+                notation.Constants.Add(ConstNotations.ConstructorConstraint);
             }
             return notation;
         }

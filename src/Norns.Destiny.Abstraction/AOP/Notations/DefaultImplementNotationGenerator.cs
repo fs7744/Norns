@@ -40,7 +40,7 @@ namespace Norns.Destiny.AOP.Notations
                 switch (member)
                 {
                     case IMethodSymbolInfo method when method.IsAbstract && method.MethodKind != MethodKindInfo.PropertyGet && method.MethodKind != MethodKindInfo.PropertySet:
-                        @class.Members.Add(GenerateImplementMethod(method));
+                        @class.Members.Add(GenerateImplementMethod(method, type.IsInterface));
                         break;
 
                     case IPropertySymbolInfo property:
@@ -54,9 +54,10 @@ namespace Norns.Destiny.AOP.Notations
             return @namespace;
         }
 
-        private INotation GenerateImplementMethod(IMethodSymbolInfo method)
+        private INotation GenerateImplementMethod(IMethodSymbolInfo method, bool isInterface)
         {
             var notation = method.ToNotationDefinition();
+            notation.IsOverride = !isInterface && (method.IsAbstract || method.IsVirtual || method.IsOverride);
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             if (method.HasReturnValue)
             {

@@ -40,6 +40,16 @@ namespace Norns.Destiny.UT.JIT.AOP
         }
     }
 
+    public interface ITest
+    {
+        long GiveFive();
+    }
+
+    [Charon]
+    public interface IJitD : ITest
+    {
+    }
+
     [Charon]
     public interface IJitC
     {
@@ -62,6 +72,36 @@ namespace Norns.Destiny.UT.JIT.AOP
         IEnumerable<T> AddValue2<T, V>(T v, in V v1);
 
         IEnumerable<T> AddValue3<T, V>(T v, out V v1);
+
+        public int A() => 3;
+    }
+
+    [Charon]
+    public abstract class JitCClass
+    {
+        public abstract int AddOne(int v);
+
+        public abstract void AddVoid();
+
+        public abstract Task AddTask(int v);
+
+        public abstract Task<int> AddVTask(int v);
+
+        public abstract ValueTask<int> AddValueTask(int v);
+
+        public abstract ValueTask<T> AddValueTask<T>(T v);
+
+        public abstract ValueTask<Task<T>> AddValueTask<T, V>(T v, V v1) where T : struct where V : JitCClass;
+
+        public abstract IEnumerable<T> AddValue1<T, V>(T v, ref V v1);
+
+        public abstract IEnumerable<T> AddValue2<T, V>(T v, in V v1);
+
+        public abstract IEnumerable<T> AddValue3<T, V>(T v, out V v1);
+
+        public int A() => 3;
+
+        public virtual int B() => 3;
     }
 
     public struct A
@@ -99,6 +139,19 @@ namespace Norns.Destiny.UT.JIT.AOP
 
     public class DefaultImplementNotationGeneratorTest
     {
+        #region Interface
+
+        [Fact]
+        public async Task WhenInheritInterface()
+        {
+            var types = JitTest.Generate(typeof(IJitD));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD)));
+            var instance = Activator.CreateInstance(t.RealType) as IJitD;
+            Assert.Equal(0, instance.GiveFive());
+        }
+
         [Fact]
         public async Task WhenSimpleInterfaceAndSomeMethods()
         {
@@ -118,6 +171,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(instance.AddValue1(new A(), ref c));
             Assert.Null(instance.AddValue2(new A(), in c));
             Assert.Null(instance.AddValue3(new A(), out c));
+            Assert.Equal(3, instance.A());
         }
 
         [Fact]
@@ -159,5 +213,34 @@ namespace Norns.Destiny.UT.JIT.AOP
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(typeof(JitAopSourceGenerator), typeof(int), typeof(int))) as IJitDIn<JitAopSourceGenerator, int, int>;
             Assert.Null(instance.A());
         }
+
+        #endregion Interface
+
+        #region Abstract Class
+
+        [Fact]
+        public async Task WhenAbstractClassAndSomeMethods()
+        {
+            var types = JitTest.Generate(typeof(JitCClass));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass)));
+            var instance = Activator.CreateInstance(t.RealType) as JitCClass;
+            Assert.Equal(0, instance.AddOne(33));
+            instance.AddVoid();
+            await instance.AddTask(66);
+            Assert.Equal(0, await instance.AddVTask(44));
+            Assert.Equal(0, await instance.AddValueTask(11));
+            Assert.Null(await instance.AddValueTask(this));
+            Assert.Null(await instance.AddValueTask(new A(), instance));
+            var c = instance;
+            Assert.Null(instance.AddValue1(new A(), ref c));
+            Assert.Null(instance.AddValue2(new A(), in c));
+            Assert.Null(instance.AddValue3(new A(), out c));
+            Assert.Equal(3, instance.A());
+            Assert.Equal(3, instance.B());
+        }
+
+        #endregion Abstract Class
     }
 }

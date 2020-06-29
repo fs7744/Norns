@@ -88,6 +88,12 @@ namespace Norns.Destiny.Notations
 
         public static readonly IEnumerable<INotation> Nothings = new INotation[] { Nothing };
 
-        internal static readonly INotation Where = "where".ToNotation();
+        public static readonly INotation Where = "where".ToNotation();
+
+        public static readonly INotation Class = "class".ToNotation();
+       
+        public static readonly INotation Struct = "struct".ToNotation();
+        
+        public static readonly INotation ConstructorConstraint = "new()".ToNotation();
     }
 }

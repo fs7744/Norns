@@ -43,7 +43,7 @@ namespace Norns.Destiny.Notations
             yield return ConstNotations.OpenParen;
             yield return Parameters.InsertComma().Combine();
             yield return ConstNotations.CloseParen;
-            yield return TypeParameters.Select(i => i.ToConstantNotation()).InsertBlank().Combine();
+            yield return TypeParameters.Select(i => i.ToConstantNotation(IsOverride)).InsertBlank().Combine();
             yield return ConstNotations.OpenBrace;
             yield return Body.Combine();
             yield return ConstNotations.CloseBrace;

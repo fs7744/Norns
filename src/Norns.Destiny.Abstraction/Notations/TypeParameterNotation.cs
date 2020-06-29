@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.Notations
 {
     public class TypeParameterNotation : ParameterNotation
     {
-        public List<string> Constants { get; } = new List<string>();
+        public List<INotation> Constants { get; } = new List<INotation>();
 
-        public FormatterNotation<TypeParameterNotation> ToConstantNotation()
+        public FormatterNotation<TypeParameterNotation> ToConstantNotation(bool isOverride)
         {
-            return new FormatterNotation<TypeParameterNotation>(this, new ConstantFormatterNotation());
+            return new FormatterNotation<TypeParameterNotation>(this, new ConstantFormatterNotation(isOverride));
         }
 
         public FormatterNotation<TypeParameterNotation> ToOnlyTypeDefinitionNotation()
@@ -19,9 +20,17 @@ namespace Norns.Destiny.Notations
 
     public class ConstantFormatterNotation : IFormatter<TypeParameterNotation>
     {
+        private readonly bool isOverride;
+
+        public ConstantFormatterNotation(bool isOverride)
+        {
+            this.isOverride = isOverride;
+        }
+
         public IEnumerable<INotation> Format(TypeParameterNotation value)
         {
-            if (value.Constants.Count > 0)
+            var constants = value.Constants.Where(i => !isOverride || i == ConstNotations.Class || i == ConstNotations.Struct).ToArray();
+            if (constants.Length > 0)
             {
                 yield return ConstNotations.Where;
                 yield return ConstNotations.Blank;
@@ -29,7 +38,7 @@ namespace Norns.Destiny.Notations
                 yield return ConstNotations.Blank;
                 yield return ConstNotations.Colon;
                 yield return ConstNotations.Blank;
-                yield return value.Constants.ToNotations().InsertComma().Combine();
+                yield return constants.InsertComma().Combine();
             }
         }
     }

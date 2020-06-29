@@ -18,7 +18,7 @@ namespace Norns.Destiny.Notations
             yield return CustomAttributes.InsertBlank().Combine();
             yield return Accessibility.ToDisplayString().ToNotation();
             yield return ConstNotations.Blank;
-            yield return "class".ToNotation();
+            yield return ConstNotations.Class;
             yield return ConstNotations.Blank;
             yield return Name.ToNotation();
             if (TypeParameters.Count > 0)
@@ -32,7 +32,7 @@ namespace Norns.Destiny.Notations
                 yield return ConstNotations.Colon;
                 yield return Inherits.InsertBlank().Combine();
             }
-            yield return TypeParameters.Select(i => i.ToConstantNotation()).InsertBlank().Combine();
+            yield return TypeParameters.Select(i => i.ToConstantNotation(false)).InsertBlank().Combine();
             yield return ConstNotations.Blank;
             yield return ConstNotations.OpenBrace;
             yield return Members.Combine();
