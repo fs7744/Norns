@@ -32,7 +32,7 @@ namespace Norns.Destiny.JIT.Structure
             {
                 return RefKindInfo.In;
             }
-            else if (p.IsRetval)
+            else if (p.IsRetval || (p.ParameterType.ContainsGenericParameters && p.ParameterType.IsByRef))
             {
                 return RefKindInfo.Ref;
             }

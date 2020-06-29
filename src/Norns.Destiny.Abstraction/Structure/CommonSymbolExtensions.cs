@@ -71,28 +71,6 @@ namespace Norns.Destiny.Abstraction.Structure
             }
         }
 
-        public static MethodNotation ToNotationDefinition(this IMethodSymbolInfo method)
-        {
-            var notation = new MethodNotation()
-            {
-                Accessibility = method.Accessibility,
-                ReturnType = method.ReturnType.FullName,
-                Name = method.Name
-            };
-            notation.Parameters.AddRange(method.Parameters.Select(i => new ParameterNotation()
-            {
-                RefKind = i.RefKind,
-                Type = i.Type.FullName,
-                Name = i.Name
-            }));
-            if (method.IsGenericMethod)
-            {
-                notation.TypeParameters.AddRange(method.TypeParameters.Select(i => i.ToNotation()));
-            }
-            notation.IsAsync = method.IsAsync;
-            return notation;
-        }
-
         public static bool HasAttribute<T>(this ITypeSymbolInfo type)
         {
             return type.GetAttributes().Any(i => i.AttributeType.FullName == typeof(T).FullName);

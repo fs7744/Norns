@@ -60,6 +60,29 @@ namespace Norns.Destiny.Notations
             return notation;
         }
 
+        public static MethodNotation ToNotationDefinition(this IMethodSymbolInfo method)
+        {
+            var notation = new MethodNotation()
+            {
+                Accessibility = method.Accessibility,
+                ReturnType = method.ReturnType.FullName,
+                Name = method.Name
+            };
+            notation.Parameters.AddRange(method.Parameters.Select(i => new ParameterNotation()
+            {
+                RefKind = i.RefKind,
+                Type = i.Type.FullName,
+                Name = i.Name
+            }));
+            if (method.IsGenericMethod)
+            {
+                notation.TypeParameters.AddRange(method.TypeParameters.Select(i => i.ToNotation()));
+            }
+            notation.IsAsync = method.IsAsync;
+            return notation;
+        }
+
+
         public static INotation ToCallParameters(this IEnumerable<ParameterNotation> values)
         {
             return values.Select(i => i.ToCallParameter()).InsertComma().Combine();

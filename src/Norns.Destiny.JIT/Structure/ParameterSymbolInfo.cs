@@ -25,7 +25,7 @@ namespace Norns.Destiny.JIT.Structure
         public string Name => RealParameter.Name;
         public RefKindInfo RefKind { get; }
         public ITypeSymbolInfo Type { get; }
-        public string FullName => RealParameter.Name;
+        public string FullName => $"{Type.FullName} {RealParameter.Name}";
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealParameter
             .GetCustomAttributesData()

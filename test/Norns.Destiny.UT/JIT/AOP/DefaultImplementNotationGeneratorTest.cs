@@ -56,6 +56,8 @@ namespace Norns.Destiny.UT.JIT.AOP
         ValueTask<T> AddValueTask<T>(T v);
 
         ValueTask<Task<T>> AddValueTask<T, V>(T v, V v1) where T : struct where V : class, IJitC;
+
+        IEnumerable<T> AddValue1<T, V>(T v, ref V v1);
     }
 
     public struct A
@@ -78,6 +80,8 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
             Assert.Null(await instance.AddValueTask(new A(), instance));
+            var c = instance;
+            Assert.Null(instance.AddValue1(new A(), ref c));
         }
 
         //        [Fact]

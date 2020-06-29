@@ -36,7 +36,7 @@ namespace Norns.Destiny.JIT.Structure
                 Name = RealType.Name;
                 FullName = RealType.FullName;
             }
-            
+
             if (IsGenericType)
             {
                 TypeArguments = type.GenericTypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
@@ -49,6 +49,11 @@ namespace Norns.Destiny.JIT.Structure
             {
                 TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
+            }
+            if (type.IsByRef)
+            {
+                Name = Name?.Replace("&", string.Empty);
+                FullName = Name;
             }
         }
 
