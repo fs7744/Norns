@@ -31,6 +31,8 @@ namespace Norns.Destiny.UT.AOT.AOP
             return AotTest.GenerateCode($"namespace Norns.Destiny.UT.AOT.Generated {{ {code} }}", collector);
         }
 
+        #region Interface
+
         [Fact]
         public void WhenSimpleInterfaceSyncMethodAndHasReturnValue()
         {
@@ -91,7 +93,7 @@ using Norns.Destiny.Attributes;
         {
             var code = @"
 using System.Threading.Tasks;
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC
     {
@@ -110,7 +112,7 @@ using Norns.Destiny.Attributes;
         {
             var code = @"
 using System.Threading.Tasks;
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC
     {
@@ -129,7 +131,7 @@ using Norns.Destiny.Attributes;
         {
             var code = @"
 using System.Threading.Tasks;
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC
     {
@@ -148,7 +150,7 @@ using Norns.Destiny.Attributes;
         {
             var code = @"
 using System.Threading.Tasks;
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC
     {
@@ -167,7 +169,7 @@ using Norns.Destiny.Attributes;
         {
             var code = @"
 using System.Threading.Tasks;
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC
     {
@@ -191,7 +193,7 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v3);
         public void WhenGenericInterfaceSyncMethod()
         {
             var code = @"
-    
+
 using Norns.Destiny.Attributes;
     [Charon]public interface IC<T> where T : class
     {
@@ -266,7 +268,7 @@ using Norns.Destiny.Attributes;
         public void WhenInGenericNestedNestedInterfaceSyncMethod()
         {
             var code = @"
-using Norns.Destiny.Attributes; 
+using Norns.Destiny.Attributes;
 public class B {
     public class A {
     [Charon]
@@ -324,5 +326,122 @@ public interface ID
             Assert.Contains("public void B()", output);
             Assert.DoesNotContain("return default;", output);
         }
+
+        #endregion Interface
+
+        #region Abstract Class
+
+        [Fact]
+        public void WhenAbstractClassSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+using System.Threading.Tasks;
+
+[Charon]
+    public abstract class JitCClass
+    {
+        public abstract int AddOne(int v);
+
+        public abstract void AddVoid();
+
+        public abstract Task AddTask(int v);
+
+        public abstract Task<int> AddVTask(int v);
+
+        public abstract ValueTask<int> AddValueTask(int v);
+
+        public abstract ValueTask<T> AddValueTask<T>(T v);
+
+        public abstract ValueTask<Task<T>> AddValueTask<T, V>(T v, V v1) where T : struct where V : JitCClass;
+
+        public abstract IEnumerable<T> AddValue1<T, V>(T v, ref V v1);
+
+        public abstract IEnumerable<T> AddValue2<T, V>(T v, in V v1);
+
+        public abstract IEnumerable<T> AddValue3<T, V>(T v, out V v1);
+
+        public int A() => 3;
+
+        public virtual int B() => 3;
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.JitCClass))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains(":Norns.Destiny.UT.AOT.Generated.JitCClass {", output);
+            Assert.Contains("public override int AddOne(int v)", output);
+            Assert.Contains("public override void AddVoid()", output);
+            Assert.Contains("public async override System.Threading.Tasks.Task AddTask(int v)", output);
+            Assert.Contains("public async override System.Threading.Tasks.Task<int> AddVTask(int v)", output);
+            Assert.Contains("public async override System.Threading.Tasks.ValueTask<int> AddValueTask(int v)", output);
+            Assert.Contains("public async override System.Threading.Tasks.ValueTask<T> AddValueTask<T>(T v)", output);
+            Assert.Contains("public async override System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)where T : struct", output);
+            Assert.Contains("public override IEnumerable<T> AddValue1<T,V>(T v,ref V v1)", output);
+            Assert.Contains("public override IEnumerable<T> AddValue2<T,V>(T v,in V v1)", output);
+            Assert.Contains("public override IEnumerable<T> AddValue3<T,V>(T v,out V v1)", output);
+            Assert.DoesNotContain("B()", output);
+            Assert.DoesNotContain("A()", output);
+        }
+
+        [Fact]
+        public void WhenGenericAbstractClassSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+using System.Threading.Tasks;
+
+[Charon]
+    public abstract class JitCClass<T> where T : class
+    {
+        public abstract T B();
+    }";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.JitCClass<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.JitCClass<T>where T : class {", output);
+            Assert.Contains("public override T B()", output);
+        }
+
+        [Fact]
+        public void WhenNestedGenericAbstractClassSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+using System.Threading.Tasks;
+
+ public class A {
+[Charon]
+    public abstract class JitCClass<T> where T : class
+    {
+        public abstract T B();
+    }}";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.A.JitCClass<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.JitCClass<T>where T : class {", output);
+            Assert.Contains("public override T B()", output);
+        }
+
+        [Fact]
+        public void WhenNestedNestedGenericAbstractClassSyncMethod()
+        {
+            var code = @"
+using Norns.Destiny.Attributes;
+using System.Threading.Tasks;
+public class A {
+ public class A {
+[Charon]
+    public abstract class JitCClass<T> where T : class
+    {
+        public abstract T B();
+    }}}";
+            var output = Generate(code);
+            Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.A.A.JitCClass<>))]", output);
+            Assert.Contains("public class DefaultImplement", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.A.JitCClass<T>where T : class {", output);
+            Assert.Contains("public override T B()", output);
+        }
+
+        #endregion Abstract Class
     }
 }

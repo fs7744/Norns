@@ -114,6 +114,12 @@ namespace Norns.Destiny.UT.JIT.AOP
     }
 
     [Charon]
+    public abstract class JitCClass<T, V, R> where T : class
+    {
+        public abstract (T, V, R) A();
+    }
+
+    [Charon]
     public interface IJitDIn<in T, V, R> where T : JitAopSourceGenerator
     {
         OnlyDefaultImplementNotationGenerator A();
@@ -134,6 +140,18 @@ namespace Norns.Destiny.UT.JIT.AOP
             {
                 T A();
             }
+
+            [Charon]
+            public abstract class JitCClassA<T, V, R> where T : class
+            {
+                public abstract (T, V, R) A();
+            }
+        }
+
+        [Charon]
+        public abstract class JitCClassB<T, V, R> where T : class
+        {
+            public abstract (T, V, R) A();
         }
     }
 
@@ -142,7 +160,7 @@ namespace Norns.Destiny.UT.JIT.AOP
         #region Interface
 
         [Fact]
-        public async Task WhenInheritInterface()
+        public void WhenInheritInterface()
         {
             var types = JitTest.Generate(typeof(IJitD));
             Assert.Single(types);
@@ -239,6 +257,44 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Null(instance.AddValue3(new A(), out c));
             Assert.Equal(3, instance.A());
             Assert.Equal(3, instance.B());
+        }
+
+        [Fact]
+        public void WhenAbstractClassSyncMethod()
+        {
+            var types = JitTest.Generate(typeof(JitCClass<,,>));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass<,,>)));
+            var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as JitCClass<DefaultImplementNotationGeneratorTest, long, int>;
+            var r = instance.A();
+            Assert.Null(r.Item1);
+            Assert.Equal(0L, r.Item2);
+            Assert.Equal(0, r.Item3);
+        }
+
+        [Fact]
+        public void WhenNestedAbstractClassSyncMethod()
+        {
+            var types = JitTest.Generate(typeof(B.JitCClassB<,,>));
+            Assert.Single(types);
+            var t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.JitCClassB<,,>)));
+            var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as B.JitCClassB<DefaultImplementNotationGeneratorTest, long, int>;
+            var r = instance.A();
+            Assert.Null(r.Item1);
+            Assert.Equal(0L, r.Item2);
+            Assert.Equal(0, r.Item3);
+
+            types = JitTest.Generate(typeof(B.A.JitCClassA<,,>));
+            Assert.Single(types);
+            t = types.Values.First();
+            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.JitCClassA<,,>)));
+            var instance1 = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as B.A.JitCClassA<DefaultImplementNotationGeneratorTest, long, int>;
+            r = instance1.A();
+            Assert.Null(r.Item1);
+            Assert.Equal(0L, r.Item2);
+            Assert.Equal(0, r.Item3);
         }
 
         #endregion Abstract Class
