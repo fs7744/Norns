@@ -2,6 +2,7 @@
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
@@ -9,10 +10,12 @@ namespace Norns.Destiny.AOP.Notations
     public class DefaultImplementNotationGenerator : AbstractNotationGenerator
     {
         private readonly Func<ITypeSymbolInfo, bool> filter;
+        private readonly IEnumerable<IInterceptorGenerator> interceptors;
 
-        public DefaultImplementNotationGenerator(Func<ITypeSymbolInfo, bool> filter)
+        public DefaultImplementNotationGenerator(Func<ITypeSymbolInfo, bool> filter, IEnumerable<IInterceptorGenerator> interceptors)
         {
             this.filter = filter;
+            this.interceptors = interceptors;
         }
 
         public override bool Filter(ITypeSymbolInfo type)
@@ -22,6 +25,10 @@ namespace Norns.Destiny.AOP.Notations
 
         public override INotation CreateImplement(ITypeSymbolInfo type)
         {
+            var context = new ProxyGeneratorContext()
+            {
+                Symbol = type
+            };
             var @namespace = new NamespaceNotation() { Name = type.Namespace };
             var @class = new ClassNotation()
             {
@@ -40,7 +47,7 @@ namespace Norns.Destiny.AOP.Notations
                 switch (member)
                 {
                     case IMethodSymbolInfo method when method.IsAbstract && method.MethodKind == MethodKindInfo.Method:
-                        @class.Members.Add(GenerateImplementMethod(method, type.IsInterface));
+                        @class.Members.Add(GenerateImplementMethod(method, type.IsInterface, context));
                         break;
 
                     case IMethodSymbolInfo method when method.MethodKind == MethodKindInfo.Constructor:
@@ -48,7 +55,7 @@ namespace Norns.Destiny.AOP.Notations
                         break;
 
                     case IPropertySymbolInfo property:
-                        @class.Members.Add(GenerateImplementProperty(property, type.IsInterface));
+                        @class.Members.Add(GenerateImplementProperty(property, type.IsInterface, context));
                         break;
 
                     default:
@@ -66,20 +73,38 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation GenerateImplementMethod(IMethodSymbolInfo method, bool isInterface)
+        private INotation GenerateImplementMethod(IMethodSymbolInfo method, bool isInterface, ProxyGeneratorContext typeContext)
         {
+            var context = new ProxyGeneratorContext()
+            {
+                Parent = typeContext,
+                Symbol = method
+            };
             var notation = method.ToNotationDefinition();
+            context.SetCurrentMethodNotation(notation);
             notation.IsOverride = !isInterface && method.CanOverride();
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
+            var returnValueParameterName = context.GetReturnValueParameterName();
             if (method.HasReturnValue)
             {
-                notation.Body.Add("return default;".ToNotation());
+                notation.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", method.IsAsync ? method.ReturnType.TypeArguments.First().FullName : method.ReturnType.FullName, ");"));
+            }
+            notation.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
+            notation.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
+            if (method.HasReturnValue)
+            {
+                notation.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
             }
             return notation;
         }
 
-        private INotation GenerateImplementProperty(IPropertySymbolInfo property, bool isInterface)
+        private INotation GenerateImplementProperty(IPropertySymbolInfo property, bool isInterface, ProxyGeneratorContext typeContext)
         {
+            var context = new ProxyGeneratorContext()
+            {
+                Parent = typeContext,
+                Symbol = property
+            };
             PropertyNotation notation;
             if (property.IsIndexer)
             {
@@ -101,16 +126,25 @@ namespace Norns.Destiny.AOP.Notations
             notation.Type = property.Type.FullName;
             if (property.CanRead)
             {
+                context.SetCurrentPropertyMethod(property.GetMethod);
                 var getter = PropertyMethodNotation.Create(true);
                 getter.Accessibility = property.GetMethod.Accessibility;
-                getter.Body.AddRange(Notation.Create("return default(", property.Type.FullName, ");"));
+
+                var returnValueParameterName = context.GetReturnValueParameterName();
+                getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
+                getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
+                getter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
+                getter.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
                 notation.Accessers.Add(getter);
             }
             if (property.CanWrite)
             {
+                context.SetCurrentPropertyMethod(property.SetMethod);
                 var setter = PropertyMethodNotation.Create(false);
                 setter.Accessibility = property.SetMethod.Accessibility;
+                setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
                 setter.Body.Add(ConstNotations.Blank);
+                setter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 notation.Accessers.Add(setter);
             }
             return notation;

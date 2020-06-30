@@ -52,12 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
             switch (serviceDescriptor)
             {
                 case ServiceDescriptor d when d.ImplementationType != null:
-                    return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, i =>
-                    {
-                        var p = ActivatorUtilities.CreateInstance(i, implementationType) as IInterceptProxy;
-                        p?.SetProxy(ActivatorUtilities.CreateInstance(i, d.ImplementationType), i);
-                        return p;
-                    }, d.Lifetime);
+                    return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, implementationType, d.Lifetime);
                 case ServiceDescriptor d when d.ImplementationFactory != null:
                     return ServiceDescriptor.Describe(serviceDescriptor.ServiceType, i =>
                     {

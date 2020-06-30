@@ -20,7 +20,7 @@ namespace Norns.Destiny.JIT.AOP
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
-            yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement);
+            yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement, generators);
             yield return new ProxyNotationGenerator(generators);
         }
 

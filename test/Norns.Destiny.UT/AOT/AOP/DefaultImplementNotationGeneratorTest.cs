@@ -19,7 +19,7 @@ namespace Norns.Destiny.UT.AOT.AOP
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
-            yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement);
+            yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement, GetInterceptorGenerators());
         }
     }
 
@@ -54,7 +54,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public int AddOne(int v)", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(int);return", output);
             Assert.Contains("public int PA", output);
             Assert.Contains("public int PD", output);
             Assert.Contains("public string this[int v,string s]", output);
@@ -113,7 +113,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public async System.Threading.Tasks.Task<int> AddVTask(int v)", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(int);return", output);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<int> AddValueTask(int v)", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(int);return", output);
         }
 
         [Fact]
@@ -151,7 +151,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<T> AddValueTask<T>(T v)", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(T);return", output);
         }
 
         [Fact]
@@ -170,7 +170,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains(":Norns.Destiny.UT.AOT.Generated.IC {", output);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask<T,V>(T v,V v1)where T : struct where V : class,Norns.Destiny.UT.AOT.Generated.IC", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(System.Threading.Tasks.Task<T>);return", output);
         }
 
         [Fact]
@@ -195,7 +195,7 @@ ValueTask<Task<T>> AddValueTask3<T,V>(T v,out V v3);
             Assert.Contains("public async System.Threading.Tasks.ValueTask<System.Threading.Tasks.Task<T>> AddValueTask3<T,V>(T v,out V v3)", output);
             Assert.DoesNotContain("where", output);
             Assert.Contains("v3 = default;", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(System.Threading.Tasks.Task<T>);return", output);
         }
 
         [Fact]
@@ -213,7 +213,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
             Assert.Contains("public T A()", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(T);return", output);
         }
 
         [Fact]
@@ -231,7 +231,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
             Assert.Contains("public T A()", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(T);return", output);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains("<T,V,R>:Norns.Destiny.UT.AOT.Generated.IC<T, V, R>where T : Norns.Destiny.UT.AOT.Generated.A", output);
             Assert.Contains("public Norns.Destiny.UT.AOT.Generated.B A()", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(Norns.Destiny.UT.AOT.Generated.B);return", output);
         }
 
         [Fact]
@@ -270,7 +270,7 @@ using Norns.Destiny.Attributes;
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains("<R>:Norns.Destiny.UT.AOT.Generated.A.IC<R>", output);
             Assert.Contains("public R A()", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(R);return", output);
         }
 
         [Fact]
@@ -290,7 +290,7 @@ public class B {
             Assert.Contains("public class DefaultImplement", output);
             Assert.Contains("<R>:Norns.Destiny.UT.AOT.Generated.B.A.IC<R>", output);
             Assert.Contains("public R A()", output);
-            Assert.Contains("return default;", output);
+            Assert.Contains("= default(R);return", output);
         }
 
         [Fact]
