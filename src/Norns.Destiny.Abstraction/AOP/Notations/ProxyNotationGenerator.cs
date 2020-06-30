@@ -41,6 +41,7 @@ namespace Norns.Destiny.AOP.Notations
             };
             context.SetCurrentNamespaceNotation(@namespace);
             context.SetCurrentClassNotation(@class);
+            var constructors = new List<ConstructorNotation>();
             foreach (var member in type.GetMembers().Union(type.GetInterfaces().SelectMany(i => i.GetMembers())).Distinct())
             {
                 switch (member)
@@ -52,6 +53,12 @@ namespace Norns.Destiny.AOP.Notations
                         @class.Members.Add(CreateProxyMethod(method, context, type.IsInterface));
                         break;
 
+                    case IMethodSymbolInfo method when method.MethodKind == MethodKindInfo.Constructor:
+                        var constructor = GenerateImplementConstructor(method, @class.Name);
+                        constructors.Add(constructor);
+                        @class.Members.Add(constructor);
+                        break;
+
                     case IPropertySymbolInfo property when property.CanOverride():
                         @class.Members.Add(CreateProxyProperty(property, context, type.IsInterface));
                         break;
@@ -60,23 +67,30 @@ namespace Norns.Destiny.AOP.Notations
                         break;
                 }
             }
-            AddProxyInfo(@class, context, type);
+            AddFromDIFieldToConstructors(@class, constructors);
             return @namespace;
         }
 
-        private void AddProxyInfo(ClassNotation @class, ProxyGeneratorContext context, ITypeSymbolInfo type)
+        private static void AddFromDIFieldToConstructors(ClassNotation @class, List<ConstructorNotation> constructors)
         {
-            @class.Members.Add(new FieldNotation() { Accessibility = AccessibilityInfo.Public, Type = type.FullName, Name = context.GetProxyFieldName() });
-            var setProxyNode = new MethodNotation() { Accessibility = AccessibilityInfo.Public, ReturnType = "void", Name = "SetProxy" };
-            setProxyNode.Parameters.Add(new ParameterNotation() { Type = "object", Name = "instance" });
-            setProxyNode.Parameters.Add(new ParameterNotation() { Type = "System.IServiceProvider", Name = "serviceProvider" });
-            setProxyNode.Body.AddRange(Notation.Create(context.GetProxyFieldName(), " = instance as ", type.FullName, ";"));
-            @class.Members.Add(setProxyNode);
-            @class.Inherits.Add("Norns.Destiny.AOP.IInterceptProxy".ToNotation());
             foreach (var f in @class.Members.Select(i => i as FieldNotation).Where(i => i != null && i.IsFromDI))
             {
-                setProxyNode.Body.AddRange(Notation.Create(f.Name, " = serviceProvider.GetService(typeof(", f.Type, ")) as ", f.Type, ";"));
+                var p = new ParameterNotation() { Type = f.Type, Name = f.Name };
+                var fieldAssign = Notation.Create("this.", f.Name, "=", f.Name, ";");
+                foreach (var item in constructors)
+                {
+                    item.Parameters.Add(p);
+                    item.Body.AddRange(fieldAssign);
+                }
             }
+        }
+
+        private ConstructorNotation GenerateImplementConstructor(IMethodSymbolInfo method, string className)
+        {
+            var notation = method.ToConstructorNotation(className);
+            notation.Accessibility = AccessibilityInfo.Public;
+            notation.HasBase = true;
+            return notation;
         }
 
         private INotation CreateProxyProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext, bool isInterface)
@@ -119,7 +133,7 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
                 getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName()));
+                getter.Body.AddRange(Notation.Create(returnValueParameterName, " = this"));
                 getter.Body.AddRange(callName);
                 getter.Body.Add(ConstNotations.Semicolon);
                 getter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
@@ -134,7 +148,7 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 setter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = value;"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                setter.Body.AddRange(Notation.Create(context.GetProxyFieldName()));
+                setter.Body.Add(ConstNotations.This);
                 setter.Body.AddRange(callName);
                 setter.Body.AddRange(Notation.Create(" = ", returnValueParameterName, ";"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
@@ -167,7 +181,7 @@ namespace Norns.Destiny.AOP.Notations
                 {
                     notation.Body.AddRange(Notation.Create(returnValueParameterName, " = "));
                 }
-                notation.Body.AddRange(Notation.Create(method.IsAsync ? "await " : string.Empty, context.GetProxyFieldName(), ".", method.Name));
+                notation.Body.AddRange(Notation.Create(method.IsAsync ? "await " : string.Empty, "this", ".", method.Name));
                 notation.Body.Add(ConstNotations.OpenParen);
                 notation.Body.Add(notation.Parameters.ToCallParameters());
                 notation.Body.Add(ConstNotations.CloseParen);

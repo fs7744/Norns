@@ -60,6 +60,22 @@ namespace Norns.Destiny.Notations
             return notation;
         }
 
+        public static ConstructorNotation ToConstructorNotation(this IMethodSymbolInfo method, string className)
+        {
+            var notation = new ConstructorNotation()
+            {
+                Name = className,
+                Accessibility = method.Accessibility
+            };
+            notation.BaseParameters.AddRange(method.Parameters.Select(i => new ParameterNotation()
+            {
+                RefKind = i.RefKind,
+                Type = i.Type.FullName,
+                Name = i.Name
+            }));
+            return notation;
+        }
+
         public static MethodNotation ToNotationDefinition(this IMethodSymbolInfo method)
         {
             var notation = new MethodNotation()

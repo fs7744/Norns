@@ -88,8 +88,9 @@ namespace Norns.Destiny.AOT.Structure
         {
             switch (methodKind)
             {
+                case MethodKind.Ordinary:
                 case MethodKind.DeclareMethod:
-                    return MethodKindInfo.DeclareMethod;
+                    return MethodKindInfo.Method;
 
                 case MethodKind.PropertyGet:
                     return MethodKindInfo.PropertyGet;
@@ -99,6 +100,9 @@ namespace Norns.Destiny.AOT.Structure
 
                 case MethodKind.Constructor:
                     return MethodKindInfo.Constructor;
+
+                case MethodKind.StaticConstructor:
+                    return MethodKindInfo.StaticConstructor;
 
                 case MethodKind.EventAdd:
                     return MethodKindInfo.EventAdd;

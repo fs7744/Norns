@@ -81,7 +81,7 @@ namespace Norns.Destiny.UT.JIT.AOP
 
         public virtual int PD { protected get; set; }
 
-        public abstract string this[int v, string s] { get;set; }
+        public abstract string this[int v, string s] { get; set; }
     }
 
     public struct A
@@ -233,7 +233,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddVTask(44));
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
-            Assert.Null(await instance.AddValueTask(new A(), instance)); 
+            Assert.Null(await instance.AddValueTask(new A(), instance));
             Assert.Equal(0, instance.PA);
             instance.PD = 55;
             Assert.Null(instance[3, ""]);

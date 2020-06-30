@@ -210,7 +210,7 @@ namespace Norns.Destiny.JIT.Structure
             }
             else
             {
-                return MethodKindInfo.DeclareMethod;
+                return MethodKindInfo.Method;
             }
         }
     }

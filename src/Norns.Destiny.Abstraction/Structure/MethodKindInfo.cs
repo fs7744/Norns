@@ -10,6 +10,6 @@
         PropertyGet = 11,
         PropertySet = 12,
         StaticConstructor = 14, 
-        DeclareMethod = 16,
+        Method = 16,
     }
 }

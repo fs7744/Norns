@@ -100,5 +100,7 @@ namespace Norns.Destiny.Notations
         public static readonly INotation Struct = "struct".ToNotation();
         
         public static readonly INotation ConstructorConstraint = "new()".ToNotation();
+
+        public static readonly INotation Base = "base".ToNotation();
     }
 }
