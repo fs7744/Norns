@@ -1,34 +1,17 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Immutable;
-using System.Runtime.Serialization;
+using System.Linq;
 
 namespace Norns.Destiny.JIT.Coder
 {
-    [Serializable]
     public class JitComplieException : Exception
     {
         public ImmutableArray<Diagnostic> Diagnostics { get; }
 
-        public JitComplieException()
-        {
-        }
-
-        public JitComplieException(ImmutableArray<Diagnostic> diagnostics)
+        public JitComplieException(ImmutableArray<Diagnostic> diagnostics) : base(diagnostics.Select(i => i.ToString()).DefaultIfEmpty().Aggregate((i, j) => i + j))
         {
             Diagnostics = diagnostics;
-        }
-
-        public JitComplieException(string message) : base(message)
-        {
-        }
-
-        public JitComplieException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected JitComplieException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
         }
     }
 }

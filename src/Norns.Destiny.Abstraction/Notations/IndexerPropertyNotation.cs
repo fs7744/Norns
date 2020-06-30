@@ -4,7 +4,7 @@ namespace Norns.Destiny.Notations
 {
     public class IndexerPropertyNotation : PropertyNotation
     {
-        public List<INotation> Parameters { get; } = new List<INotation>();
+        public List<ParameterNotation> Parameters { get; } = new List<ParameterNotation>();
 
         public override INotation GetName()
         {

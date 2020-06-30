@@ -5,6 +5,11 @@ namespace Norns.Destiny.Notations
     public static class ConstNotations
     {
         /// <summary>
+        /// .
+        /// </summary>
+        public static readonly INotation Dot = ".".ToNotation();
+
+        /// <summary>
         /// ' '
         /// </summary>
         public static readonly INotation Blank = " ".ToNotation();

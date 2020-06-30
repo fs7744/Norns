@@ -3,6 +3,7 @@ using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.JIT.Coder;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Norns.Destiny.JIT.AOP
 {
@@ -14,7 +15,7 @@ namespace Norns.Destiny.JIT.AOP
         public JitAopSourceGenerator(JitOptions options, IEnumerable<IInterceptorGenerator> generators)
         {
             this.options = options;
-            this.generators = generators;
+            this.generators = generators.ToArray();
         }
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()

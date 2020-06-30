@@ -44,11 +44,11 @@ namespace Norns.Destiny.AOP.Notations
                     case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet
                         && method.MethodKind != MethodKindInfo.PropertySet
                         && method.CanOverride():
-                        @class.Members.Add(CreateProxyMethod(method, context));
+                        @class.Members.Add(CreateProxyMethod(method, context, type.IsInterface));
                         break;
 
                     case IPropertySymbolInfo property when property.CanOverride():
-                        @class.Members.Add(CreateProxyProperty(property, context));
+                        @class.Members.Add(CreateProxyProperty(property, context, type.IsInterface));
                         break;
 
                     default:
@@ -74,7 +74,7 @@ namespace Norns.Destiny.AOP.Notations
             }
         }
 
-        private INotation CreateProxyProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext)
+        private INotation CreateProxyProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext, bool isInterface)
         {
             var context = new ProxyGeneratorContext()
             {
@@ -82,6 +82,7 @@ namespace Norns.Destiny.AOP.Notations
                 Symbol = property
             };
             PropertyNotation notation;
+            List<INotation> callName = new List<INotation>();
             if (property.IsIndexer)
             {
                 var indexer = new IndexerPropertyNotation();
@@ -91,12 +92,17 @@ namespace Norns.Destiny.AOP.Notations
                     Name = i.Name
                 }));
                 notation = indexer;
+                callName.Add(ConstNotations.OpenBracket);
+                callName.Add(indexer.Parameters.ToCallParameters());
+                callName.Add(ConstNotations.CloseBracket);
             }
             else
             {
+                callName.Add(ConstNotations.Dot);
+                callName.Add(property.Name.ToNotation());
                 notation = new PropertyNotation();
             }
-            notation.IsOverride = true;
+            notation.IsOverride = !isInterface && property.CanOverride();
             notation.Accessibility = property.Accessibility;
             notation.Name = property.Name;
             notation.Type = property.Type.FullName;
@@ -108,7 +114,9 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
                 getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName(), ".", property.Name, ";"));
+                getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName()));
+                getter.Body.AddRange(callName);
+                getter.Body.Add(ConstNotations.Semicolon);
                 getter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 getter.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
                 notation.Accessers.Add(getter);
@@ -121,29 +129,32 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 setter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = value;"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                setter.Body.AddRange(Notation.Create(context.GetProxyFieldName(), ".", property.Name, " = ", returnValueParameterName, ";"));
+                setter.Body.AddRange(Notation.Create(context.GetProxyFieldName()));
+                setter.Body.AddRange(callName);
+                setter.Body.AddRange(Notation.Create(" = ", returnValueParameterName, ";"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 notation.Accessers.Add(setter);
             }
             return notation;
         }
 
-        private INotation CreateProxyMethod(IMethodSymbolInfo method, ProxyGeneratorContext typeContext)
+        private INotation CreateProxyMethod(IMethodSymbolInfo method, ProxyGeneratorContext typeContext, bool isInterface)
         {
             var context = new ProxyGeneratorContext()
             {
-                Parent = typeContext
+                Parent = typeContext,
+                Symbol = method
             };
 
             var notation = method.ToNotationDefinition();
             context.SetCurrentMethodNotation(notation);
-            notation.IsOverride = true;
+            notation.IsOverride = !isInterface && method.CanOverride();
             var returnValueParameterName = context.GetReturnValueParameterName();
             if (method.HasReturnValue)
             {
-                notation.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", method.IsAsync ? method.ReturnType.TypeParameters.First().FullName : method.ReturnType.FullName, ");"));
+                notation.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", method.IsAsync ? method.ReturnType.TypeArguments.First().FullName : method.ReturnType.FullName, ");"));
             }
-
+            notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             notation.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
             if (!method.IsAbstract)
             {
@@ -152,7 +163,9 @@ namespace Norns.Destiny.AOP.Notations
                     notation.Body.AddRange(Notation.Create(returnValueParameterName, " = "));
                 }
                 notation.Body.AddRange(Notation.Create(method.IsAsync ? "await " : string.Empty, context.GetProxyFieldName(), ".", method.Name));
+                notation.Body.Add(ConstNotations.OpenParen);
                 notation.Body.Add(notation.Parameters.ToCallParameters());
+                notation.Body.Add(ConstNotations.CloseParen);
                 notation.Body.Add(ConstNotations.Semicolon);
             }
             notation.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));

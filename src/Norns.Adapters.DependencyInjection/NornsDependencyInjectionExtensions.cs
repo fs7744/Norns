@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceProvider BuildAopServiceProvider(this IServiceCollection sc, params Assembly[] assemblies)
         {
-            var (defaultInterfaceImplementDict, proxyDict) = DestinyExtensions.FindProxyTypes(AppDomain.CurrentDomain.GetAssemblies().Union(assemblies).Distinct().ToArray());
+            var (defaultInterfaceImplementDict, proxyDict) = DestinyExtensions.FindProxyTypes(assemblies.Distinct().ToArray());
 
             foreach (var c in sc.ToArray())
             {

@@ -23,8 +23,9 @@ namespace Norns.Destiny.JIT.Coder
             CreateNotationGenerators()
                 .Select(i => i.GenerateNotations(source))
                 .Combine().Record(sb);
+            var code = sb.ToString();
             var options = CreateOptions();
-            var compileTrees = CSharpSyntaxTree.ParseText(sb.ToString(), options.ParseOptions);
+            var compileTrees = CSharpSyntaxTree.ParseText(code, options.ParseOptions);
             var compilation = CSharpCompilation.Create(RandomUtils.NewName(), new SyntaxTree[] { compileTrees }, options.References, options.CompilationOptions);
             return Complie(compilation);
         }

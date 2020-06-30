@@ -30,7 +30,7 @@ namespace Norns.Destiny.Notations
             if (Inherits.Count > 0)
             {
                 yield return ConstNotations.Colon;
-                yield return Inherits.InsertBlank().Combine();
+                yield return Inherits.InsertComma().Combine();
             }
             yield return TypeParameters.Select(i => i.ToConstantNotation(false)).InsertBlank().Combine();
             yield return ConstNotations.Blank;
