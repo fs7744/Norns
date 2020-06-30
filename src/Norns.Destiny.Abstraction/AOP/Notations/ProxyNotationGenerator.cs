@@ -29,6 +29,10 @@ namespace Norns.Destiny.AOP.Notations
                 Name = $"Proxy{type.Name}{RandomUtils.NewName()}"
             };
             @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.Proxy(typeof({(type.IsGenericType ? type.GenericDefinitionName : type.FullName)}))]".ToNotation());
+            if (type.IsGenericType)
+            {
+                @class.TypeParameters.AddRange(type.TypeParameters.Select(i => i.ToNotation()));
+            }
             @namespace.Members.Add(@class);
             @class.Inherits.Add(type.FullName.ToNotation());
             var context = new ProxyGeneratorContext()
@@ -43,7 +47,8 @@ namespace Norns.Destiny.AOP.Notations
                 {
                     case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet
                         && method.MethodKind != MethodKindInfo.PropertySet
-                        && method.CanOverride():
+                        && method.CanOverride()
+                        && method.Name != "Finalize":
                         @class.Members.Add(CreateProxyMethod(method, context, type.IsInterface));
                         break;
 
