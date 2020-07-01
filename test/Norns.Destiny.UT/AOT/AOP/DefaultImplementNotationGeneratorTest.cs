@@ -19,7 +19,7 @@ namespace Norns.Destiny.UT.AOT.AOP
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
-            yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement, GetInterceptorGenerators());
+            yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement);
         }
     }
 

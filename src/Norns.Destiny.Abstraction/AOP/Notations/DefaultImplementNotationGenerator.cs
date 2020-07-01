@@ -2,7 +2,6 @@
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
@@ -10,12 +9,10 @@ namespace Norns.Destiny.AOP.Notations
     public class DefaultImplementNotationGenerator : AbstractNotationGenerator
     {
         private readonly Func<ITypeSymbolInfo, bool> filter;
-        private readonly IEnumerable<IInterceptorGenerator> interceptors;
 
-        public DefaultImplementNotationGenerator(Func<ITypeSymbolInfo, bool> filter, IEnumerable<IInterceptorGenerator> interceptors)
+        public DefaultImplementNotationGenerator(Func<ITypeSymbolInfo, bool> filter)
         {
             this.filter = filter;
-            this.interceptors = interceptors;
         }
 
         public override bool Filter(ITypeSymbolInfo type)
@@ -89,8 +86,6 @@ namespace Norns.Destiny.AOP.Notations
             {
                 notation.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", method.IsAsync ? method.ReturnType.TypeArguments.First().FullName : method.ReturnType.FullName, ");"));
             }
-            notation.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-            notation.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
             if (method.HasReturnValue)
             {
                 notation.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
@@ -132,8 +127,6 @@ namespace Norns.Destiny.AOP.Notations
 
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
-                getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                getter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 getter.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
                 notation.Accessers.Add(getter);
             }
@@ -142,9 +135,7 @@ namespace Norns.Destiny.AOP.Notations
                 context.SetCurrentPropertyMethod(property.SetMethod);
                 var setter = PropertyMethodNotation.Create(false);
                 setter.Accessibility = property.SetMethod.Accessibility;
-                setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
                 setter.Body.Add(ConstNotations.Blank);
-                setter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 notation.Accessers.Add(setter);
             }
             return notation;

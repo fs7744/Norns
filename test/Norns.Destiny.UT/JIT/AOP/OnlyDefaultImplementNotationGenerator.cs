@@ -15,7 +15,7 @@ namespace Norns.Destiny.UT.JIT.AOP
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
-            yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement, generators);
+            yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement);
         }
     }
 }

@@ -23,14 +23,14 @@ namespace Norns.Destiny.UT.JIT.AOP
             Assert.Equal(0, await instance.AddValueTask(11));
             Assert.Null(await instance.AddValueTask(this));
             Assert.Null(await instance.AddValueTask(new A(), instance));
-            //Assert.Equal(-5, instance.PA);
-            //instance.PD = 55;
-            //Assert.Null(instance[3, ""]);
+            Assert.Equal(-5, instance.PA);
+            instance.PD = 55;
+            Assert.Null(instance[3, ""]);
             var c = instance;
-            //Assert.Null(instance.AddValue1(new A(), ref c));
-            //Assert.Null(instance.AddValue2(new A(), in c));
-            //Assert.Null(instance.AddValue3(new A(), out c));
-            //Assert.Equal(8, instance.A());
+            Assert.Null(instance.AddValue1(new A(), ref c));
+            Assert.Null(instance.AddValue2(new A(), in c));
+            Assert.Null(instance.AddValue3(new A(), out c));
+            Assert.Equal(8, instance.A());
         }
 
         #region Abstract Class

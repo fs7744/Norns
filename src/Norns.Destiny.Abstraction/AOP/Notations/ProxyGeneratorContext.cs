@@ -14,6 +14,7 @@ namespace Norns.Destiny.AOP.Notations
     public static class ProxyGeneratorContextExtensions
     {
         private const string ReturnValueParameterName = "ReturnValueParameterName";
+        private const string ProxyFieldName = "ProxyFieldName";
         private const string CurrentPropertyMethod = "CurrentPropertyMethod";
         private const string CurrentNamespaceNotation = "CurrentNamespaceNotation";
         private const string CurrentClassNotation = "CurrentClassNotation";
@@ -26,6 +27,16 @@ namespace Norns.Destiny.AOP.Notations
                 context.Add(ReturnValueParameterName, $"r{RandomUtils.NewName()}");
             }
             return context[ReturnValueParameterName].ToString();
+        }
+
+        public static string GetProxyFieldName(this ProxyGeneratorContext context)
+        {
+            var c = context.Parent ?? context;
+            if (!c.ContainsKey(ProxyFieldName))
+            {
+                c.Add(ProxyFieldName, $"f{RandomUtils.NewName()}");
+            }
+            return c[ProxyFieldName].ToString();
         }
 
         public static void SetCurrentPropertyMethod(this ProxyGeneratorContext context, IMethodSymbolInfo method)
