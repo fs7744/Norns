@@ -211,7 +211,7 @@ using Norns.Destiny.Attributes;
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T> where T : class {", output);
             Assert.Contains("public T A()", output);
             Assert.Contains("= default(T);return", output);
         }
@@ -229,7 +229,7 @@ using Norns.Destiny.Attributes;
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T>where T : class {", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.IC<T> where T : class {", output);
             Assert.Contains("public T A()", output);
             Assert.Contains("= default(T);return", output);
         }
@@ -249,7 +249,7 @@ using Norns.Destiny.Attributes;
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.IC<,,>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T,V,R>:Norns.Destiny.UT.AOT.Generated.IC<T, V, R>where T : Norns.Destiny.UT.AOT.Generated.A", output);
+            Assert.Contains("<T,V,R>:Norns.Destiny.UT.AOT.Generated.IC<T, V, R> where T : Norns.Destiny.UT.AOT.Generated.A", output);
             Assert.Contains("public Norns.Destiny.UT.AOT.Generated.B A()", output);
             Assert.Contains("= default(Norns.Destiny.UT.AOT.Generated.B);return", output);
         }
@@ -416,7 +416,7 @@ using System.Threading.Tasks;
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.JitCClass<>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.JitCClass<T>where T : class {", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.JitCClass<T> where T : class {", output);
             Assert.Contains("public override T B()", output);
         }
 
@@ -436,7 +436,7 @@ using System.Threading.Tasks;
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.A.JitCClass<>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.JitCClass<T>where T : class {", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.JitCClass<T> where T : class {", output);
             Assert.Contains("public override T B()", output);
         }
 
@@ -456,7 +456,7 @@ public class A {
             var output = Generate(code);
             Assert.Contains("[Norns.Destiny.Attributes.DefaultImplement(typeof(Norns.Destiny.UT.AOT.Generated.A.A.JitCClass<>))]", output);
             Assert.Contains("public class DefaultImplement", output);
-            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.A.JitCClass<T>where T : class {", output);
+            Assert.Contains("<T>:Norns.Destiny.UT.AOT.Generated.A.A.JitCClass<T> where T : class {", output);
             Assert.Contains("public override T B()", output);
         }
 

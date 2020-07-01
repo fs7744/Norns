@@ -21,7 +21,8 @@ namespace Norns.Destiny.JIT.Coder
 
         public IEnumerable<ITypeSymbolInfo> GetTypes()
         {
-            return assemblies.SelectMany(i => i.GetTypes())
+            return assemblies.SelectMany(i => i.GetTypes().Select(j => j.IsGenericType ? j.GetGenericTypeDefinition() : j))
+                .Distinct()
                  .Select(i => new TypeSymbolInfo(i))
                  .Where(filter);
         }

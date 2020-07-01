@@ -26,12 +26,17 @@ namespace Norns.Destiny.UT.JIT.AOP
 
         public static T GenerateProxy<T>()
         {
+            return GenerateProxy<T>(typeof(T));
+        }
+
+        public static R GenerateProxy<R>(Type type)
+        {
             var generator = new JitAopSourceGenerator(options, new IInterceptorGenerator[] { new AddSomeTingsInterceptorGenerator() });
-            var assembly = generator.Generate(new JitTypesSymbolSource(typeof(T)));
+            var assembly = generator.Generate(new JitTypesSymbolSource(type));
             var services = new ServiceCollection();
-            services.AddDestinyInterface<T>();
+            services.AddDestinyInterface<R>();
             var provider = services.BuildAopServiceProvider(assembly);
-            return provider.GetRequiredService<T>();
+            return provider.GetRequiredService<R>();
         }
     }
 }

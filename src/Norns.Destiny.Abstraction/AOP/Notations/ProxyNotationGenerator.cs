@@ -131,9 +131,12 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
                 getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName()));
-                getter.Body.AddRange(callName);
-                getter.Body.Add(ConstNotations.Semicolon);
+                if (getter.Accessibility == AccessibilityInfo.Public || getter.Accessibility == AccessibilityInfo.Internal)
+                {
+                    getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName()));
+                    getter.Body.AddRange(callName);
+                    getter.Body.Add(ConstNotations.Semicolon);
+                }
                 getter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 getter.Body.AddRange(Notation.Create("return ", returnValueParameterName, ";"));
                 notation.Accessers.Add(getter);
@@ -146,9 +149,12 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 setter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = value;"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                setter.Body.Add(context.GetProxyFieldName().ToNotation());
-                setter.Body.AddRange(callName);
-                setter.Body.AddRange(Notation.Create(" = ", returnValueParameterName, ";"));
+                if (setter.Accessibility == AccessibilityInfo.Public || setter.Accessibility == AccessibilityInfo.Internal)
+                {
+                    setter.Body.Add(context.GetProxyFieldName().ToNotation());
+                    setter.Body.AddRange(callName);
+                    setter.Body.AddRange(Notation.Create(" = ", returnValueParameterName, ";"));
+                }
                 setter.Body.AddRange(interceptors.SelectMany(i => i.AfterMethod(context)));
                 notation.Accessers.Add(setter);
             }
@@ -173,7 +179,7 @@ namespace Norns.Destiny.AOP.Notations
             }
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             notation.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-            if (!method.IsAbstract)
+            if (!method.IsAbstract && (method.Accessibility == AccessibilityInfo.Internal || method.Accessibility == AccessibilityInfo.Public))
             {
                 if (method.HasReturnValue)
                 {

@@ -135,6 +135,13 @@ namespace Norns.Destiny.UT.JIT.AOP
         }
     }
 
+    public class DataBase
+    { 
+    }
+
+    public class Data : DataBase
+    { }
+
     public class DefaultImplementNotationGeneratorTest
     {
         #region Interface

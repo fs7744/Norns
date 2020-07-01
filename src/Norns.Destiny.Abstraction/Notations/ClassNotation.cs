@@ -32,6 +32,10 @@ namespace Norns.Destiny.Notations
                 yield return ConstNotations.Colon;
                 yield return Inherits.InsertComma().Combine();
             }
+            if (TypeParameters.Count > 0)
+            {
+                yield return ConstNotations.Blank;
+            }
             yield return TypeParameters.Select(i => i.ToConstantNotation(false)).InsertBlank().Combine();
             yield return ConstNotations.Blank;
             yield return ConstNotations.OpenBrace;

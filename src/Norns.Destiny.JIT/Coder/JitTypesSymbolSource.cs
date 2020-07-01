@@ -18,7 +18,7 @@ namespace Norns.Destiny.JIT.Coder
 
         public IEnumerable<ITypeSymbolInfo> GetTypes()
         {
-            return types.Select(i => new TypeSymbolInfo(i));
+            return types.Select(i => new TypeSymbolInfo(i.IsGenericType ? i.GetGenericTypeDefinition() : i));
         }
     }
 }

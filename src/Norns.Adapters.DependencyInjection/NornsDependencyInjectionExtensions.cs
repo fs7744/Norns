@@ -13,14 +13,15 @@ namespace Microsoft.Extensions.DependencyInjection
         public static bool TryCreateProxyDescriptor(Dictionary<Type, Type> defaultInterfaceImplementDict, Dictionary<Type, Type> proxyDict, ServiceDescriptor origin, out ServiceDescriptor proxy)
         {
             proxy = origin;
+            var serviceType = proxy.ServiceType.IsGenericType ? proxy.ServiceType.GetGenericTypeDefinition() : proxy.ServiceType;
             if (proxy.ImplementationType == typeof(DefaultImplementAttribute)
-                && defaultInterfaceImplementDict.TryGetValue(proxy.ServiceType, out var implementType))
+                && defaultInterfaceImplementDict.TryGetValue(serviceType, out var implementType))
             {
-                proxy = ServiceDescriptor.Describe(proxy.ServiceType, implementType, proxy.Lifetime);
+                proxy = ServiceDescriptor.Describe(proxy.ServiceType, proxy.ServiceType.IsGenericType ? implementType.MakeGenericType(proxy.ServiceType.GetGenericArguments()) : implementType, proxy.Lifetime);
             }
-            if (proxyDict.ContainsKey(proxy.ServiceType))
+            if (proxyDict.ContainsKey(serviceType))
             {
-                proxy = ToImplementationServiceDescriptor(proxy, proxyDict[proxy.ServiceType]);
+                proxy = ToImplementationServiceDescriptor(proxy, proxy.ServiceType.IsGenericType ? proxyDict[serviceType].MakeGenericType(proxy.ServiceType.GetGenericArguments()) : proxyDict[serviceType]);
             }
 
             return proxy != origin;
