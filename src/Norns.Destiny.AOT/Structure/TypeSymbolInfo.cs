@@ -18,6 +18,10 @@ namespace Norns.Destiny.AOT.Structure
                 IsAbstract = namedType.IsAbstract;
                 TypeArguments = namedType.TypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
                 TypeParameters = namedType.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
+                if (IsGenericType)
+                {
+                    GenericDefinitionName = $"{(RealType.ContainingType == null ? RealType.ContainingNamespace.ToDisplayString() : RealType.ContainingType.ToDisplayString())}.{Name}<{TypeParameters.Skip(1).Select(i => ",").DefaultIfEmpty("").Aggregate((i, j) => i + j)}>";
+                }
             }
             else
             {
@@ -43,7 +47,7 @@ namespace Norns.Destiny.AOT.Structure
         public bool IsInterface => RealType.TypeKind == TypeKind.Interface;
         public string FullName => RealType.ToDisplayString();
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public string GenericDefinitionName => $"{(RealType.ContainingType == null ? RealType.ContainingNamespace.ToDisplayString() : RealType.ContainingType.ToDisplayString())}.{Name}<{TypeParameters.Skip(1).Select(i => ",").DefaultIfEmpty("").Aggregate((i, j) => i + j)}>";
+        public string GenericDefinitionName { get; }
 
         public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.AllInterfaces
             .Select(i => new TypeSymbolInfo(i))
@@ -58,5 +62,19 @@ namespace Norns.Destiny.AOT.Structure
             .Select(AotSymbolExtensions.ConvertToStructure)
             .Where(i => i != null)
             .ToImmutableArray();
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ITypeSymbolInfo type && type.FullName != null)
+            {
+                return type.FullName == FullName;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return FullName == null ? Name.GetHashCode() : FullName.GetHashCode();
+        }
     }
 }

@@ -7,6 +7,7 @@ using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOT.AOP;
 using Norns.Destiny.AOT.Coder;
+using Norns.Destiny.AOT.Structure;
 using Norns.Destiny.JIT.Coder;
 using Norns.Destiny.Notations;
 using Norns.Destiny.Utils;
@@ -35,6 +36,15 @@ namespace Norns.Destiny.UT.AOT
         public static readonly IEnumerable<MetadataReference> References = AppDomain.CurrentDomain.GetAssemblies().Where(i => !i.IsDynamic).Select(i => AssemblyMetadata.CreateFromFile(i.Location).GetReference()).ToArray();
         public static readonly CSharpParseOptions Regular = new CSharpParseOptions(kind: SourceCodeKind.Regular, documentationMode: DocumentationMode.Parse);
         public static readonly CSharpCompilationOptions DebugDll = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release);
+
+        public static TypeSymbolInfo GetTypeByMetadataName(string fullyQualifiedMetadataName)
+        {
+            Compilation compilation = CSharpCompilation.Create(RandomUtils.NewName(), null,
+               References,
+               DebugDll);
+            var type = compilation.GetTypeByMetadataName(fullyQualifiedMetadataName);
+            return type == null ? null : new TypeSymbolInfo(type);
+        }
 
         public static string GenerateCode(string code, ISourceGenerator sourceGenerator)
         {

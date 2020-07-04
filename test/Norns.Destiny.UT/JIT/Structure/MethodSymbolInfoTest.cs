@@ -103,7 +103,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsAbstract);
             Assert.False(m.IsOverride);
             Assert.False(m.IsVirtual);
-            Assert.Equal("System.Int32", m.ReturnType.FullName);
+            Assert.Equal("int", m.ReturnType.FullName);
 
             m = ms["Norns.Destiny.UT.JIT.Structure.MethodSymbolInfoTest+A.ProtectedM"];
             Assert.Equal(AccessibilityInfo.Protected, m.Accessibility);
