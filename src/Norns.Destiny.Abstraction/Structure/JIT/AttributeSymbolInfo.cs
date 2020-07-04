@@ -10,7 +10,7 @@ namespace Norns.Destiny.JIT.Structure
         public AttributeSymbolInfo(CustomAttributeData attributeData)
         {
             AttributeData = attributeData;
-            AttributeType = new TypeSymbolInfo(attributeData.AttributeType);
+            AttributeType = attributeData.AttributeType.GetSymbolInfo();
             AttributeConstructor = new MethodSymbolInfo(attributeData.Constructor);
 
             ConstructorArguments = AttributeData.ConstructorArguments.Select(JitSymbolExtensions.ConvertToStructure).ToImmutableArray();

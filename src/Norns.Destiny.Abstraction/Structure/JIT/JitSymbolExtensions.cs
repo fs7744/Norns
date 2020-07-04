@@ -64,7 +64,7 @@ namespace Norns.Destiny.JIT.Structure
         {
             return new TypedConstantInfo()
             {
-                Type = new TypeSymbolInfo(arg.ArgumentType),
+                Type = arg.ArgumentType.GetSymbolInfo(),
                 Value = arg.Value
             };
         }
@@ -73,7 +73,7 @@ namespace Norns.Destiny.JIT.Structure
         {
             return new TypedConstantInfo()
             {
-                Type = new TypeSymbolInfo(arg.TypedValue.ArgumentType),
+                Type = arg.TypedValue.ArgumentType.GetSymbolInfo(),
                 Value = arg.TypedValue.Value,
                 Name = arg.MemberName
             };

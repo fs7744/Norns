@@ -27,7 +27,7 @@ namespace Norns.Destiny.UT.AOT
     {
         protected override IEnumerable<IInterceptorGenerator> GetInterceptorGenerators()
         {
-           yield return new JIT.AOP.AddSomeTingsInterceptorGenerator();
+            yield return new JIT.AOP.AddSomeTingsInterceptorGenerator();
         }
     }
 
@@ -92,7 +92,7 @@ namespace Norns.Destiny.UT.AOT
 
         public static dynamic GenerateProxy(string code, string typeName, Type[] genericeType = null)
         {
-            var assembly = GenerateAssembly($"namespace Norns.Destiny.UT.AOT.Generated {{{code}}}" ,new EmptyAotAopSourceGenerator());
+            var assembly = GenerateAssembly($"namespace Norns.Destiny.UT.AOT.Generated {{{code}}}", new EmptyAotAopSourceGenerator());
             var services = new ServiceCollection();
             var type = assembly.GetTypes().First(i => i.Name == typeName);
             if (genericeType != null)

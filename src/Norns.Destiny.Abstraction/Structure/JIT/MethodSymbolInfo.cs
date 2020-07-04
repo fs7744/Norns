@@ -20,7 +20,7 @@ namespace Norns.Destiny.JIT.Structure
                 TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
             }
             Parameters = RealMethod.GetParameters().Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
-            ReturnType = m is MethodInfo mei ? new TypeSymbolInfo(mei.ReturnType) : null;
+            ReturnType = m is MethodInfo mei ? mei.ReturnType.GetSymbolInfo() : null;
             Accessibility = RealMethod.ConvertAccessibilityInfo();
             MethodKind = RealMethod.ConvertMethodKindInfo();
             var (isAsync, hasReturnValue) = this.GetMethodExtensionInfo();

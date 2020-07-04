@@ -20,7 +20,7 @@ namespace Norns.Destiny.UT.JIT.AOP
         {
             var generator = new OnlyDefaultImplementNotationGenerator(options, new IInterceptorGenerator[] { new EmptyInterceptorGenerator() });
             var assembly = generator.Generate(new JitTypesSymbolSource(types));
-            return assembly.GetTypes().Select(i => new TypeSymbolInfo(i)).Where(i => i.HasAttribute<DefaultImplementAttribute>())
+            return assembly.GetTypes().Select(i => i.GetSymbolInfo() as TypeSymbolInfo).Where(i => i.HasAttribute<DefaultImplementAttribute>())
                 .ToDictionary(i => i.Name, i => i);
         }
 

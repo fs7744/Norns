@@ -58,17 +58,17 @@ namespace Norns.Destiny.JIT.Structure
             else if (type.IsNested)
             {
                 name = name.Replace('+', '.');
-                fullName = $"{new TypeSymbolInfo(type.DeclaringType).FullName}.{name}";
+                fullName = $"{type.DeclaringType.GetSymbolInfo().FullName}.{name}";
             }
 
             if (type.IsGenericType)
             {
-                TypeArguments = type.GenericTypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+                TypeArguments = type.GenericTypeArguments.Select(i => i.GetSymbolInfo()).ToImmutableArray<ITypeSymbolInfo>();
                 var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
                 TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
                 var genericParams = type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
                 name = genericParamsNumber.Replace(name, string.Empty);
-                fullName = genericParamsNumber.Replace($"{(type.IsNested ? new TypeSymbolInfo(type.DeclaringType).FullName : @namespace)}.{name}", string.Empty);
+                fullName = genericParamsNumber.Replace($"{(type.IsNested ? type.DeclaringType.GetSymbolInfo().FullName : @namespace)}.{name}", string.Empty);
                 GenericDefinitionName = $"{fullName}<{genericParams.Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
                 fullName = $"{fullName}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
             }
@@ -106,14 +106,14 @@ namespace Norns.Destiny.JIT.Structure
         public bool IsClass => RealType.IsClass;
         public bool IsInterface => RealType.IsInterface;
         public string FullName { get; private set; }
-        public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
+        public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : RealType.BaseType.GetSymbolInfo();
         public string GenericDefinitionName { get; private set; }
 
         public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)).ToImmutableArray<IAttributeSymbolInfo>();
 
         public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.GetInterfaces()
-            .Select(i => new TypeSymbolInfo(i))
-            .ToImmutableArray<ITypeSymbolInfo>();
+            .Select(i => i.GetSymbolInfo())
+            .ToImmutableArray();
 
         public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
             .Select(JitSymbolExtensions.ConvertToStructure)

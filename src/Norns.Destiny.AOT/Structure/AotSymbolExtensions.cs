@@ -121,7 +121,7 @@ namespace Norns.Destiny.AOT.Structure
         public static ITypedConstantInfo ConvertToStructure(this TypedConstant constant)
         {
             return new TypedConstantInfo()
-            { 
+            {
                 Type = new TypeSymbolInfo(constant.Type),
                 Value = constant.Value
             };

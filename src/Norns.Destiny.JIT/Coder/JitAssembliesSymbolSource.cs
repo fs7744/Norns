@@ -1,6 +1,5 @@
 ﻿using Norns.Destiny.Abstraction.Coder;
 using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.JIT.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace Norns.Destiny.JIT.Coder
         {
             return assemblies.SelectMany(i => i.GetTypes().Select(j => j.IsGenericType ? j.GetGenericTypeDefinition() : j))
                 .Distinct()
-                 .Select(i => new TypeSymbolInfo(i))
+                 .Select(i => i.GetSymbolInfo())
                  .Where(filter);
         }
     }

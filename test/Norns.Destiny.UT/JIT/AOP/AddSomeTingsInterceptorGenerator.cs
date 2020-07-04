@@ -1,7 +1,6 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
-using Norns.Destiny.JIT.Structure;
 using Norns.Destiny.Notations;
 using System.Collections.Generic;
 
@@ -15,12 +14,12 @@ namespace Norns.Destiny.UT.JIT.AOP
             {
                 var r = context.GetReturnValueParameterName();
                 var rType = method.ReturnType;
-                if (rType.FullName == new TypeSymbolInfo(typeof(long)).FullName)
+                if (rType.IsType<long>())
                 {
                     yield return r.ToNotation();
                     yield return "++;".ToNotation();
                 }
-                else if (rType.FullName == new TypeSymbolInfo(typeof(int)).FullName)
+                else if (rType.IsType<int>())
                 {
                     yield return r.ToNotation();
                     yield return "+=5;".ToNotation();
@@ -34,7 +33,7 @@ namespace Norns.Destiny.UT.JIT.AOP
             {
                 var r = context.GetReturnValueParameterName();
                 var rType = method.ReturnType;
-                if (rType.FullName == new TypeSymbolInfo(typeof(int)).FullName)
+                if (rType.IsType<int>())
                 {
                     yield return r.ToNotation();
                     yield return "-=5;".ToNotation();

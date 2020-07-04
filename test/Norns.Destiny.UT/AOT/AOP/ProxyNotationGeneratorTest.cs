@@ -125,7 +125,7 @@ using Norns.Destiny.Attributes;
         }
     }";
             var typeName = "IJitDB`1";
-            var instance = AotTest.GenerateProxy(code, typeName,new Type[] { typeof(DataBase) });
+            var instance = AotTest.GenerateProxy(code, typeName, new Type[] { typeof(DataBase) });
             Assert.Null(instance.A());
 
             typeName = "IJitDA`1";
@@ -218,7 +218,6 @@ using Norns.Destiny.Attributes;
         [Fact]
         public void WhenAbstractClassSyncMethod()
         {
-
             var code = @"
 using Norns.Destiny.Attributes;
 using Norns.Destiny.AOT.Coder;

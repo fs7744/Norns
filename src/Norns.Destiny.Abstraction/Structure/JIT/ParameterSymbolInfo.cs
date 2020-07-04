@@ -11,7 +11,7 @@ namespace Norns.Destiny.JIT.Structure
         public ParameterSymbolInfo(ParameterInfo p)
         {
             RealParameter = p;
-            Type = new TypeSymbolInfo(p.ParameterType);
+            Type = p.ParameterType.GetSymbolInfo();
             RefKind = p.ConvertToStructure();
         }
 

@@ -1,5 +1,4 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.JIT.Structure;
 using System.Linq;
 using Xunit;
 
@@ -19,7 +18,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIndexer()
         {
-            var ps = new TypeSymbolInfo(typeof(PropertyTest)).GetMembers()
+            var ps = typeof(PropertyTest).GetSymbolInfo().GetMembers()
                 .Select(i => i as IPropertySymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);

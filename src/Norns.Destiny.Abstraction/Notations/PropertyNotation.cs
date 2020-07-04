@@ -16,7 +16,7 @@ namespace Norns.Destiny.Notations
         public override IEnumerable<INotation> GetMembers()
         {
             yield return CustomAttributes.InsertBlank().Combine();
-            yield return Accessibility.ToDisplayString().ToNotation(); 
+            yield return Accessibility.ToDisplayString().ToNotation();
             if (IsOverride)
             {
                 yield return ConstNotations.Blank;
@@ -32,7 +32,7 @@ namespace Norns.Destiny.Notations
         }
 
         public virtual INotation GetName()
-        { 
+        {
             return Name.ToNotation();
         }
     }

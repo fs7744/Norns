@@ -97,13 +97,13 @@ namespace Norns.Destiny.UT.JIT.AOP
         [Fact]
         public void WhenNestedAbstractClassSyncMethod()
         {
-            var instance = JitTest.GenerateProxy < B.JitCClassB<Data, long, short>>();
+            var instance = JitTest.GenerateProxy<B.JitCClassB<Data, long, short>>();
             var r = instance.A();
             Assert.Null(r.Item1);
             Assert.Equal(0L, r.Item2);
             Assert.Equal(0, r.Item3);
 
-            var instance1 = JitTest.GenerateProxy < B.A.JitCClassA<DataBase, long, int>>();
+            var instance1 = JitTest.GenerateProxy<B.A.JitCClassA<DataBase, long, int>>();
             var r1 = instance1.A();
             Assert.Null(r1.Item1);
             Assert.Equal(0L, r1.Item2);

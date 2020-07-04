@@ -1,5 +1,4 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.JIT.Structure;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -75,7 +74,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenMethods()
         {
-            var ms = new TypeSymbolInfo(typeof(A)).GetMembers()
+            var ms = typeof(A).GetSymbolInfo().GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
@@ -184,7 +183,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.Single(m.TypeParameters);
             Assert.True(m.TypeParameters.First().HasReferenceTypeConstraint);
 
-            ms = new TypeSymbolInfo(typeof(B)).GetMembers()
+            ms = typeof(B).GetSymbolInfo().GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
@@ -227,7 +226,7 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(m.IsVirtual);
             Assert.Equal("Task", m.ReturnType.Name);
 
-            ms = new TypeSymbolInfo(typeof(Sta)).GetMembers()
+            ms = typeof(Sta).GetSymbolInfo().GetMembers()
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);

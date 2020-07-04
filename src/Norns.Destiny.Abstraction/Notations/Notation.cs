@@ -98,7 +98,6 @@ namespace Norns.Destiny.Notations
             return notation;
         }
 
-
         public static INotation ToCallParameters(this IEnumerable<ParameterNotation> values)
         {
             return values.Select(i => i.ToCallParameter()).InsertComma().Combine();

@@ -16,8 +16,8 @@ namespace Norns.Destiny.JIT.Structure
             HasConstructorConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) == GenericParameterAttributes.DefaultConstructorConstraint;
             ConstraintTypes = type.GetGenericParameterConstraints()
                 .Where(i => i != typeof(ValueType))
-                .Select(i => new TypeSymbolInfo(i))
-                .ToImmutableArray<ITypeSymbolInfo>();
+                .Select(i => i.GetSymbolInfo())
+                .ToImmutableArray();
             RefKind = type.GenericParameterAttributes.ConvertToStructure();
         }
 

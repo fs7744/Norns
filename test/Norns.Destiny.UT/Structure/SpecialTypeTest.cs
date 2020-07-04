@@ -1,4 +1,4 @@
-﻿using Norns.Destiny.JIT.Structure;
+﻿using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.UT.AOT;
 using System;
 using Xunit;
@@ -24,7 +24,7 @@ namespace Norns.Destiny.UT.Structure
         public void TypeSymbolInfoWhenSpecialTypeShouldEq(Type type)
         {
             var aot = AotTest.GetTypeByMetadataName(type.FullName);
-            var jit = new TypeSymbolInfo(type);
+            var jit = type.GetSymbolInfo();
             Assert.NotEqual(aot.Origin, jit.Origin);
             Assert.Equal(aot.Name, jit.Name);
             Assert.Equal(aot.FullName, jit.FullName);

@@ -136,7 +136,7 @@ namespace Norns.Destiny.UT.JIT.AOP
     }
 
     public class DataBase
-    { 
+    {
     }
 
     public class Data : DataBase

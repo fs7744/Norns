@@ -10,7 +10,7 @@ namespace Norns.Destiny.JIT.Structure
         public PropertySymbolInfo(PropertyInfo p)
         {
             RealProperty = p;
-            Type = new TypeSymbolInfo(p.PropertyType);
+            Type = p.PropertyType.GetSymbolInfo();
             Parameters = RealProperty.GetIndexParameters().Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
             GetMethod = CanRead ? new MethodSymbolInfo(p.GetMethod) : null;
             SetMethod = CanWrite ? new MethodSymbolInfo(p.SetMethod) : null;

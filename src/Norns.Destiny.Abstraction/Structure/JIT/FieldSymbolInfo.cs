@@ -10,7 +10,7 @@ namespace Norns.Destiny.JIT.Structure
         public FieldSymbolInfo(FieldInfo f)
         {
             RealField = f;
-            FieldType = new TypeSymbolInfo(f.FieldType);
+            FieldType = f.FieldType.GetSymbolInfo();
             Accessibility = f.ConvertAccessibilityInfo();
         }
 

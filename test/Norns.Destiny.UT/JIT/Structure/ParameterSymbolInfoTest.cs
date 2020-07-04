@@ -1,5 +1,4 @@
 ﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.JIT.Structure;
 using System;
 using System.Linq;
 using Xunit;
@@ -24,7 +23,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIsParams()
         {
-            var ps = new TypeSymbolInfo(typeof(ParameterTest)).GetMembers()
+            var ps = typeof(ParameterTest).GetSymbolInfo().GetMembers()
                 .Select(i => i as IMethodSymbolInfo)
                 .Where(i => i != null)
                 .First(i => i.Name == "A")
@@ -44,7 +43,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIsThis()
         {
-            var m = new TypeSymbolInfo(typeof(ParameterTest)).GetMembers()
+            var m = typeof(ParameterTest).GetSymbolInfo().GetMembers()
                    .Select(i => i as IMethodSymbolInfo)
                    .Where(i => i != null)
                    .First(i => i.Name == "B");
