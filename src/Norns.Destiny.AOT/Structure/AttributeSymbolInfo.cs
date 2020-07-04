@@ -11,7 +11,7 @@ namespace Norns.Destiny.AOT.Structure
         {
             AttributeData = attributeData;
             AttributeType = new TypeSymbolInfo(attributeData.AttributeClass);
-            AttributeConstructor = new MethodSymbolInfo(attributeData.AttributeConstructor);
+            AttributeConstructor = attributeData.AttributeConstructor == null ? null : new MethodSymbolInfo(attributeData.AttributeConstructor);
             ConstructorArguments = AttributeData.ConstructorArguments.Select(AotSymbolExtensions.ConvertToStructure).ToImmutableArray();
             NamedArguments = AttributeData.NamedArguments.Select(AotSymbolExtensions.ConvertToStructure).ToImmutableArray();
         }

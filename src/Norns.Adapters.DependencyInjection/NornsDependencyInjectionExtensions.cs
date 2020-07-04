@@ -44,7 +44,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddDestinyInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
-            sc.Add(ServiceDescriptor.Describe(typeof(T), typeof(DefaultImplementAttribute), lifetime));
+            return sc.AddDestinyInterface(typeof(T), lifetime);
+        }
+
+        public static IServiceCollection AddDestinyInterface(this IServiceCollection sc, Type serviceType, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        {
+            sc.Add(ServiceDescriptor.Describe(serviceType, typeof(DefaultImplementAttribute), lifetime));
             return sc;
         }
 
