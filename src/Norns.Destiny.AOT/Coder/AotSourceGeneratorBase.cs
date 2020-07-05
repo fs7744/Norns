@@ -39,11 +39,19 @@ namespace Norns.Destiny.AOT.Coder
         {
             if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
                 return;
-            var source = CreateGenerateSymbolSource(receiver.SyntaxNodes, context);
-            var notations = CreateNotationGenerators()
-                .Select(i => i.GenerateNotations(source))
-                .Combine();
-            context.AddSource(RandomUtils.NewCSFileName(), CreateSourceText(notations));
+            var file = RandomUtils.NewCSFileName();
+            try
+            {
+                var source = CreateGenerateSymbolSource(receiver.SyntaxNodes, context);
+                var notations = CreateNotationGenerators()
+                    .Select(i => i.GenerateNotations(source))
+                    .Combine();
+                context.AddSource(file, CreateSourceText(notations));
+            }
+            catch (Exception ex)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("n001", ex.ToString(), ex.ToString(), "Norns.AOT.Generate", DiagnosticSeverity.Warning, true), Location.Create(file, TextSpan.FromBounds(0, 0), new LinePositionSpan())));
+            }
         }
 
         public void Initialize(InitializationContext context)

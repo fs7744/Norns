@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOT.AOP;
 using System.Collections.Generic;

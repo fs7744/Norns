@@ -20,12 +20,11 @@ namespace Norns.Benchmark
     {
         private static void Main(string[] args)
         {
-              var p = new ServiceCollection()
-                //.AddSingleton<IC, DsProxy>() sd
-                .AddDestinyInterface<IC>(ServiceLifetime.Scoped)
-                .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
-                //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
-                .GetRequiredService<IC>();
+            var p = new ServiceCollection()
+              .AddDestinyInterface<IC>(ServiceLifetime.Scoped)
+              .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
+              //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
+              .GetRequiredService<IC>();
 
             p.AddOne2(1);
         }

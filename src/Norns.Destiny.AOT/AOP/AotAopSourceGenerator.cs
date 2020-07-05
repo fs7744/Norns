@@ -3,6 +3,7 @@ using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.AOT.Coder;
+using Norns.Destiny.Attributes;
 using System.Collections.Generic;
 
 namespace Norns.Destiny.AOT.AOP
@@ -24,7 +25,7 @@ namespace Norns.Destiny.AOT.AOP
 
         protected override bool Filter(ITypeSymbolInfo type)
         {
-            return AopUtils.CanAopType(type);
+            return type.HasAttribute<CharonAttribute>() && AopUtils.CanAopType(type);
         }
     }
 }
