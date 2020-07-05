@@ -169,6 +169,10 @@ Because source-generators not allow loading referenced assemblies now, so can't 
 
 waiting to start
 
+## Plan 
+
+- [ ] [Norns-JIT-Imporve](https://github.com/fs7744/Norns/projects/1)
+
 ## 取名缘由
 
 Norns == 诺伦三女神 （北欧神话中的命运女神）
