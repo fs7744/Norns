@@ -11,7 +11,7 @@ namespace Norns.Benchmark
     {
         public override IEnumerable<INotation> BeforeMethod(ProxyGeneratorContext context, IMethodSymbolInfo method)
         {
-            typeof(System.Console).Name.ToString();
+            typeof(System.Console).Name.ToString(); // just make sure load System.Console dll before jit generate code
             if (!method.Parameters.IsEmpty)
             {
                 yield return $"System.Console.WriteLine($\"Call Method {method.Name} at {{System.DateTime.Now.ToString(\"yyyy-MM-dd HH:mm:ss.fff\")}} {method.Parameters[0].Type.FullName} {method.Parameters[0].Name} = {{{method.Parameters[0].Name}}}".ToNotation();

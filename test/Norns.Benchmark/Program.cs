@@ -16,17 +16,32 @@ namespace Norns.Benchmark
         }
     }
 
+    public class C : IC
+    {
+        public int AddOne(int v)
+        {
+            return v;
+        }
+    }
+
     internal class Program
     {
         private static void Main(string[] args)
         {
             var p = new ServiceCollection()
-              .AddDestinyInterface<IC>(ServiceLifetime.Scoped)
+                .AddTransient<IC, C>()
+              //.AddDestinyInterface<IC>(ServiceLifetime.Scoped)
               .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
               //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
               .GetRequiredService<IC>();
 
-            p.AddOne2(1);
+            var result = p.AddOne(99);
+            Console.WriteLine($"p.AddOne(99) 's result is {result}.");
+            Console.WriteLine();
+            result = p.AddOne2(1);
+            Console.WriteLine($"p.AddOne2(1) 's result is {result}.");
+
+            Console.ReadKey();
         }
     }
 }

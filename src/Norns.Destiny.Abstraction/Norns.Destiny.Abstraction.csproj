@@ -5,11 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="AOP\Notations\DefaultImplementNotationGenerator.cs~RF350974.TMP" />
-    <None Remove="Structure\ITypeParameterSymbolInfo.cs~RF8cd921.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
 
