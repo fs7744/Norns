@@ -24,17 +24,24 @@ namespace Norns.Destiny.UT.JIT.AOP
                 .ToDictionary(i => i.Name, i => i);
         }
 
-        public static T GenerateProxy<T>()
+        public static T GenerateProxy<T>(ServiceLifetime lifetime = ServiceLifetime.Singleton, Action < IServiceCollection> action = null)
         {
-            return GenerateProxy<T>(typeof(T));
+            return GenerateProxy<T>(typeof(T), lifetime, action);
         }
 
-        public static R GenerateProxy<R>(Type type)
+        public static R GenerateProxy<R>(Type type, ServiceLifetime lifetime = ServiceLifetime.Singleton, Action<IServiceCollection> action = null)
         {
             var generator = new JitAopSourceGenerator(options, new IInterceptorGenerator[] { new AddSomeTingsInterceptorGenerator() });
             var assembly = generator.Generate(new JitTypesSymbolSource(type));
             var services = new ServiceCollection();
-            services.AddDestinyInterface<R>();
+            if (action == null)
+            {
+                services.AddDestinyInterface<R>(lifetime);
+            }
+            else
+            {
+                action(services);
+            }
             var provider = services.BuildAopServiceProvider(assembly);
             return provider.GetRequiredService<R>();
         }

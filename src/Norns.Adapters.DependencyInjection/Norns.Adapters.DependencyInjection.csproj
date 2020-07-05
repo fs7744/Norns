@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Norns.Destiny.Abstraction\Norns.Destiny.Abstraction.csproj" />
+    <ProjectReference Include="..\Norns.Destiny.JIT\Norns.Destiny.JIT.csproj" />
   </ItemGroup>
 
 </Project>

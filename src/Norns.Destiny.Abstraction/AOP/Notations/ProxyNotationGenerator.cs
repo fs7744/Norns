@@ -131,7 +131,7 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 getter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = default(", property.Type.FullName, ");"));
                 getter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                if (getter.Accessibility == AccessibilityInfo.Public || getter.Accessibility == AccessibilityInfo.Internal)
+                if (isInterface || (getter.Accessibility == AccessibilityInfo.Public || getter.Accessibility == AccessibilityInfo.Internal))
                 {
                     getter.Body.AddRange(Notation.Create(returnValueParameterName, " = ", context.GetProxyFieldName()));
                     getter.Body.AddRange(callName);
@@ -149,7 +149,7 @@ namespace Norns.Destiny.AOP.Notations
                 var returnValueParameterName = context.GetReturnValueParameterName();
                 setter.Body.AddRange(Notation.Create("var ", returnValueParameterName, " = value;"));
                 setter.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-                if (setter.Accessibility == AccessibilityInfo.Public || setter.Accessibility == AccessibilityInfo.Internal)
+                if (isInterface || (setter.Accessibility == AccessibilityInfo.Public || setter.Accessibility == AccessibilityInfo.Internal))
                 {
                     setter.Body.Add(context.GetProxyFieldName().ToNotation());
                     setter.Body.AddRange(callName);
@@ -179,7 +179,7 @@ namespace Norns.Destiny.AOP.Notations
             }
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             notation.Body.AddRange(interceptors.SelectMany(i => i.BeforeMethod(context)));
-            if (!method.IsAbstract && (method.Accessibility == AccessibilityInfo.Internal || method.Accessibility == AccessibilityInfo.Public))
+            if (isInterface || (!method.IsAbstract && (method.Accessibility == AccessibilityInfo.Internal || method.Accessibility == AccessibilityInfo.Public)))
             {
                 if (method.HasReturnValue)
                 {

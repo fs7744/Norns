@@ -18,6 +18,29 @@ namespace Norns.Destiny.UT.JIT.AOP
     {
     }
 
+    public class JitD : IJitD
+    {
+        public long GiveFive()
+        {
+            return 7;
+        }
+    }
+
+    public class JitD2 : IJitD
+    {
+        private readonly IServiceProvider provider;
+
+        public JitD2(IServiceProvider provider)
+        {
+            this.provider = provider;
+        }
+
+        public long GiveFive()
+        {
+            return 99;
+        }
+    }
+
     [Charon]
     public interface IJitC
     {

@@ -44,5 +44,11 @@ namespace Norns.Destiny.UT.Structure
             Assert.Equal(aot.BaseType, jit.BaseType);
             Assert.Equal(aot.GetInterfaces().Length, jit.GetInterfaces().Length);
         }
+
+        //[Fact]
+        //public void Test()
+        //{
+        //    typeof(System.Diagnostics.Tracing.con)
+        //}
     }
 }

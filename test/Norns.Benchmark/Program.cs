@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Norns.Destiny.AOP;
+using Norns.Destiny.Attributes;
+using System;
 
 namespace Norns.Benchmark
 {
+    [Charon]
     public interface IC
     {
         int AddOne(int v);
@@ -16,10 +20,11 @@ namespace Norns.Benchmark
     {
         private static void Main(string[] args)
         {
-            var p = new ServiceCollection()
+              var p = new ServiceCollection()
                 //.AddSingleton<IC, DsProxy>() sd
                 .AddDestinyInterface<IC>(ServiceLifetime.Scoped)
-                .BuildAopServiceProvider()
+                .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
+                //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
                 .GetRequiredService<IC>();
 
             p.AddOne2(1);

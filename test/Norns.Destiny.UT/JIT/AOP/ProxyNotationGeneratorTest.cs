@@ -1,4 +1,5 @@
-﻿using Norns.Destiny.JIT.AOP;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Norns.Destiny.JIT.AOP;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,6 +12,28 @@ namespace Norns.Destiny.UT.JIT.AOP
         {
             var instance = JitTest.GenerateProxy<IJitD>();
             Assert.Equal(1, instance.GiveFive());
+        }
+
+        [Fact]
+        public void WhenInheritClass()
+        {
+            var instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddTransient<IJitD, JitD>());
+            Assert.Equal(8, instance.GiveFive());
+
+            instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddSingleton<IJitD>(new JitD()));
+            Assert.Equal(8, instance.GiveFive());
+
+            instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddScoped<IJitD>(i => new JitD()));
+            Assert.Equal(8, instance.GiveFive());
+
+            instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddTransient<IJitD, JitD2>());
+            Assert.Equal(100, instance.GiveFive());
+
+            instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddSingleton<IJitD>(new JitD2(null)));
+            Assert.Equal(100, instance.GiveFive());
+
+            instance = JitTest.GenerateProxy<IJitD>(action: s => s.AddScoped<IJitD>(i => new JitD2(i)));
+            Assert.Equal(100, instance.GiveFive());
         }
 
         [Fact]

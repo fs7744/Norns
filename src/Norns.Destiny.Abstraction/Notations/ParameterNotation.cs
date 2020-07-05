@@ -34,6 +34,11 @@ namespace Norns.Destiny.Notations
     {
         public IEnumerable<INotation> Format(ParameterNotation value)
         {
+            if (value.RefKind == RefKindInfo.Out || value.RefKind == RefKindInfo.Ref)
+            {
+                yield return value.RefKind.ToDisplayString().ToNotation();
+                yield return ConstNotations.Blank;
+            }
             yield return value.Name.ToNotation();
         }
     }

@@ -14,10 +14,6 @@ namespace Norns.Destiny.JIT.Structure
             HasReferenceTypeConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.ReferenceTypeConstraint) == GenericParameterAttributes.ReferenceTypeConstraint;
             HasValueTypeConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.NotNullableValueTypeConstraint) == GenericParameterAttributes.NotNullableValueTypeConstraint;
             HasConstructorConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) == GenericParameterAttributes.DefaultConstructorConstraint;
-            ConstraintTypes = type.GetGenericParameterConstraints()
-                .Where(i => i != typeof(ValueType))
-                .Select(i => i.GetSymbolInfo())
-                .ToImmutableArray();
             RefKind = type.GenericParameterAttributes.ConvertToStructure();
         }
 
@@ -28,6 +24,9 @@ namespace Norns.Destiny.JIT.Structure
         public bool HasUnmanagedTypeConstraint { get; }
         public bool HasNotNullConstraint { get; }
         public bool HasConstructorConstraint { get; }
-        public ImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
+        public ImmutableArray<ITypeSymbolInfo> ConstraintTypes => RealType.GetGenericParameterConstraints()
+                .Where(i => i != typeof(ValueType))
+                .Select(i => i.GetSymbolInfo())
+                .ToImmutableArray();
     }
 }

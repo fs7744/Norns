@@ -1,5 +1,7 @@
 ﻿using Norns.Destiny.AOP;
 using Norns.Destiny.Attributes;
+using Norns.Destiny.JIT.AOP;
+using Norns.Destiny.JIT.Coder;
 using Norns.Destiny.Utils;
 using System;
 using System.Collections.Generic;
@@ -40,6 +42,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
             return sc.BuildServiceProvider();
+        }
+
+        public static IServiceProvider BuildJitAopServiceProvider(this IServiceCollection sc, JitOptions options, IInterceptorGenerator[] interceptors, params Assembly[] assemblies)
+        {
+            var op = options ?? JitOptions.CreateDefault();
+            var generator = new JitAopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
+            var assembly = generator.Generate(new JitAssembliesSymbolSource(assemblies, op.FilterProxy));
+            return sc.BuildAopServiceProvider(assemblies.Union(new Assembly[] { assembly }).ToArray());
         }
 
         public static IServiceCollection AddDestinyInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)

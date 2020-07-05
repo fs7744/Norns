@@ -60,9 +60,13 @@ namespace Norns.Destiny.JIT.Structure
                 name = name.Replace('+', '.');
                 fullName = $"{type.DeclaringType.GetSymbolInfo().FullName}.{name}";
             }
-
             if (type.IsGenericType)
             {
+                if (type.Name == "ConcurrentSetItem`2")
+                {
+                    type.ToString();
+                }
+
                 TypeArguments = type.GenericTypeArguments.Select(i => i.GetSymbolInfo()).ToImmutableArray<ITypeSymbolInfo>();
                 var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
                 TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();

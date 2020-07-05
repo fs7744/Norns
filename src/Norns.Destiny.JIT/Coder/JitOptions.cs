@@ -2,21 +2,20 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Norns.Destiny.Abstraction.Structure;
 using Norns.Destiny.AOP;
+using Norns.Destiny.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Norns.Destiny.JIT.Coder
 {
     public class JitOptions
     {
+        public Func<ITypeSymbolInfo, bool> FilterProxy { get; set; }
+
         public Func<ITypeSymbolInfo, bool> FilterForDefaultImplement { get; set; }
 
         public CSharpCompilationOptions CompilationOptions { get; set; }
 
         public CSharpParseOptions ParseOptions { get; set; }
-
-        public IEnumerable<MetadataReference> References { get; set; }
 
         public static JitOptions CreateDefault()
         {
@@ -30,13 +29,12 @@ namespace Norns.Destiny.JIT.Coder
                                    platform: Platform.AnyCpu,
                                    checkOverflow: false,
                                    assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
-            var references = AppDomain.CurrentDomain.GetAssemblies().Where(i => !i.IsDynamic).Select(i => MetadataReference.CreateFromFile(i.Location)).ToArray();
             return new JitOptions()
             {
                 CompilationOptions = compilationOptions,
+                FilterProxy = i => AopUtils.CanAopType(i) && i.HasAttribute<CharonAttribute>(),
                 FilterForDefaultImplement = AopUtils.CanDoDefaultImplement,
-                ParseOptions = parseOptions,
-                References = references
+                ParseOptions = parseOptions
             };
         }
     }
