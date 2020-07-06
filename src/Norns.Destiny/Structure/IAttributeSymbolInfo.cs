@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -6,7 +6,7 @@ namespace Norns.Destiny.Structure
     {
         ITypeSymbolInfo AttributeType { get; }
         IMethodSymbolInfo AttributeConstructor { get; }
-        ImmutableArray<ITypedConstantInfo> ConstructorArguments { get; }
-        ImmutableArray<INamedConstantInfo> NamedArguments { get; }
+        IImmutableArray<ITypedConstantInfo> ConstructorArguments { get; }
+        IImmutableArray<INamedConstantInfo> NamedArguments { get; }
     }
 }

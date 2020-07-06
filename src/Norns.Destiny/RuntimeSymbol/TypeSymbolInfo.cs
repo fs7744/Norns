@@ -1,7 +1,7 @@
-﻿using Norns.Destiny.Structure;
+﻿using Norns.Destiny.Immutable;
+using Norns.Destiny.Structure;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -13,81 +13,68 @@ namespace Norns.Destiny.RuntimeSymbol
     {
         private static readonly Regex genericParamsNumber = new Regex("`{1}[0-9]{1,}");
 
-        private static readonly Dictionary<string, string> specialTypes = new Dictionary<string, string>()
-        {
-            { "System.Void", "void" },
-            { typeof(object).FullName, "object" },
-            { typeof(bool).FullName, "bool" },
-            { typeof(char).FullName, "char" },
-            { typeof(short).FullName, "short" },
-            { typeof(ushort).FullName, "ushort" },
-            { typeof(int).FullName, "int" },
-            { typeof(uint).FullName, "uint" },
-            { typeof(long).FullName, "long" },
-            { typeof(ulong).FullName, "ulong" },
-            { typeof(decimal).FullName, "decimal" },
-            { typeof(float).FullName, "float" },
-            { typeof(double).FullName, "double" },
-            { typeof(string).FullName, "string" }
-        };
-
-        private void SetInfo(Type type, string name, string fullName, string @namespace)
+        private void SetInfo(Type type, string name, Func<string> fullName, string @namespace)
         {
             RealType = type;
             Accessibility = type.ConvertAccessibilityInfo();
             IsStatic = type.IsAbstract && type.IsSealed;
             Name = name;
-            FullName = fullName;
             Namespace = @namespace;
+            baseType = new Lazy<ITypeSymbolInfo>(() => RealType.BaseType?.GetSymbolInfo());
+            if (type.IsGenericType)
+            {
+                TypeArguments = EnumerableExtensions.CreateLazyImmutableArray(() => type.GenericTypeArguments.Select(i => i.GetSymbolInfo()));
+                TypeParameters = EnumerableExtensions.CreateLazyImmutableArray<ITypeParameterSymbolInfo>(() => (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition()).GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)));
+                Func<IEnumerable<ITypeSymbolInfo>> genericParams = () => type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
+                Name = genericParamsNumber.Replace(name, string.Empty);
+                Func<string> newFullName = () => genericParamsNumber.Replace($"{(type.IsNested ? type.DeclaringType.GetSymbolInfo().FullName : Namespace)}.{Name}", string.Empty);
+                genericDefinitionName = new Lazy<string>(() => $"{newFullName()}<{genericParams().Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>");
+                fullName = () => $"{newFullName()}<{genericParams().Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
+            }
+            else
+            {
+                genericDefinitionName = new Lazy<string>(() => string.Empty);
+                TypeArguments = EnumerableExtensions.EmptyImmutableArray<ITypeSymbolInfo>();
+                TypeParameters = EnumerableExtensions.EmptyImmutableArray<ITypeParameterSymbolInfo>();
+            }
+            this.fullName = new Lazy<string>(fullName);
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray<IAttributeSymbolInfo>(() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)));
+            Interfaces = EnumerableExtensions.CreateLazyImmutableArray(() => RealType.GetInterfaces().Distinct().Select(i => i.GetSymbolInfo()));
+            Members = EnumerableExtensions.CreateLazyImmutableArray(() => RealType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+            .Select(RuntimeSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
+            isAnonymousType = new Lazy<bool>(() => Attribute.IsDefined(RealType, typeof(CompilerGeneratedAttribute), false)
+            && RealType.Name.Contains("AnonymousType")
+            && RealType.Name.StartsWith("<>"));
+        }
+
+        public TypeSymbolInfo(Type type, string fullName, string name)
+        {
+            SetInfo(type, name, () => fullName, type.Namespace);
         }
 
         public TypeSymbolInfo(Type type)
         {
             var @namespace = type.Namespace;
             var name = type.Name;
-            var fullName = type.FullName;
+            var newFullName = type.FullName;
 
-            if (fullName != null && specialTypes.TryGetValue(fullName, out var specialTypeFullName))
+            if (type.IsGenericParameter)
             {
-                fullName = specialTypeFullName;
-            }
-            else if (type.IsGenericParameter)
-            {
-                fullName = name = type.Name;
+                newFullName = name = type.Name;
             }
             else if (type.IsNested)
             {
                 name = name.Replace('+', '.');
-                fullName = $"{type.DeclaringType.GetSymbolInfo().FullName}.{name}";
-            }
-            if (type.IsGenericType)
-            {
-                if (type.Name == "ConcurrentSetItem`2")
-                {
-                    type.ToString();
-                }
-
-                TypeArguments = type.GenericTypeArguments.Select(i => i.GetSymbolInfo()).ToImmutableArray<ITypeSymbolInfo>();
-                var genericType = (type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition());
-                TypeParameters = genericType.GetGenericArguments().Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
-                var genericParams = type.IsGenericTypeDefinition ? TypeParameters.Cast<ITypeSymbolInfo>() : TypeArguments;
-                name = genericParamsNumber.Replace(name, string.Empty);
-                fullName = genericParamsNumber.Replace($"{(type.IsNested ? type.DeclaringType.GetSymbolInfo().FullName : @namespace)}.{name}", string.Empty);
-                GenericDefinitionName = $"{fullName}<{genericParams.Select(i => string.Empty).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
-                fullName = $"{fullName}<{genericParams.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)}>";
-            }
-            else
-            {
-                TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
-                TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
+                newFullName = $"{type.DeclaringType.GetSymbolInfo().FullName}.{name}";
             }
             if (type.IsByRef)
             {
                 name = name?.Replace("&", string.Empty);
-                fullName = name;
+                newFullName = name;
             }
 
-            SetInfo(type, name, fullName, @namespace);
+            SetInfo(type, name, () => newFullName, @namespace);
         }
 
         public Type RealType { get; private set; }
@@ -100,29 +87,24 @@ namespace Norns.Destiny.RuntimeSymbol
         public bool IsGenericType => RealType.IsGenericType;
         public bool IsAbstract => RealType.IsAbstract;
 
-        public bool IsAnonymousType => Attribute.IsDefined(RealType, typeof(CompilerGeneratedAttribute), false)
-            && RealType.Name.Contains("AnonymousType")
-            && RealType.Name.StartsWith("<>");
+        private Lazy<bool> isAnonymousType;
+        public bool IsAnonymousType => isAnonymousType.Value;
 
-        public ImmutableArray<ITypeSymbolInfo> TypeArguments { get; private set; }
         public object Origin => RealType;
-        public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; private set; }
         public bool IsClass => RealType.IsClass;
         public bool IsInterface => RealType.IsInterface;
-        public string FullName { get; private set; }
-        public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : RealType.BaseType.GetSymbolInfo();
-        public string GenericDefinitionName { get; private set; }
+        private Lazy<string> fullName;
+        public string FullName => fullName.Value;
 
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)).ToImmutableArray<IAttributeSymbolInfo>();
-
-        public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.GetInterfaces()
-            .Select(i => i.GetSymbolInfo())
-            .ToImmutableArray();
-
-        public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
-            .Select(RuntimeSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        private Lazy<ITypeSymbolInfo> baseType;
+        public ITypeSymbolInfo BaseType => baseType.Value;
+        private Lazy<string> genericDefinitionName;
+        public string GenericDefinitionName => genericDefinitionName.Value;
+        public IImmutableArray<ITypeSymbolInfo> TypeArguments { get; private set; }
+        public IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; private set; }
+        public IImmutableArray<ITypeSymbolInfo> Interfaces { get; private set; }
+        public IImmutableArray<ISymbolInfo> Members { get; private set; }
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; private set; }
 
         public override bool Equals(object obj)
         {

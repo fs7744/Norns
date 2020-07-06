@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -9,6 +9,6 @@ namespace Norns.Destiny.Structure
         bool HasReferenceTypeConstraint { get; }
         bool HasValueTypeConstraint { get; }
         bool HasConstructorConstraint { get; }
-        ImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
+        IImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
     }
 }

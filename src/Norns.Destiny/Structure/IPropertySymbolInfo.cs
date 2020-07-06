@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -8,7 +8,7 @@ namespace Norns.Destiny.Structure
         bool CanWrite { get; }
         bool CanRead { get; }
         ITypeSymbolInfo Type { get; }
-        ImmutableArray<IParameterSymbolInfo> Parameters { get; }
+        IImmutableArray<IParameterSymbolInfo> Parameters { get; }
         AccessibilityInfo Accessibility { get; }
         bool IsStatic { get; }
         bool IsExtern { get; }
@@ -18,7 +18,6 @@ namespace Norns.Destiny.Structure
         bool IsVirtual { get; }
         IMethodSymbolInfo GetMethod { get; }
         IMethodSymbolInfo SetMethod { get; }
-
-        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
+        IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

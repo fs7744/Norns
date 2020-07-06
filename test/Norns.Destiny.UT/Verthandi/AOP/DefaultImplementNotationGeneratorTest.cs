@@ -175,7 +175,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(IJitD));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD));
             var instance = Activator.CreateInstance(t.RealType) as IJitD;
             Assert.Equal(0, instance.GiveFive());
         }
@@ -186,7 +186,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(IJitC));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitC));
             var instance = Activator.CreateInstance(t.RealType) as IJitC;
             Assert.Equal(0, instance.AddOne(33));
             instance.AddVoid();
@@ -211,7 +211,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(IJitD<>));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD<>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitD<>));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as IJitD<DefaultImplementNotationGeneratorTest>;
             Assert.Null(instance.A());
         }
@@ -222,14 +222,14 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(B.IJitDB<>));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.IJitDB<>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.IJitDB<>));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as B.IJitDB<DefaultImplementNotationGeneratorTest>;
             Assert.Null(instance.A());
 
             types = VerthandiTest.Generate(typeof(B.A.IJitDA<>));
             Assert.Single(types);
             t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.IJitDA<>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.IJitDA<>));
             var instance2 = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType())) as B.A.IJitDA<DefaultImplementNotationGeneratorTest>;
             Assert.Null(instance2.A());
         }
@@ -240,7 +240,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(IJitDIn<,,>));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitDIn<,,>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(IJitDIn<,,>));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(typeof(AopSourceGenerator), typeof(int), typeof(int))) as IJitDIn<AopSourceGenerator, int, int>;
             Assert.Null(instance.A());
         }
@@ -255,7 +255,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(JitCClass));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass));
             var instance = Activator.CreateInstance(t.RealType) as JitCClass;
             Assert.Equal(0, instance.AddOne(33));
             instance.AddVoid();
@@ -281,7 +281,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(JitCClass<,,>));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass<,,>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(JitCClass<,,>));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as JitCClass<DefaultImplementNotationGeneratorTest, long, int>;
             var r = instance.A();
             Assert.Null(r.Item1);
@@ -295,7 +295,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             var types = VerthandiTest.Generate(typeof(B.JitCClassB<,,>));
             Assert.Single(types);
             var t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.JitCClassB<,,>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.JitCClassB<,,>));
             var instance = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as B.JitCClassB<DefaultImplementNotationGeneratorTest, long, int>;
             var r = instance.A();
             Assert.Null(r.Item1);
@@ -305,7 +305,7 @@ namespace Norns.Destiny.UT.Verthandi.AOP
             types = VerthandiTest.Generate(typeof(B.A.JitCClassA<,,>));
             Assert.Single(types);
             t = types.Values.First();
-            Assert.True(t.GetAttributes().Any(i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.JitCClassA<,,>)));
+            Assert.Contains(t.Attributes, i => i.AttributeType.FullName == typeof(DefaultImplementAttribute).FullName && i.ConstructorArguments.First().Value == typeof(B.A.JitCClassA<,,>));
             var instance1 = Activator.CreateInstance(t.RealType.MakeGenericType(this.GetType(), typeof(long), typeof(int))) as B.A.JitCClassA<DefaultImplementNotationGeneratorTest, long, int>;
             r = instance1.A();
             Assert.Null(r.Item1);

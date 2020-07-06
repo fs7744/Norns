@@ -1,5 +1,5 @@
-﻿using Norns.Destiny.Structure;
-using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
+using Norns.Destiny.Structure;
 using System.Linq;
 using System.Reflection;
 
@@ -12,6 +12,7 @@ namespace Norns.Destiny.RuntimeSymbol
             RealField = f;
             FieldType = f.FieldType.GetSymbolInfo();
             Accessibility = f.ConvertAccessibilityInfo();
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealField.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)));
         }
 
         public FieldInfo RealField { get; }
@@ -27,9 +28,6 @@ namespace Norns.Destiny.RuntimeSymbol
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
         public string FullName => $"{RealField.DeclaringType.FullName}.{RealField.Name}";
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealField.GetCustomAttributesData()
-            .Select(i => new AttributeSymbolInfo(i))
-            .ToImmutableArray<IAttributeSymbolInfo>();
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

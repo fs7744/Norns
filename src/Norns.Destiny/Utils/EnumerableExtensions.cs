@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Norns.Destiny.Immutable;
+using System.Collections.Generic;
 
 namespace System.Linq
 {
@@ -16,6 +17,31 @@ namespace System.Linq
                 yield return separator;
                 yield return enumerator.Current;
             }
+        }
+
+        public static IEnumerable<(int, T)> WithIndex<T>(this IEnumerable<T> enumerate)
+        {
+            var index = -1;
+            foreach (var item in enumerate)
+            {
+                index++;
+                yield return (index, item);
+            }
+        }
+
+        public static IImmutableArray<T> EmptyImmutableArray<T>()
+        {
+            return ImmutableArray<T>.Empty;
+        }
+
+        public static IImmutableArray<T> ToImmutableArray<T>(this IEnumerable<T> enumerate)
+        {
+            return new ImmutableArray<T>(enumerate);
+        }
+
+        public static IImmutableArray<T> CreateLazyImmutableArray<T>(Func<IEnumerable<T>> enumerate)
+        {
+            return new LazyImmutableArray<T>(enumerate);
         }
     }
 }

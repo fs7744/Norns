@@ -41,7 +41,7 @@ namespace Norns.Destiny.AOP.Notations
             };
             context.SetCurrentNamespaceNotation(@namespace);
             context.SetCurrentClassNotation(@class);
-            foreach (var member in type.GetMembers().Union(type.GetInterfaces().SelectMany(i => i.GetMembers())).Distinct())
+            foreach (var member in type.Members.Union(type.Interfaces.SelectMany(i => i.Members)).Distinct())
             {
                 switch (member)
                 {

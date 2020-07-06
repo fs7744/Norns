@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -13,7 +13,7 @@ namespace Norns.Skuld.Structure
             HasReferenceTypeConstraint = type.HasReferenceTypeConstraint;
             HasValueTypeConstraint = type.HasValueTypeConstraint;
             HasConstructorConstraint = type.HasConstructorConstraint;
-            ConstraintTypes = type.ConstraintTypes.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
+            ConstraintTypes = EnumerableExtensions.CreateLazyImmutableArray<ITypeSymbolInfo>(() => type.ConstraintTypes.Select(i => new TypeSymbolInfo(i)));
             RefKind = type.Variance.ConvertToStructure();
         }
 
@@ -22,6 +22,6 @@ namespace Norns.Skuld.Structure
         public bool HasReferenceTypeConstraint { get; }
         public bool HasValueTypeConstraint { get; }
         public bool HasConstructorConstraint { get; }
-        public ImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
+        public IImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
     }
 }

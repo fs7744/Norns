@@ -1,6 +1,6 @@
-﻿using Norns.Destiny.Structure;
+﻿using Norns.Destiny.Immutable;
+using Norns.Destiny.Structure;
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -15,6 +15,7 @@ namespace Norns.Destiny.RuntimeSymbol
             HasValueTypeConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.NotNullableValueTypeConstraint) == GenericParameterAttributes.NotNullableValueTypeConstraint;
             HasConstructorConstraint = (type.GenericParameterAttributes & GenericParameterAttributes.DefaultConstructorConstraint) == GenericParameterAttributes.DefaultConstructorConstraint;
             RefKind = type.GenericParameterAttributes.ConvertToStructure();
+            ConstraintTypes = EnumerableExtensions.CreateLazyImmutableArray(() => RealType.GetGenericParameterConstraints().Where(i => i != typeof(ValueType)).Select(i => i.GetSymbolInfo()));
         }
 
         public int Ordinal { get; }
@@ -24,10 +25,6 @@ namespace Norns.Destiny.RuntimeSymbol
         public bool HasUnmanagedTypeConstraint { get; }
         public bool HasNotNullConstraint { get; }
         public bool HasConstructorConstraint { get; }
-
-        public ImmutableArray<ITypeSymbolInfo> ConstraintTypes => RealType.GetGenericParameterConstraints()
-                .Where(i => i != typeof(ValueType))
-                .Select(i => i.GetSymbolInfo())
-                .ToImmutableArray();
+        public IImmutableArray<ITypeSymbolInfo> ConstraintTypes { get; }
     }
 }

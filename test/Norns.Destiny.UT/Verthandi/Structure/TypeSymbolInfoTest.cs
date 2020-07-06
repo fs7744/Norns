@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Norns.Destiny.UT.JIT.Structure
+namespace Norns.Destiny.UT.RuntimeSymbol
 {
     internal class InternalClass
     { }
@@ -141,7 +141,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var dict = typeof(AbstractPublicClass).GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
                 .ToDictionary(i => i.Name, i => (i as TypeInfo).GetSymbolInfo());
-            Assert.Equal("Norns.Destiny.UT.JIT.Structure.AbstractPublicClass.PrivateClass", dict["PrivateClass"].FullName);
+            Assert.Equal("Norns.Destiny.UT.RuntimeSymbol.AbstractPublicClass.PrivateClass", dict["PrivateClass"].FullName);
             Assert.Equal(AccessibilityInfo.Private, dict["PrivateClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Protected, dict["ProtectedClass"].Accessibility);
             Assert.Equal(AccessibilityInfo.Internal, dict["InternalClass"].Accessibility);
@@ -155,8 +155,8 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var dict = typeof(AbstractPublicClass).Assembly.GetTypes()
                    .ToDictionary(i => i.FullName, i => i.GetSymbolInfo());
-            Assert.Equal(AccessibilityInfo.Internal, dict["Norns.Destiny.UT.JIT.Structure.InternalClass"].Accessibility);
-            Assert.Equal(AccessibilityInfo.Public, dict["Norns.Destiny.UT.JIT.Structure.PublicClass"].Accessibility);
+            Assert.Equal(AccessibilityInfo.Internal, dict["Norns.Destiny.UT.RuntimeSymbol.InternalClass"].Accessibility);
+            Assert.Equal(AccessibilityInfo.Public, dict["Norns.Destiny.UT.RuntimeSymbol.PublicClass"].Accessibility);
         }
 
         #endregion Accessibility
@@ -185,7 +185,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         {
             var type = typeof(StaticClass).GetSymbolInfo();
             Assert.Equal("StaticClass", type.Name);
-            Assert.Equal("Norns.Destiny.UT.JIT.Structure", type.Namespace);
+            Assert.Equal("Norns.Destiny.UT.RuntimeSymbol", type.Namespace);
         }
 
         [Fact]
@@ -258,10 +258,10 @@ namespace Norns.Destiny.UT.JIT.Structure
             var iaTypeDefinition = typeof(GenericClass<Test, B>).GetSymbolInfo();
             Assert.True(iaTypeDefinition.IsGenericType);
             Assert.True(iaTypeDefinition.IsClass);
-            Assert.Equal(2, iaTypeDefinition.TypeArguments.Length);
+            Assert.Equal(2, iaTypeDefinition.TypeArguments.Count);
             var ta = iaTypeDefinition.TypeArguments.First();
             Assert.Equal(nameof(Test), ta.Name);
-            Assert.Equal(2, iaTypeDefinition.TypeParameters.Length);
+            Assert.Equal(2, iaTypeDefinition.TypeParameters.Count);
             var tp = iaTypeDefinition.TypeParameters.First();
             Assert.Equal(0, tp.Ordinal);
             Assert.Equal("T", tp.Name);
@@ -271,10 +271,10 @@ namespace Norns.Destiny.UT.JIT.Structure
             Assert.False(tp.HasValueTypeConstraint);
             Assert.Empty(tp.ConstraintTypes);
 
-            ta = iaTypeDefinition.TypeArguments[1];
+            ta = iaTypeDefinition.TypeArguments.Skip(1).First();
             Assert.Equal(nameof(B), ta.Name);
-            Assert.Equal(2, iaTypeDefinition.TypeParameters.Length);
-            tp = iaTypeDefinition.TypeParameters[1];
+            Assert.Equal(2, iaTypeDefinition.TypeParameters.Count);
+            tp = iaTypeDefinition.TypeParameters.Skip(1).First();
             Assert.Equal(1, tp.Ordinal);
             Assert.Equal("Y", tp.Name);
             Assert.Equal(RefKindInfo.None, tp.RefKind);
@@ -301,20 +301,20 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenInterfaces()
         {
-            var interfaces = typeof(object).GetSymbolInfo().GetInterfaces();
+            var interfaces = typeof(object).GetSymbolInfo().Interfaces;
             Assert.Empty(interfaces);
-            interfaces = typeof(int).GetSymbolInfo().GetInterfaces();
+            interfaces = typeof(int).GetSymbolInfo().Interfaces;
             Assert.Contains(nameof(IComparable), interfaces.Select(i => i.Name));
-            interfaces = typeof(Test).GetSymbolInfo().GetInterfaces();
+            interfaces = typeof(Test).GetSymbolInfo().Interfaces;
             Assert.Empty(interfaces);
-            interfaces = typeof(A).GetSymbolInfo().GetInterfaces();
+            interfaces = typeof(A).GetSymbolInfo().Interfaces;
             Assert.Empty(interfaces);
         }
 
         [Fact]
         public void WhenClassFields()
         {
-            var fields = typeof(FieldTest).GetSymbolInfo().GetMembers()
+            var fields = typeof(FieldTest).GetSymbolInfo().Members
                 .Select(i => i as IFieldSymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);
@@ -378,7 +378,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenStructFields()
         {
-            var fields = typeof(StructFieldTest).GetSymbolInfo().GetMembers()
+            var fields = typeof(StructFieldTest).GetSymbolInfo().Members
                 .Select(i => i as IFieldSymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);
@@ -396,7 +396,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenAttribute()
         {
-            var attrs = typeof(AbstractPublicClass.PublicClass).GetSymbolInfo().GetAttributes();
+            var attrs = typeof(AbstractPublicClass.PublicClass).GetSymbolInfo().Attributes;
             Assert.Single(attrs);
             var a = attrs.First();
             Assert.Equal(@"[Xunit.CollectionAttribute(""a"")]", a.FullName);

@@ -16,7 +16,7 @@ using Xunit;
         public class PublicClass
         { }
     }";
-            var attrs = SkuldTest.SimpleGenerateTypeSymbolInfos(code).First().Value.GetAttributes();
+            var attrs = SkuldTest.SimpleGenerateTypeSymbolInfos(code).First().Value.Attributes;
             Assert.Single(attrs);
             var a = attrs.First();
             Assert.Equal(@"Xunit.CollectionAttribute(""a"")", a.FullName);
@@ -186,11 +186,11 @@ public class C : ClassT {}";
             var code = @"public class ClassT { } public struct A {} interface IB {}
 public class C : IB {}";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            Assert.Empty(types["ClassT"].GetInterfaces());
-            Assert.Single(types["C"].GetInterfaces());
-            Assert.Equal("IB", types["C"].GetInterfaces().First().Name);
-            Assert.Empty(types["A"].GetInterfaces());
-            Assert.Empty(types["IB"].GetInterfaces());
+            Assert.Empty(types["ClassT"].Interfaces);
+            Assert.Single(types["C"].Interfaces);
+            Assert.Equal("IB", types["C"].Interfaces.First().Name);
+            Assert.Empty(types["A"].Interfaces);
+            Assert.Empty(types["IB"].Interfaces);
             Assert.True(types["IB"].IsInterface);
         }
 
@@ -199,7 +199,7 @@ public class C : IB {}";
         {
             var code = @"public class ClassT { public int x, y; }";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            Assert.Empty(types["ClassT"].GetInterfaces());
+            Assert.Empty(types["ClassT"].Interfaces);
         }
 
         [Fact]
@@ -215,7 +215,7 @@ public class C : IB {}";
         private long F;
     }";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            var fields = types["FieldTest"].GetMembers()
+            var fields = types["FieldTest"].Members
                 .Select(i => i as IFieldSymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);
@@ -284,7 +284,7 @@ public class C : IB {}";
             internal fixed char name[30];
         }";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            var fields = types["StructFieldTest"].GetMembers()
+            var fields = types["StructFieldTest"].Members
                 .Select(i => i as IFieldSymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);

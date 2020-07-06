@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -13,7 +13,6 @@ namespace Norns.Destiny.Structure
         object ConstantValue { get; }
         bool IsStatic { get; }
         AccessibilityInfo Accessibility { get; }
-
-        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
+        IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

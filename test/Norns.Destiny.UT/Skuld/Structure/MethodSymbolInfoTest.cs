@@ -71,7 +71,7 @@ public abstract class A
             }
         }";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            var ms = types["A"].GetMembers()
+            var ms = types["A"].Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
@@ -180,7 +180,7 @@ public abstract class A
             Assert.Single(m.TypeParameters);
             Assert.True(m.TypeParameters.First().HasReferenceTypeConstraint);
 
-            ms = types["B"].GetMembers()
+            ms = types["B"].Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
@@ -223,7 +223,7 @@ public abstract class A
             Assert.False(m.IsVirtual);
             Assert.Equal("Task", m.ReturnType.Name);
 
-            ms = types["Sta"].GetMembers()
+            ms = types["Sta"].Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);
@@ -256,7 +256,7 @@ Task<int> AddVTask(int v);
 ValueTask<int> AddValueTask(int v);
     }";
             var types = SkuldTest.SimpleGenerateTypeSymbolInfos(code);
-            var ms = types["IC"].GetMembers()
+            var ms = types["IC"].Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
                  .ToDictionary(i => i.FullName, i => i);

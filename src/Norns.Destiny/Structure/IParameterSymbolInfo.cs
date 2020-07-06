@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -11,7 +11,6 @@ namespace Norns.Destiny.Structure
         bool HasExplicitDefaultValue { get; }
         object ExplicitDefaultValue { get; }
         ITypeSymbolInfo Type { get; }
-
-        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
+        IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

@@ -3,7 +3,7 @@ using Norns.Destiny.Structure;
 using System.Linq;
 using Xunit;
 
-namespace Norns.Destiny.UT.JIT.Structure
+namespace Norns.Destiny.UT.RuntimeSymbol
 {
     public class PropertySymbolInfoTest
     {
@@ -19,7 +19,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIndexer()
         {
-            var ps = typeof(PropertyTest).GetSymbolInfo().GetMembers()
+            var ps = typeof(PropertyTest).GetSymbolInfo().Members
                 .Select(i => i as IPropertySymbolInfo)
                 .Where(i => i != null)
                 .ToDictionary(i => i.Name, i => i);

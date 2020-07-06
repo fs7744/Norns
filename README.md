@@ -71,7 +71,7 @@ namespace Norns.Benchmark
             typeof(System.Console).Name.ToString(); // just make sure load System.Console dll before jit generate code
             if (!method.Parameters.IsEmpty)
             {
-                yield return $"System.Console.WriteLine($\"Call Method {method.Name} at {{System.DateTime.Now.ToString(\"yyyy-MM-dd HH:mm:ss.fff\")}} {method.Parameters[0].Type.FullName} {method.Parameters[0].Name} = {{{method.Parameters[0].Name}}}".ToNotation();
+                yield return $"System.Console.WriteLine($\"Call Method {method.Name} at {{System.DateTime.Now.ToString(\"yyyy-MM-dd HH:mm:ss.fff\")}} {method.Parameters.First().Type.FullName} {method.Parameters.First().Name} = {{{method.Parameters.First().Name}}}".ToNotation();
                 foreach (var item in method.Parameters.Skip(1))
                 {
                     yield return $", {item.FullName} {item.Name} = {{{item.Name}}}".ToNotation();

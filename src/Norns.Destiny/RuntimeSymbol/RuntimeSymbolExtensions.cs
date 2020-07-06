@@ -8,7 +8,7 @@ namespace Norns.Destiny.RuntimeSymbol
     {
         public static ITypeSymbolInfo GetSymbolInfo(this Type type)
         {
-            return new TypeSymbolInfo(type);
+            return TypeSymbolCache.Get(type);
         }
 
         public static RefKindInfo ConvertToStructure(this GenericParameterAttributes attributes)

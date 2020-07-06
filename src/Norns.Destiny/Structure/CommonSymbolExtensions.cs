@@ -73,7 +73,7 @@ namespace Norns.Destiny.Structure
 
         public static bool HasAttribute<T>(this ITypeSymbolInfo type)
         {
-            return type.GetAttributes().Any(i => i.AttributeType.FullName == typeof(T).FullName);
+            return type.Attributes.Any(i => i.AttributeType.FullName == typeof(T).FullName);
         }
 
         public static bool CanOverride(this IMethodSymbolInfo method)

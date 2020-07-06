@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -12,6 +12,9 @@ namespace Norns.Skuld.Structure
             RealField = f;
             FieldType = new TypeSymbolInfo(f.Type);
             Accessibility = f.DeclaredAccessibility.ConvertToStructure();
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealField.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
         }
 
         public IFieldSymbol RealField { get; }
@@ -27,10 +30,6 @@ namespace Norns.Skuld.Structure
         public bool IsStatic => RealField.IsStatic;
         public AccessibilityInfo Accessibility { get; }
         public string FullName => RealField.ToDisplayString();
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealField.GetAttributes()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

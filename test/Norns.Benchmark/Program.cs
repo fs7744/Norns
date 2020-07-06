@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Norns.Destiny.AOP;
 using Norns.Destiny.Attributes;
+using Norns.Destiny.Utils;
 using System;
 
 namespace Norns.Benchmark
@@ -34,7 +35,8 @@ namespace Norns.Benchmark
               .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
               //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
               .GetRequiredService<IC>();
-
+            DestinyExtensions.CleanCache();
+            GC.Collect();
             var result = p.AddOne(99);
             Console.WriteLine($"p.AddOne(99) 's result is {result}.");
             Console.WriteLine();

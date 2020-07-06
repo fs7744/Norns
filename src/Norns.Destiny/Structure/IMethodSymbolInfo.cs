@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -7,8 +7,6 @@ namespace Norns.Destiny.Structure
         ITypeSymbolInfo ReturnType { get; }
         bool IsExtensionMethod { get; }
         bool IsGenericMethod { get; }
-        ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
-        ImmutableArray<IParameterSymbolInfo> Parameters { get; }
         AccessibilityInfo Accessibility { get; }
         bool IsStatic { get; }
         bool IsSealed { get; }
@@ -18,7 +16,8 @@ namespace Norns.Destiny.Structure
         MethodKindInfo MethodKind { get; }
         bool IsAsync { get; }
         bool HasReturnValue { get; }
-
-        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
+        IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
+        IImmutableArray<IParameterSymbolInfo> Parameters { get; }
+        IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Norns.Destiny.UT.JIT.Structure
+namespace Norns.Destiny.UT.RuntimeSymbol
 {
     public static class ParameterTest
     {
@@ -24,7 +24,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIsParams()
         {
-            var ps = typeof(ParameterTest).GetSymbolInfo().GetMembers()
+            var ps = typeof(ParameterTest).GetSymbolInfo().Members
                 .Select(i => i as IMethodSymbolInfo)
                 .Where(i => i != null)
                 .First(i => i.Name == "A")
@@ -44,7 +44,7 @@ namespace Norns.Destiny.UT.JIT.Structure
         [Fact]
         public void WhenIsThis()
         {
-            var m = typeof(ParameterTest).GetSymbolInfo().GetMembers()
+            var m = typeof(ParameterTest).GetSymbolInfo().Members
                    .Select(i => i as IMethodSymbolInfo)
                    .Where(i => i != null)
                    .First(i => i.Name == "B");

@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -14,7 +14,10 @@ namespace Norns.Skuld.Structure
             Accessibility = p.DeclaredAccessibility.ConvertToStructure();
             GetMethod = CanRead ? new MethodSymbolInfo(p.GetMethod) : null;
             SetMethod = CanWrite ? new MethodSymbolInfo(p.SetMethod) : null;
-            Parameters = RealProperty.Parameters.Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
+            Parameters = EnumerableExtensions.CreateLazyImmutableArray<IParameterSymbolInfo>(() => RealProperty.Parameters.Select(i => new ParameterSymbolInfo(i)));
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealProperty.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
         }
 
         private IPropertySymbol RealProperty { get; }
@@ -24,7 +27,6 @@ namespace Norns.Skuld.Structure
         public bool CanWrite => !RealProperty.IsReadOnly;
         public bool CanRead => !RealProperty.IsWriteOnly;
         public ITypeSymbolInfo Type { get; }
-        public ImmutableArray<IParameterSymbolInfo> Parameters { get; }
         public AccessibilityInfo Accessibility { get; }
         public bool IsStatic => RealProperty.IsStatic;
         public bool IsExtern => RealProperty.IsExtern;
@@ -35,10 +37,7 @@ namespace Norns.Skuld.Structure
         public IMethodSymbolInfo GetMethod { get; }
         public IMethodSymbolInfo SetMethod { get; }
         public string FullName => RealProperty.ToDisplayString();
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealProperty.GetAttributes()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        public IImmutableArray<IParameterSymbolInfo> Parameters { get; }
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

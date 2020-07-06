@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -12,6 +12,9 @@ namespace Norns.Skuld.Structure
             RealParameter = p;
             Type = new TypeSymbolInfo(p.Type);
             RefKind = p.RefKind.ConvertToStructure();
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealParameter.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
         }
 
         public IParameterSymbol RealParameter { get; }
@@ -25,10 +28,6 @@ namespace Norns.Skuld.Structure
         public ITypeSymbolInfo Type { get; }
         public RefKindInfo RefKind { get; }
         public string FullName => RealParameter.ToDisplayString();
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealParameter.GetAttributes()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

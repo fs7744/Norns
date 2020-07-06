@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using Norns.Destiny.Immutable;
 
 namespace Norns.Destiny.Structure
 {
@@ -9,8 +9,8 @@ namespace Norns.Destiny.Structure
         bool IsSealed { get; }
         bool IsValueType { get; }
         bool IsGenericType { get; }
-        ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
-        ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
+        IImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
+        IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         bool IsAnonymousType { get; }
         bool IsClass { get; }
         bool IsInterface { get; }
@@ -18,11 +18,8 @@ namespace Norns.Destiny.Structure
         bool IsStatic { get; }
         AccessibilityInfo Accessibility { get; }
         string GenericDefinitionName { get; }
-
-        ImmutableArray<ITypeSymbolInfo> GetInterfaces();
-
-        ImmutableArray<ISymbolInfo> GetMembers();
-
-        ImmutableArray<IAttributeSymbolInfo> GetAttributes();
+        IImmutableArray<ITypeSymbolInfo> Interfaces { get; }
+        IImmutableArray<ISymbolInfo> Members { get; }
+        IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

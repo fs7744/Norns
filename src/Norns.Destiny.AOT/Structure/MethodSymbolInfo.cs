@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -17,6 +17,11 @@ namespace Norns.Skuld.Structure
             var (isAsync, hasReturnValue) = this.GetMethodExtensionInfo();
             IsAsync = isAsync;
             HasReturnValue = hasReturnValue;
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealMethod.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
+            TypeParameters = EnumerableExtensions.CreateLazyImmutableArray<ITypeParameterSymbolInfo>(() => RealMethod.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)));
+            Parameters = EnumerableExtensions.CreateLazyImmutableArray<IParameterSymbolInfo>(() => RealMethod.Parameters.Select(i => new ParameterSymbolInfo(i)));
         }
 
         public IMethodSymbol RealMethod { get; }
@@ -27,8 +32,6 @@ namespace Norns.Skuld.Structure
         public ITypeSymbolInfo ReturnType { get; }
         public bool IsExtensionMethod => RealMethod.IsExtensionMethod;
         public bool IsGenericMethod => RealMethod.IsGenericMethod;
-        public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters => RealMethod.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
-        public ImmutableArray<IParameterSymbolInfo> Parameters => RealMethod.Parameters.Select(i => new ParameterSymbolInfo(i)).ToImmutableArray<IParameterSymbolInfo>();
         public bool IsSealed => RealMethod.IsSealed;
         public bool IsAbstract => RealMethod.IsAbstract;
         public bool IsOverride => RealMethod.IsOverride;
@@ -37,10 +40,8 @@ namespace Norns.Skuld.Structure
         public MethodKindInfo MethodKind { get; }
         public bool IsAsync { get; }
         public bool HasReturnValue { get; }
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealMethod.GetAttributes()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        public IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
+        public IImmutableArray<IParameterSymbolInfo> Parameters { get; }
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }

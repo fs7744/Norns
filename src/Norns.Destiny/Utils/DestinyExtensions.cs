@@ -1,4 +1,5 @@
 ﻿using Norns.Destiny.Attributes;
+using Norns.Destiny.RuntimeSymbol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +48,12 @@ namespace Norns.Destiny.Utils
             }
 
             return (defaultInterfaceImplementDict, proxyDict);
+        }
+
+        public static void CleanCache()
+        {
+            TypeSymbolCache.cache.Clear();
+            TypeSymbolCache.InitSpecialType();
         }
     }
 }

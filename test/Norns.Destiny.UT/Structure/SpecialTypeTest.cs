@@ -42,7 +42,7 @@ namespace Norns.Destiny.UT.Structure
             Assert.Equal(aot.TypeArguments.IsEmpty, jit.TypeArguments.IsEmpty);
             Assert.Equal(aot.TypeParameters.IsEmpty, jit.TypeParameters.IsEmpty);
             Assert.Equal(aot.BaseType, jit.BaseType);
-            Assert.Equal(aot.GetInterfaces().Length, jit.GetInterfaces().Length);
+            Assert.Equal(aot.Interfaces.Count, jit.Interfaces.Count);
         }
     }
 }

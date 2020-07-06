@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using Norns.Destiny.Immutable;
 using Norns.Destiny.Structure;
-using System.Collections.Immutable;
+using System;
 using System.Linq;
 
 namespace Norns.Skuld.Structure
@@ -16,18 +17,29 @@ namespace Norns.Skuld.Structure
             {
                 IsGenericType = namedType.IsGenericType;
                 IsAbstract = namedType.IsAbstract;
-                TypeArguments = namedType.TypeArguments.Select(i => new TypeSymbolInfo(i)).ToImmutableArray<ITypeSymbolInfo>();
-                TypeParameters = namedType.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)).ToImmutableArray<ITypeParameterSymbolInfo>();
+                TypeArguments = EnumerableExtensions.CreateLazyImmutableArray<ITypeSymbolInfo>(() => namedType.TypeArguments.Select(i => new TypeSymbolInfo(i)));
+                TypeParameters = EnumerableExtensions.CreateLazyImmutableArray<ITypeParameterSymbolInfo>(() => namedType.TypeParameters.Select(i => new TypeParameterSymbolInfo(i)));
                 if (IsGenericType)
                 {
-                    GenericDefinitionName = $"{(RealType.ContainingType == null ? RealType.ContainingNamespace.ToDisplayString() : RealType.ContainingType.ToDisplayString())}.{Name}<{TypeParameters.Skip(1).Select(i => ",").DefaultIfEmpty("").Aggregate((i, j) => i + j)}>";
+                    genericDefinitionName = new Lazy<string>(() => $"{(RealType.ContainingType == null ? RealType.ContainingNamespace.ToDisplayString() : RealType.ContainingType.ToDisplayString())}.{Name}<{TypeParameters.Skip(1).Select(i => ",").DefaultIfEmpty("").Aggregate((i, j) => i + j)}>");
+                }
+                else
+                {
+                    genericDefinitionName = new Lazy<string>(() => string.Empty);
                 }
             }
             else
             {
-                TypeArguments = ImmutableArray<ITypeSymbolInfo>.Empty;
-                TypeParameters = ImmutableArray<ITypeParameterSymbolInfo>.Empty;
+                TypeArguments = EnumerableExtensions.EmptyImmutableArray<ITypeSymbolInfo>();
+                TypeParameters = EnumerableExtensions.EmptyImmutableArray<ITypeParameterSymbolInfo>();
             }
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray(() => RealType.GetAttributes()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
+            Interfaces = EnumerableExtensions.CreateLazyImmutableArray<ITypeSymbolInfo>(() => RealType.AllInterfaces.Select(i => new TypeSymbolInfo(i)));
+            Members = EnumerableExtensions.CreateLazyImmutableArray(() => RealType.GetMembers()
+            .Select(AotSymbolExtensions.ConvertToStructure)
+            .Where(i => i != null));
         }
 
         public ITypeSymbol RealType { get; }
@@ -38,8 +50,6 @@ namespace Norns.Skuld.Structure
         public bool IsSealed => RealType.IsSealed;
         public bool IsValueType => RealType.IsValueType;
         public bool IsGenericType { get; }
-        public ImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
-        public ImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         public bool IsAbstract { get; }
         public bool IsAnonymousType => RealType.IsAnonymousType;
         public object Origin => RealType;
@@ -47,21 +57,13 @@ namespace Norns.Skuld.Structure
         public bool IsInterface => RealType.TypeKind == TypeKind.Interface;
         public string FullName => RealType.ToDisplayString();
         public ITypeSymbolInfo BaseType => RealType.BaseType == null ? null : new TypeSymbolInfo(RealType.BaseType);
-        public string GenericDefinitionName { get; }
-
-        public ImmutableArray<ITypeSymbolInfo> GetInterfaces() => RealType.AllInterfaces
-            .Select(i => new TypeSymbolInfo(i))
-            .ToImmutableArray<ITypeSymbolInfo>();
-
-        public ImmutableArray<ISymbolInfo> GetMembers() => RealType.GetMembers()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealType.GetAttributes()
-            .Select(AotSymbolExtensions.ConvertToStructure)
-            .Where(i => i != null)
-            .ToImmutableArray();
+        private readonly Lazy<string> genericDefinitionName;
+        public string GenericDefinitionName => genericDefinitionName.Value;
+        public IImmutableArray<ITypeSymbolInfo> TypeArguments { get; }
+        public IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
+        public IImmutableArray<ITypeSymbolInfo> Interfaces { get; }
+        public IImmutableArray<ISymbolInfo> Members { get; }
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
 
         public override bool Equals(object obj)
         {

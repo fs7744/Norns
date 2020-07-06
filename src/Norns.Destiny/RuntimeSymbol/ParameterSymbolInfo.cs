@@ -1,6 +1,6 @@
-﻿using Norns.Destiny.Structure;
+﻿using Norns.Destiny.Immutable;
+using Norns.Destiny.Structure;
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -13,10 +13,11 @@ namespace Norns.Destiny.RuntimeSymbol
             RealParameter = p;
             Type = p.ParameterType.GetSymbolInfo();
             RefKind = p.ConvertToStructure();
+            Attributes = EnumerableExtensions.CreateLazyImmutableArray<IAttributeSymbolInfo>(() => RealParameter.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)));
         }
 
         public ParameterInfo RealParameter { get; }
-        public bool IsParams => RealParameter.CustomAttributes.Any(i => i.AttributeType == typeof(ParamArrayAttribute));
+        public bool IsParams => Attributes.Any(i => i.AttributeType.IsType<ParamArrayAttribute>());
         public bool IsOptional => RealParameter.IsOptional;
         public int Ordinal => RealParameter.Position;
         public bool HasExplicitDefaultValue => RealParameter.HasDefaultValue;
@@ -26,10 +27,6 @@ namespace Norns.Destiny.RuntimeSymbol
         public RefKindInfo RefKind { get; }
         public ITypeSymbolInfo Type { get; }
         public string FullName => $"{Type.FullName} {RealParameter.Name}";
-
-        public ImmutableArray<IAttributeSymbolInfo> GetAttributes() => RealParameter
-            .GetCustomAttributesData()
-            .Select(i => new AttributeSymbolInfo(i))
-            .ToImmutableArray<IAttributeSymbolInfo>();
+        public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
     }
 }
