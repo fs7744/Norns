@@ -29,8 +29,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\src\Norns.Destiny.AOT\Norns.Destiny.AOT.csproj" />
-    <ProjectReference Include="..\..\src\Norns.Destiny.JIT\Norns.Destiny.JIT.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Destiny.AOT\Norns.Skuld.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Destiny.JIT\Norns.Verthandi.csproj" />
   </ItemGroup>
 
 </Project>

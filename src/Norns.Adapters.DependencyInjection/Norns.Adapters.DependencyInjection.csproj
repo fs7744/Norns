@@ -9,8 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Norns.Destiny.Abstraction\Norns.Destiny.Abstraction.csproj" />
-    <ProjectReference Include="..\Norns.Destiny.JIT\Norns.Destiny.JIT.csproj" />
+    <ProjectReference Include="..\Norns.Destiny.JIT\Norns.Verthandi.csproj" />
   </ItemGroup>
 
 </Project>

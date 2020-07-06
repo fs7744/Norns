@@ -16,7 +16,7 @@ This a project to do static weaving and dynamic weaving.
 
 There is two way that we will try to support :
 
-#### AOT
+#### AOT   (Norns.Skuld)
 
 > experimental feature
 
@@ -26,7 +26,7 @@ There is two way that we will try to support :
 (ps: because source-generators not allow loading referenced assemblies now, so can't share package to other now. I will try to find way to fix this.)
 `
 
-#### JIT
+#### JIT     (Norns.Verthandi)
 
 * use Reflection to generator proxy class code 
 * use roslyn sdk to convert code to type
@@ -39,7 +39,7 @@ Actually we can do jit after generate dll to generate proxy dll, make the jit to
 But now there is source-generators.
 ```
 
-### Dynamic weaving
+### Dynamic weaving   Emit  (Norns.Urd)
 
 * Emit to generate proxy type
 
@@ -48,14 +48,14 @@ But now there is source-generators.
 
 ## How to use
 
-### JIT
+### JIT     (Norns.Verthandi)
 
 0. reference `Norns.Adapters.DependencyInjection`
 
 1. write InterceptorGenerator base on `AbstractInterceptorGenerator`
 
 ```csharp
-using Norns.Destiny.Abstraction.Structure;
+using Norns.Destiny.Structure;
 using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.Notations;
@@ -159,13 +159,13 @@ return 2 at 2020-07-05 15:42:22.003
 p.AddOne2(1) 's result is 2.
 ```
 
-### AOT
+### AOT   (Norns.Skuld)
 
 There is Noting until source-generators can do this.
 
 Because source-generators not allow loading referenced assemblies now, so can't share package to other, and i don't want to write the demo.
 
-### Emit
+### Emit  (Norns.Urd)
 
 waiting to start
 

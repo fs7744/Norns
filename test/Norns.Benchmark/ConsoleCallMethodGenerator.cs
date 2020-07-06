@@ -1,7 +1,7 @@
-﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.AOP;
+﻿using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
 using Norns.Destiny.Notations;
+using Norns.Destiny.Structure;
 using System.Collections.Generic;
 using System.Linq;
 

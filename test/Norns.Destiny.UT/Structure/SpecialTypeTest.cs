@@ -1,5 +1,5 @@
-﻿using Norns.Destiny.Abstraction.Structure;
-using Norns.Destiny.UT.AOT;
+﻿using Norns.Destiny.RuntimeSymbol;
+using Norns.Destiny.UT.Skuld;
 using System;
 using Xunit;
 
@@ -23,7 +23,7 @@ namespace Norns.Destiny.UT.Structure
         [InlineData(typeof(string))]
         public void TypeSymbolInfoWhenSpecialTypeShouldEq(Type type)
         {
-            var aot = AotTest.GetTypeByMetadataName(type.FullName);
+            var aot = SkuldTest.GetTypeByMetadataName(type.FullName);
             var jit = type.GetSymbolInfo();
             Assert.NotEqual(aot.Origin, jit.Origin);
             Assert.Equal(aot.Name, jit.Name);
@@ -44,11 +44,5 @@ namespace Norns.Destiny.UT.Structure
             Assert.Equal(aot.BaseType, jit.BaseType);
             Assert.Equal(aot.GetInterfaces().Length, jit.GetInterfaces().Length);
         }
-
-        //[Fact]
-        //public void Test()
-        //{
-        //    typeof(System.Diagnostics.Tracing.con)
-        //}
     }
 }

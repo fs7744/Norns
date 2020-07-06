@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
-using Norns.Destiny.Abstraction.Structure;
+using Norns.Destiny.Structure;
 using System.Collections.Generic;
 
-namespace Norns.Destiny.AOT.Structure
+namespace Norns.Skuld.Structure
 {
     public static class AotSymbolExtensions
     {

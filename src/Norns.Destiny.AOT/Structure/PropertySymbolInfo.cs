@@ -1,9 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
-using Norns.Destiny.Abstraction.Structure;
+using Norns.Destiny.Structure;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Norns.Destiny.AOT.Structure
+namespace Norns.Skuld.Structure
 {
     public class PropertySymbolInfo : IPropertySymbolInfo
     {

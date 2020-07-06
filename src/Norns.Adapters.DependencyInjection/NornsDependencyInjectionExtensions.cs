@@ -1,8 +1,8 @@
 ﻿using Norns.Destiny.AOP;
 using Norns.Destiny.Attributes;
-using Norns.Destiny.JIT.AOP;
-using Norns.Destiny.JIT.Coder;
 using Norns.Destiny.Utils;
+using Norns.Verthandi.AOP;
+using Norns.Verthandi.Loom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,11 +44,11 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildServiceProvider();
         }
 
-        public static IServiceProvider BuildJitAopServiceProvider(this IServiceCollection sc, JitOptions options, IInterceptorGenerator[] interceptors, params Assembly[] assemblies)
+        public static IServiceProvider BuildJitAopServiceProvider(this IServiceCollection sc, LoomOptions options, IInterceptorGenerator[] interceptors, params Assembly[] assemblies)
         {
-            var op = options ?? JitOptions.CreateDefault();
-            var generator = new JitAopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
-            var assembly = generator.Generate(new JitAssembliesSymbolSource(assemblies, op.FilterProxy));
+            var op = options ?? LoomOptions.CreateDefault();
+            var generator = new AopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
+            var assembly = generator.Generate(new AssembliesSymbolSource(assemblies, op.FilterProxy));
             return sc.BuildAopServiceProvider(assemblies.Union(new Assembly[] { assembly }).ToArray());
         }
 
