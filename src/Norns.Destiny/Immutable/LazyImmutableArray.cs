@@ -5,31 +5,6 @@ using System.Linq;
 
 namespace Norns.Destiny.Immutable
 {
-    public class LazyData<T>
-    {
-        private Func<T> func;
-
-        public LazyData(Func<T> func)
-        {
-            this.func = func;
-        }
-
-        private T value;
-
-        public T Value
-        {
-            get
-            {
-                if (func != null)
-                {
-                    value = func();
-                    func = null;
-                }
-                return value;
-            }
-        }
-    }
-
     public struct LazyImmutableArray<T> : IImmutableArray<T>
     {
         private readonly Lazy<List<T>> enumerable;
