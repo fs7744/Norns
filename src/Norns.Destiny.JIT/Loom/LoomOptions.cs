@@ -33,7 +33,7 @@ namespace Norns.Verthandi.Loom
             {
                 CompilationOptions = compilationOptions,
                 FilterProxy = i => AopUtils.CanAopType(i) && i.HasAttribute<CharonAttribute>(),
-                FilterForDefaultImplement = AopUtils.CanDoDefaultImplement,
+                FilterForDefaultImplement = i => AopUtils.CanDoDefaultImplement(i) && i.HasAttribute<CharonAttribute>(),
                 ParseOptions = parseOptions
             };
         }

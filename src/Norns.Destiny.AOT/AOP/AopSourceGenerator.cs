@@ -14,7 +14,7 @@ namespace Norns.Skuld.AOP
 
         protected virtual bool FilterForDefaultImplement(ITypeSymbolInfo type)
         {
-            return AopUtils.CanDoDefaultImplement(type);
+            return AopUtils.CanDoDefaultImplement(type) && type.HasAttribute<CharonAttribute>();
         }
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()

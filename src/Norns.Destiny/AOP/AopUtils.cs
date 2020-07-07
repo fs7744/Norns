@@ -1,5 +1,4 @@
-﻿using Norns.Destiny.Attributes;
-using Norns.Destiny.Structure;
+﻿using Norns.Destiny.Structure;
 
 namespace Norns.Destiny.AOP
 {
@@ -14,7 +13,7 @@ namespace Norns.Destiny.AOP
 
         public static bool CanDoDefaultImplement(ITypeSymbolInfo type)
         {
-            return (type.IsInterface || (type.IsClass && type.IsAbstract)) && type.HasAttribute<CharonAttribute>();
+            return (type.IsInterface || (type.IsClass && type.IsAbstract));
         }
     }
 }

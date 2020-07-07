@@ -1,4 +1,5 @@
 ﻿using Norns.Destiny.RuntimeSymbol;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.Destiny.Structure
@@ -71,9 +72,13 @@ namespace Norns.Destiny.Structure
             }
         }
 
+        public static IEnumerable<IAttributeSymbolInfo> GetAttributeSymbolInfos<T>(this ITypeSymbolInfo type)
+        {
+            return type.Attributes.Where(i => i.AttributeType.FullName == typeof(T).FullName);
+        }
         public static bool HasAttribute<T>(this ITypeSymbolInfo type)
         {
-            return type.Attributes.Any(i => i.AttributeType.FullName == typeof(T).FullName);
+            return type.GetAttributeSymbolInfos<T>().FirstOrDefault() != null;
         }
 
         public static bool CanOverride(this IMethodSymbolInfo method)
