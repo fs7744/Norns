@@ -19,5 +19,6 @@ namespace Norns.Destiny.Structure
         IImmutableArray<ITypeParameterSymbolInfo> TypeParameters { get; }
         IImmutableArray<IParameterSymbolInfo> Parameters { get; }
         IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
+        ITypeSymbolInfo ContainingType { get; }
     }
 }

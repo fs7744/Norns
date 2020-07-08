@@ -32,8 +32,8 @@ namespace Norns.Verthandi.Loom
             return new LoomOptions()
             {
                 CompilationOptions = compilationOptions,
-                FilterProxy = i => AopUtils.CanAopType(i) && i.HasAttribute<CharonAttribute>(),
-                FilterForDefaultImplement = i => AopUtils.CanDoDefaultImplement(i) && i.HasAttribute<CharonAttribute>(),
+                FilterProxy = i => i.Accessibility == AccessibilityInfo.Public && i.Namespace != null &&  !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Internal.") && AopUtils.CanAopType(i) && i.HasAttribute<CharonAttribute>() ,
+                FilterForDefaultImplement = i => i.Accessibility == AccessibilityInfo.Public && i.Namespace != null && !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Internal.") && AopUtils.CanDoDefaultImplement(i) && i.HasAttribute<CharonAttribute>(),
                 ParseOptions = parseOptions
             };
         }

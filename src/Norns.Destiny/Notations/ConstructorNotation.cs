@@ -23,7 +23,7 @@ namespace Norns.Destiny.Notations
                 yield return ConstNotations.Colon;
                 yield return ConstNotations.Base;
                 yield return ConstNotations.OpenParen;
-                yield return BaseParameters.InsertComma().Combine();
+                yield return BaseParameters.Select(i => i.ToCallParameter()).InsertComma().Combine();
                 yield return ConstNotations.CloseParen;
             }
             yield return ConstNotations.OpenBrace;

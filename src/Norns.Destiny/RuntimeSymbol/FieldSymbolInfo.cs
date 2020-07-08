@@ -9,6 +9,7 @@ namespace Norns.Destiny.RuntimeSymbol
     {
         public FieldSymbolInfo(FieldInfo f)
         {
+            ContainingType = f.DeclaringType.GetSymbolInfo();
             RealField = f;
             FieldType = f.FieldType.GetSymbolInfo();
             Accessibility = f.ConvertAccessibilityInfo();
@@ -29,5 +30,6 @@ namespace Norns.Destiny.RuntimeSymbol
         public AccessibilityInfo Accessibility { get; }
         public string FullName => $"{RealField.DeclaringType.FullName}.{RealField.Name}";
         public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
+        public ITypeSymbolInfo ContainingType { get; }
     }
 }

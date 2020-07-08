@@ -78,8 +78,8 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             var ms = typeof(A).GetSymbolInfo().Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
-                 .ToDictionary(i => i.FullName, i => i);
-            var m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.PrivateM"];
+                 .ToDictionary(i => $"{i.ContainingType.FullName}.{i.Name}", i => i);
+            var m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.PrivateM"];
             Assert.Equal(AccessibilityInfo.Private, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -92,7 +92,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.False(m.IsVirtual);
             Assert.Equal("void", m.ReturnType.FullName);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.InternalM"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.InternalM"];
             Assert.Equal(AccessibilityInfo.Internal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -105,7 +105,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.False(m.IsVirtual);
             Assert.Equal("int", m.ReturnType.FullName);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.ProtectedM"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.ProtectedM"];
             Assert.Equal(AccessibilityInfo.Protected, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -118,7 +118,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.True(m.IsVirtual);
             Assert.Equal("ValueTuple", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.PIS"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.PIS"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -131,7 +131,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.PPS"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.PPS"];
             Assert.Equal(AccessibilityInfo.ProtectedAndInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -144,7 +144,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.False(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.ToString"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.ToString"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -157,7 +157,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.True(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.GetTask"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.GetTask"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -170,7 +170,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.False(m.IsVirtual);
             Assert.Equal("Task", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+A.GetT"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.A.GetT"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.True(m.IsGenericMethod);
@@ -187,8 +187,8 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             ms = typeof(B).GetSymbolInfo().Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
-                 .ToDictionary(i => i.FullName, i => i);
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+B.ProtectedM"];
+                 .ToDictionary(i => $"{i.ContainingType.FullName}.{i.Name}", i => i);
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.B.ProtectedM"];
             Assert.Equal(AccessibilityInfo.Protected, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -201,7 +201,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.True(m.IsVirtual);
             Assert.Equal("ValueTuple", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+B.PIS"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.B.PIS"];
             Assert.Equal(AccessibilityInfo.ProtectedOrInternal, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -214,7 +214,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             Assert.True(m.IsVirtual);
             Assert.Equal("String", m.ReturnType.Name);
 
-            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest+B.GetTask"];
+            m = ms["Norns.Destiny.UT.RuntimeSymbol.MethodSymbolInfoTest.B.GetTask"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.Parameters);
             Assert.Empty(m.TypeParameters);
@@ -230,7 +230,7 @@ namespace Norns.Destiny.UT.RuntimeSymbol
             ms = typeof(Sta).GetSymbolInfo().Members
                  .Select(i => i as IMethodSymbolInfo)
                  .Where(i => i != null)
-                 .ToDictionary(i => i.FullName, i => i);
+                 .ToDictionary(i => $"{i.ContainingType.FullName}.{i.Name}", i => i);
             m = ms["Norns.Destiny.UT.RuntimeSymbol.Sta.A"];
             Assert.Equal(AccessibilityInfo.Public, m.Accessibility);
             Assert.Empty(m.TypeParameters);

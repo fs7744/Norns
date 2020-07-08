@@ -9,6 +9,7 @@ namespace Norns.Skuld.Structure
     {
         public MethodSymbolInfo(IMethodSymbol m)
         {
+            ContainingType = new TypeSymbolInfo(m.ContainingType);
             RealMethod = m;
             Origin = m;
             Accessibility = m.DeclaredAccessibility.ConvertToStructure();
@@ -24,6 +25,7 @@ namespace Norns.Skuld.Structure
             Parameters = EnumerableExtensions.CreateLazyImmutableArray<IParameterSymbolInfo>(() => RealMethod.Parameters.Select(i => new ParameterSymbolInfo(i)));
         }
 
+        public ITypeSymbolInfo ContainingType { get; }
         public IMethodSymbol RealMethod { get; }
         public object Origin { get; }
         public string Name => RealMethod.Name;

@@ -19,5 +19,6 @@ namespace Norns.Destiny.Structure
         IMethodSymbolInfo GetMethod { get; }
         IMethodSymbolInfo SetMethod { get; }
         IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
+        ITypeSymbolInfo ContainingType { get; }
     }
 }

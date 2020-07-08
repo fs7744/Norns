@@ -9,6 +9,7 @@ namespace Norns.Destiny.RuntimeSymbol
     {
         public MethodSymbolInfo(MethodBase m)
         {
+            ContainingType = m.DeclaringType.GetSymbolInfo();
             RealMethod = m;
             if (IsGenericMethod && m is MethodInfo mi)
             {
@@ -29,6 +30,7 @@ namespace Norns.Destiny.RuntimeSymbol
             Attributes = EnumerableExtensions.CreateLazyImmutableArray<IAttributeSymbolInfo>(() => RealMethod.GetCustomAttributesData().Select(i => new AttributeSymbolInfo(i)));
         }
 
+        public ITypeSymbolInfo ContainingType { get; }
         public MethodBase RealMethod { get; }
         public ITypeSymbolInfo ReturnType { get; }
         public bool IsExtensionMethod => RealMethod.CustomAttributes.Any(i => i.AttributeType == typeof(System.Runtime.CompilerServices.ExtensionAttribute));
@@ -41,7 +43,20 @@ namespace Norns.Destiny.RuntimeSymbol
         public bool IsAbstract => RealMethod.IsAbstract;
         public bool IsOverride => RealMethod.IsVirtual && (RealMethod.Attributes & MethodAttributes.NewSlot) != MethodAttributes.NewSlot;
         public bool IsVirtual => RealMethod.IsVirtual && !RealMethod.IsAbstract;
-        public string FullName => $"{RealMethod.DeclaringType.FullName}.{RealMethod.Name}";
+        private string fullName;
+
+        public string FullName
+        {
+            get
+            {
+                if (fullName == null)
+                {
+                    fullName = $"{ReturnType?.FullName} {RealMethod.Name}{(IsGenericMethod ? ("<" + TypeParameters.Select(i => i.FullName).InsertSeparator(",").Aggregate((i, j) => i + j)) + ">" : string.Empty)}({Parameters.Select(i => i.FullName).InsertSeparator(",").DefaultIfEmpty().Aggregate((i, j) => i + j)})";
+                }
+                return fullName;
+            }
+        }
+
         public MethodKindInfo MethodKind { get; }
         public bool IsAsync { get; }
         public bool HasReturnValue { get; }

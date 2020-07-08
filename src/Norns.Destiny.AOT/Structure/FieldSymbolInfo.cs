@@ -9,6 +9,7 @@ namespace Norns.Skuld.Structure
     {
         public FieldSymbolInfo(IFieldSymbol f)
         {
+            ContainingType = new TypeSymbolInfo(f.ContainingType);
             RealField = f;
             FieldType = new TypeSymbolInfo(f.Type);
             Accessibility = f.DeclaredAccessibility.ConvertToStructure();
@@ -17,6 +18,7 @@ namespace Norns.Skuld.Structure
             .Where(i => i != null));
         }
 
+        public ITypeSymbolInfo ContainingType { get; }
         public IFieldSymbol RealField { get; }
         public object Origin => RealField;
         public string Name => RealField.Name;

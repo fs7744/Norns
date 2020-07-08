@@ -2,6 +2,7 @@
 using Norns.Destiny.Structure;
 using Norns.Destiny.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Norns.Destiny.AOP.Notations
@@ -32,27 +33,27 @@ namespace Norns.Destiny.AOP.Notations
                 Accessibility = type.Accessibility,
                 Name = $"DefaultImplement{type.Name}{RandomUtils.NewName()}"
             };
-            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.DefaultImplement(typeof({(type.IsGenericType ? type.GenericDefinitionName : type.FullName)}))]".ToNotation());
+            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.DefaultImplement(typeof({CreateImplementKey(type)}))]".ToNotation());
             if (type.IsGenericType)
             {
                 @class.TypeParameters.AddRange(type.TypeParameters.Select(i => i.ToNotation()));
             }
             @namespace.Members.Add(@class);
             @class.Inherits.Add(type.FullName.ToNotation());
-            foreach (var member in type.Members.Union(type.Interfaces.SelectMany(i => i.Members)).Distinct())
+            foreach (var member in type.Members.Union(type.Interfaces.SelectMany(i => i.Members)).Distinct(new FullNameSymbolInfoEqualityComparer()))
             {
                 switch (member)
                 {
-                    case IMethodSymbolInfo method when method.IsAbstract && method.MethodKind == MethodKindInfo.Method:
-                        @class.Members.Add(GenerateImplementMethod(method, type.IsInterface, context));
+                    case IMethodSymbolInfo method when method.Accessibility != AccessibilityInfo.Private && !method.IsStatic && method.IsAbstract && method.MethodKind == MethodKindInfo.Method:
+                        @class.Members.Add(GenerateImplementMethod(method, context));
                         break;
 
-                    case IMethodSymbolInfo method when method.MethodKind == MethodKindInfo.Constructor:
+                    case IMethodSymbolInfo method when method.Accessibility != AccessibilityInfo.Private && !method.IsStatic && method.MethodKind == MethodKindInfo.Constructor:
                         @class.Members.Add(GenerateImplementConstructor(method, @class.Name));
                         break;
 
-                    case IPropertySymbolInfo property:
-                        @class.Members.Add(GenerateImplementProperty(property, type.IsInterface, context));
+                    case IPropertySymbolInfo property when property.Accessibility != AccessibilityInfo.Private && !property.IsStatic:
+                        @class.Members.Add(GenerateImplementProperty(property, context));
                         break;
 
                     default:
@@ -70,7 +71,7 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation GenerateImplementMethod(IMethodSymbolInfo method, bool isInterface, ProxyGeneratorContext typeContext)
+        private INotation GenerateImplementMethod(IMethodSymbolInfo method, ProxyGeneratorContext typeContext)
         {
             var context = new ProxyGeneratorContext()
             {
@@ -79,7 +80,7 @@ namespace Norns.Destiny.AOP.Notations
             };
             var notation = method.ToNotationDefinition();
             context.SetCurrentMethodNotation(notation);
-            notation.IsOverride = !isInterface && method.CanOverride();
+            notation.IsOverride = !method.ContainingType.IsInterface && method.CanOverride();
             notation.Body.Add(method.Parameters.Where(i => i.RefKind == RefKindInfo.Out).Select(i => $"{i.Name} = default;".ToNotation()).Combine());
             var returnValueParameterName = context.GetReturnValueParameterName();
             if (method.HasReturnValue)
@@ -93,7 +94,7 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation GenerateImplementProperty(IPropertySymbolInfo property, bool isInterface, ProxyGeneratorContext typeContext)
+        private INotation GenerateImplementProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext)
         {
             var context = new ProxyGeneratorContext()
             {
@@ -115,7 +116,7 @@ namespace Norns.Destiny.AOP.Notations
             {
                 notation = new PropertyNotation();
             }
-            notation.IsOverride = !isInterface && property.CanOverride();
+            notation.IsOverride = !property.ContainingType.IsInterface && property.CanOverride();
             notation.Accessibility = property.Accessibility;
             notation.Name = property.Name;
             notation.Type = property.Type.FullName;
@@ -139,6 +140,19 @@ namespace Norns.Destiny.AOP.Notations
                 notation.Accessers.Add(setter);
             }
             return notation;
+        }
+    }
+
+    public class FullNameSymbolInfoEqualityComparer : IEqualityComparer<ISymbolInfo>
+    {
+        public bool Equals(ISymbolInfo x, ISymbolInfo y)
+        {
+            return x.FullName == y.FullName;
+        }
+
+        public int GetHashCode(ISymbolInfo obj)
+        {
+            return obj.FullName.GetHashCode();
         }
     }
 }

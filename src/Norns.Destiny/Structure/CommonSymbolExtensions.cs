@@ -83,12 +83,12 @@ namespace Norns.Destiny.Structure
 
         public static bool CanOverride(this IMethodSymbolInfo method)
         {
-            return method.IsAbstract || method.IsVirtual || method.IsOverride;
+            return !method.IsSealed && !method.IsStatic && (method.IsAbstract || method.IsVirtual || method.IsOverride);
         }
 
         public static bool CanOverride(this IPropertySymbolInfo property)
         {
-            return property.IsAbstract || property.IsVirtual || property.IsOverride;
+            return !property.IsSealed && !property.IsStatic && (property.IsAbstract || property.IsVirtual || property.IsOverride);
         }
 
         public static bool IsType<T>(this ITypeSymbolInfo type)

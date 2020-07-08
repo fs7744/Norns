@@ -28,7 +28,7 @@ namespace Norns.Destiny.AOP.Notations
                 Accessibility = type.Accessibility,
                 Name = $"Proxy{type.Name}{RandomUtils.NewName()}"
             };
-            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.Proxy(typeof({(type.IsGenericType ? type.GenericDefinitionName : type.FullName)}))]".ToNotation());
+            @class.CustomAttributes.Add($"[Norns.Destiny.Attributes.Proxy(typeof({CreateImplementKey(type)}))]".ToNotation());
             if (type.IsGenericType)
             {
                 @class.TypeParameters.AddRange(type.TypeParameters.Select(i => i.ToNotation()));
@@ -45,19 +45,19 @@ namespace Norns.Destiny.AOP.Notations
             {
                 switch (member)
                 {
-                    case IMethodSymbolInfo method when method.MethodKind != MethodKindInfo.PropertyGet
+                    case IMethodSymbolInfo method when !method.IsStatic && method.MethodKind != MethodKindInfo.PropertyGet
                         && method.MethodKind != MethodKindInfo.PropertySet
                         && method.CanOverride()
                         && method.Name != "Finalize":
-                        @class.Members.Add(CreateProxyMethod(method, context, type.IsInterface));
+                        @class.Members.Add(CreateProxyMethod(method, context));
                         break;
 
-                    case IMethodSymbolInfo method when method.MethodKind == MethodKindInfo.Constructor:
+                    case IMethodSymbolInfo method when !method.IsStatic && method.MethodKind == MethodKindInfo.Constructor:
                         @class.Members.Add(GenerateImplementConstructor(method, @class.Name));
                         break;
 
                     case IPropertySymbolInfo property when property.CanOverride():
-                        @class.Members.Add(CreateProxyProperty(property, context, type.IsInterface));
+                        @class.Members.Add(CreateProxyProperty(property, context));
                         break;
 
                     default:
@@ -91,7 +91,7 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation CreateProxyProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext, bool isInterface)
+        private INotation CreateProxyProperty(IPropertySymbolInfo property, ProxyGeneratorContext typeContext)
         {
             var context = new ProxyGeneratorContext()
             {
@@ -119,6 +119,7 @@ namespace Norns.Destiny.AOP.Notations
                 callName.Add(property.Name.ToNotation());
                 notation = new PropertyNotation();
             }
+            var isInterface = property.ContainingType.IsInterface;
             notation.IsOverride = !isInterface && property.CanOverride();
             notation.Accessibility = property.Accessibility;
             notation.Name = property.Name;
@@ -161,7 +162,7 @@ namespace Norns.Destiny.AOP.Notations
             return notation;
         }
 
-        private INotation CreateProxyMethod(IMethodSymbolInfo method, ProxyGeneratorContext typeContext, bool isInterface)
+        private INotation CreateProxyMethod(IMethodSymbolInfo method, ProxyGeneratorContext typeContext)
         {
             var context = new ProxyGeneratorContext()
             {
@@ -171,6 +172,7 @@ namespace Norns.Destiny.AOP.Notations
 
             var notation = method.ToNotationDefinition();
             context.SetCurrentMethodNotation(notation);
+            var isInterface = method.ContainingType.IsInterface;
             notation.IsOverride = !isInterface && method.CanOverride();
             var returnValueParameterName = context.GetReturnValueParameterName();
             if (method.HasReturnValue)

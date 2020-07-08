@@ -14,5 +14,6 @@ namespace Norns.Destiny.Structure
         bool IsStatic { get; }
         AccessibilityInfo Accessibility { get; }
         IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
+        ITypeSymbolInfo ContainingType { get; }
     }
 }

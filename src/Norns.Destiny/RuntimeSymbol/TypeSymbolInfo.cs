@@ -82,7 +82,7 @@ namespace Norns.Destiny.RuntimeSymbol
         public AccessibilityInfo Accessibility { get; private set; }
         public string Name { get; private set; }
         public bool IsStatic { get; private set; }
-        public bool IsSealed => RealType.IsSealed;
+        public bool IsSealed => RealType.IsSealed || RealType.IsGenericTypeDefinition;
         public bool IsValueType => RealType.IsValueType;
         public bool IsGenericType => RealType.IsGenericType;
         public bool IsAbstract => RealType.IsAbstract;

@@ -9,6 +9,7 @@ namespace Norns.Destiny.RuntimeSymbol
     {
         public PropertySymbolInfo(PropertyInfo p)
         {
+            ContainingType = p.DeclaringType.GetSymbolInfo();
             RealProperty = p;
             Type = p.PropertyType.GetSymbolInfo();
             Parameters = EnumerableExtensions.CreateLazyImmutableArray<IParameterSymbolInfo>(() => RealProperty.GetIndexParameters().Select(i => new ParameterSymbolInfo(i)));
@@ -36,8 +37,9 @@ namespace Norns.Destiny.RuntimeSymbol
         public string Name => RealProperty.Name;
         public IMethodSymbolInfo GetMethod { get; }
         public IMethodSymbolInfo SetMethod { get; }
-        public string FullName => $"{RealProperty.DeclaringType.FullName}.{Name}";
+        public string FullName => $"{Type.FullName} {Name}";
         public IImmutableArray<IParameterSymbolInfo> Parameters { get; }
         public IImmutableArray<IAttributeSymbolInfo> Attributes { get; }
+        public ITypeSymbolInfo ContainingType { get; }
     }
 }

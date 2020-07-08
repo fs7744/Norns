@@ -9,6 +9,7 @@ namespace Norns.Skuld.Structure
     {
         public PropertySymbolInfo(IPropertySymbol p)
         {
+            ContainingType = new TypeSymbolInfo(p.ContainingType);
             RealProperty = p;
             Type = new TypeSymbolInfo(p.Type);
             Accessibility = p.DeclaredAccessibility.ConvertToStructure();
@@ -20,6 +21,7 @@ namespace Norns.Skuld.Structure
             .Where(i => i != null));
         }
 
+        public ITypeSymbolInfo ContainingType { get; }
         private IPropertySymbol RealProperty { get; }
         public object Origin => RealProperty;
         public string Name => RealProperty.Name;
