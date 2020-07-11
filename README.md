@@ -133,7 +133,7 @@ internal class Program
     {
         var p = new ServiceCollection()
             .AddTransient<IC, C>()
-            .BuildJitAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() }, AppDomain.CurrentDomain.GetAssemblies())
+            .BuildVerthandiAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
             .GetRequiredService<IC>();
 
         var result = p.AddOne(99);

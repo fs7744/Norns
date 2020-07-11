@@ -32,7 +32,7 @@ namespace Norns.Destiny.Utils
                 .Where(i => i.ServiceType != null)
                 .Distinct()
                 .GroupBy(i => i.IsProxy)
-                .ToDictionary(j => j.Key, i => i.GroupBy(j => j.ServiceType).ToDictionary(j => j.Key, j => j.First().ImplementType));
+                .ToDictionary(j => j.Key, i => i.GroupBy(j => j.ServiceType).ToDictionary(j => j.Key, j => j.OrderBy(x => x.ServiceType.IsInterface).First().ImplementType));
             Dictionary<Type, Type> defaultInterfaceImplementDict = new Dictionary<Type, Type>();
             Dictionary<Type, Type> proxyDict = new Dictionary<Type, Type>();
             foreach (var t in types)

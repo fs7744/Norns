@@ -45,9 +45,10 @@ namespace Norns.Destiny.AOP.Notations
             {
                 switch (member)
                 {
-                    case IMethodSymbolInfo method when !method.IsStatic && method.MethodKind != MethodKindInfo.PropertyGet
+                    case IMethodSymbolInfo method when !method.IsStatic 
+                        && method.MethodKind != MethodKindInfo.PropertyGet
                         && method.MethodKind != MethodKindInfo.PropertySet
-                        && method.CanOverride()
+                        && (method.CanOverride() || (method.ContainingType.IsInterface && !method.IsAbstract))
                         && method.Name != "Finalize":
                         @class.Members.Add(CreateProxyMethod(method, context));
                         break;
@@ -187,7 +188,7 @@ namespace Norns.Destiny.AOP.Notations
                 {
                     notation.Body.AddRange(Notation.Create(returnValueParameterName, " = "));
                 }
-                notation.Body.AddRange(Notation.Create(method.IsAsync ? "await " : string.Empty, context.GetProxyFieldName(), ".", method.Name));
+                notation.Body.AddRange(Notation.Create(method.IsAsync ? "await " : string.Empty, method.ContainingType.IsInterface && !method.IsAbstract ? $"({context.GetProxyFieldName()} as {method.ContainingType.FullName})"  : context.GetProxyFieldName(), ".", method.Name));
                 notation.Body.Add(ConstNotations.OpenParen);
                 notation.Body.Add(notation.Parameters.ToCallParameters());
                 notation.Body.Add(ConstNotations.CloseParen);

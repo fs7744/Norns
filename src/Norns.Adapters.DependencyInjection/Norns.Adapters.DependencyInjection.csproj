@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Norns.Destiny.JIT\Norns.Verthandi.csproj" />
+    <ProjectReference Include="..\Norns.Destiny.Verthandi\Norns.Verthandi.csproj" />
   </ItemGroup>
 
 </Project>

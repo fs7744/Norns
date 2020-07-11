@@ -44,6 +44,16 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildServiceProvider();
         }
 
+        public static IServiceProvider BuildVerthandiAopServiceProvider(this IServiceCollection sc, LoomOptions options, IInterceptorGenerator[] interceptors)
+        {
+            var op = options ?? LoomOptions.CreateDefault();
+            var generator = new AopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
+            var types = sc.Select(i => i.ServiceType).Union(sc.Select(i => i.ImplementationType)).Where(i => i != null).Select(j => j.IsGenericType ? j.GetGenericTypeDefinition() : j).Distinct().ToArray();
+            var assembly = generator.Generate(new TypesSymbolSource(types));
+            return sc.BuildAopServiceProvider(assembly);
+        }
+
+
         public static IServiceProvider BuildJitAopServiceProvider(this IServiceCollection sc, LoomOptions options, IInterceptorGenerator[] interceptors, params Assembly[] assemblies)
         {
             var op = options ?? LoomOptions.CreateDefault();

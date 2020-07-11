@@ -20,9 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Skuld", "src\Norns.Destiny.AOT\Norns.Skuld.csproj", "{47D0E2E8-09F4-4563-BE66-6B90DD555B9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Skuld", "src\Norns.Destiny.Skuld\Norns.Skuld.csproj", "{47D0E2E8-09F4-4563-BE66-6B90DD555B9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi", "src\Norns.Destiny.JIT\Norns.Verthandi.csproj", "{FC7024ED-1C2F-4129-A4D2-37D706294D85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi", "src\Norns.Destiny.Verthandi\Norns.Verthandi.csproj", "{FC7024ED-1C2F-4129-A4D2-37D706294D85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.Destiny", "src\Norns.Destiny\Norns.Destiny.csproj", "{BF028967-93FC-4C13-AA6D-F0AE9C091F82}"
 EndProject
