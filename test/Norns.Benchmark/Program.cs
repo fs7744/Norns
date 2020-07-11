@@ -42,12 +42,10 @@ namespace Norns.Benchmark
             var p = new ServiceCollection()
                 .AddTransient<IC, C>()
               //.AddDestinyInterface<IC>(ServiceLifetime.Scoped)
-              .BuildVerthandiAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
+              .BuildVerthandiAopServiceProvider(new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
               //.BuildAopServiceProvider(AppDomain.CurrentDomain.GetAssemblies())
               //.BuildServiceProvider()
               .GetRequiredService<IC>();
-            DestinyExtensions.CleanCache();
-            GC.Collect();
             var result = p.AddOne(99);
             Console.WriteLine($"p.AddOne(99) 's result is {result}.");
             Console.WriteLine();

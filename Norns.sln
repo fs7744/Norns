@@ -24,9 +24,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Skuld", "src\Norns.De
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi", "src\Norns.Destiny.Verthandi\Norns.Verthandi.csproj", "{FC7024ED-1C2F-4129-A4D2-37D706294D85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.Destiny", "src\Norns.Destiny\Norns.Destiny.csproj", "{BF028967-93FC-4C13-AA6D-F0AE9C091F82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Destiny", "src\Norns.Destiny\Norns.Destiny.csproj", "{BF028967-93FC-4C13-AA6D-F0AE9C091F82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.Urd", "src\Norns.Urd\Norns.Urd.csproj", "{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Urd", "src\Norns.Urd\Norns.Urd.csproj", "{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiDemo", "test\WebApiDemo\WebApiDemo.csproj", "{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,10 @@ Global
 		{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{FC7024ED-1C2F-4129-A4D2-37D706294D85} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
 		{BF028967-93FC-4C13-AA6D-F0AE9C091F82} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
 		{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
+		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF} = {115CAC93-F1BB-40FA-A55E-D846ED028024}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2BFA03B-F071-472F-95AD-C2E127881EDE}

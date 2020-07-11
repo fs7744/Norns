@@ -1,5 +1,6 @@
 ﻿using Norns.Destiny.AOP;
 using Norns.Destiny.Attributes;
+using Norns.Destiny.Structure;
 using Norns.Destiny.Utils;
 using Norns.Verthandi.AOP;
 using Norns.Verthandi.Loom;
@@ -44,12 +45,18 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildServiceProvider();
         }
 
-        public static IServiceProvider BuildVerthandiAopServiceProvider(this IServiceCollection sc, LoomOptions options, IInterceptorGenerator[] interceptors)
+        public static IServiceProvider BuildVerthandiAopServiceProvider(this IServiceCollection sc, IInterceptorGenerator[] interceptors, LoomOptions options = null)
         {
             var op = options ?? LoomOptions.CreateDefault();
+            var userFilterProxy = op.FilterProxy ?? ((ITypeSymbolInfo i) => true);
+            var userFilterForDefaultImplement = op.FilterForDefaultImplement ?? ((ITypeSymbolInfo i) => true);
+            op.FilterProxy = i => i.Namespace != null && AopUtils.CanAopType(i) && userFilterProxy(i);
+            op.FilterForDefaultImplement = i => i.Namespace != null && AopUtils.CanDoDefaultImplement(i) && userFilterForDefaultImplement(i);
             var generator = new AopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
-            var types = sc.Select(i => i.ServiceType).Union(sc.Select(i => i.ImplementationType)).Where(i => i != null).Select(j => j.IsGenericType ? j.GetGenericTypeDefinition() : j).Distinct().ToArray();
+            var types = sc.Select(i => i.ServiceType).Select(j => j.IsGenericType ? j.GetGenericTypeDefinition() : j).Distinct().ToArray();
             var assembly = generator.Generate(new TypesSymbolSource(types));
+            DestinyExtensions.CleanCache();
+            GC.Collect();
             return sc.BuildAopServiceProvider(assembly);
         }
 

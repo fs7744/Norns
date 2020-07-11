@@ -126,6 +126,28 @@ public class C : IC
 
 4. set to DI
 
+if use asp.net core, just use `UseVerthandiAop` like :
+
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+        .UseVerthandiAop(new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
+}
+```
+
+if not, you can try this :
+
 ```csharp
 internal class Program
 {
@@ -133,7 +155,7 @@ internal class Program
     {
         var p = new ServiceCollection()
             .AddTransient<IC, C>()
-            .BuildVerthandiAopServiceProvider(null, new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
+            .BuildVerthandiAopServiceProvider(new IInterceptorGenerator[] { new ConsoleCallMethodGenerator() })
             .GetRequiredService<IC>();
 
         var result = p.AddOne(99);

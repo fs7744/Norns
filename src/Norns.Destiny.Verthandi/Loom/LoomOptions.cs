@@ -1,7 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Norns.Destiny.AOP;
-using Norns.Destiny.Attributes;
 using Norns.Destiny.Structure;
 using System;
 
@@ -32,8 +30,8 @@ namespace Norns.Verthandi.Loom
             return new LoomOptions()
             {
                 CompilationOptions = compilationOptions,
-                FilterProxy = i => i.Accessibility == AccessibilityInfo.Public && i.Namespace != null &&  !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Internal.") && AopUtils.CanAopType(i) && i.HasAttribute<CharonAttribute>() ,
-                FilterForDefaultImplement = i => i.Accessibility == AccessibilityInfo.Public && i.Namespace != null && !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Internal.") && AopUtils.CanDoDefaultImplement(i) && i.HasAttribute<CharonAttribute>(),
+                FilterProxy = i => !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Microsoft"),
+                FilterForDefaultImplement = i => !i.Namespace.StartsWith("System") && !i.Namespace.StartsWith("Microsoft"),
                 ParseOptions = parseOptions
             };
         }
