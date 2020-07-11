@@ -1,51 +1,45 @@
 # Norns
 
-[中文文档](doc\zh\README.md)
+## 目标
 
-## Goal
+把静态编织（static weaving）和动态编织（dynamic weaving）都做一遍.
 
-This a project to do static weaving and dynamic weaving.
+## 设计
 
-## Desgin
+### 基于代理模式的AOP
 
-### AOP base on proxy
+0. 生成代理类型
+1. 在di中替换为代理类型
+2. 在代理类中实现AOP功能
 
-0. Generate proxy class type
-1. Replace type to proxy type for di
-2. Do aop in proxy class
+### 静态编织Static weaving 基于[roslyn](https://github.com/dotnet/roslyn)生成代码
 
-### Static weaving generate code base on [roslyn](https://github.com/dotnet/roslyn)
-
-There is two way that we will try to support :
+会尝试以下两种方式实现AOP :
 
 #### AOT   (Norns.Skuld)
 
-> experimental feature
+> 仍为实验特性
 
-* use [source-generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md) to generator proxy class code 
+* 基于 [source-generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.md) 生成代码
 
 `
-(ps: because source-generators not allow loading referenced assemblies now, so can't share package to other now. I will try to find way to fix this.)
+(ps: 目前由于 source-generators 不允许加载引用dll, 所以目前受限而无法作为公用包给大家使用.)
 `
 
 #### JIT     (Norns.Verthandi)
 
-* use Reflection to generator proxy class code 
-* use roslyn sdk to convert code to type
+* 基于 Reflection 获取类型数据并生成代码 
+* 基于 roslyn sdk 编译代码
 
 ```
-Not use this in production.
+不要在 production 使用该功能.
 
-Roslyn is so great, but if we just use it once before di, it seem wasting a lot of memory and cpu.
-
-Actually we can do jit after generate dll to generate proxy dll, make the jit to aot after build.
-
-But now there is source-generators.
+Roslyn 很强大, 但是依旧会消耗很多cpu和内存。
 ```
 
 ### Dynamic weaving   Emit  (Norns.Urd)
 
-* Emit to generate proxy type
+* 基于 Emit 生成代理类
 
 > (ps: this will begin after static weaving done)
 
@@ -187,13 +181,11 @@ p.AddOne2(1) 's result is 2.
 
 ### AOT   (Norns.Skuld)
 
-There is Noting until source-generators can do this.
-
-Because source-generators not allow loading referenced assemblies now, so can't share package to other, and i don't want to write the demo.
+source-generators 还有很多问题和变动，所以目前不提供demo 文档.
 
 ### Emit  (Norns.Urd)
 
-waiting to start
+暂未开始
 
 ## Plan 
 
