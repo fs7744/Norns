@@ -32,6 +32,8 @@ There is two way that we will try to support :
 * use roslyn sdk to convert code to type
 
 ```
+Not use this in production.
+
 Roslyn is so great, but if we just use it once before di, it seem wasting a lot of memory and cpu.
 
 Actually we can do jit after generate dll to generate proxy dll, make the jit to aot after build.
