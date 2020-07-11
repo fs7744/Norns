@@ -1,6 +1,6 @@
 # Norns
 
-[中文文档](doc\zh\README.md)
+[中文文档](doc/zh/README.md)
 
 ## Goal
 
