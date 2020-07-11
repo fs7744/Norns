@@ -69,8 +69,6 @@ namespace Norns.Destiny.UT.Skuld
 
             GeneratorDriver driver = new CSharpGeneratorDriver(Regular, ImmutableArray.Create(sourceGenerator), ImmutableArray<AdditionalText>.Empty);
             driver.RunFullGeneration(compilation, out var outputCompilation, out var diagnostics);
-            //var array = outputCompilation.SyntaxTrees.ToArray();
-            //var gemerateCode = array[1].ToString();
             if (!diagnostics.IsEmpty)
             {
                 throw new ComplieException(diagnostics);
@@ -104,16 +102,16 @@ namespace Norns.Destiny.UT.Skuld
             return provider.GetRequiredService(type);
         }
 
-        public static List<ITypeSymbolInfo> GenerateTypeSymbolInfos(string code, Func<ITypeSymbolInfo, bool> filter)
+        public static List<ITypeSymbolInfo> GenerateTypeSymbolInfos(string code)
         {
-            var collector = new TypeSymbolInfoCollector(filter);
+            var collector = new TypeSymbolInfoCollector();
             GenerateCode(code, collector);
             return collector.Infos;
         }
 
         public static Dictionary<string, ITypeSymbolInfo> SimpleGenerateTypeSymbolInfos(string code, bool isUseShortName = true)
         {
-            var collector = new TypeSymbolInfoCollector(i => i.Namespace == "Norns.Destiny.UT.AOT.Generated");
+            var collector = new TypeSymbolInfoCollector();
             GenerateCode($"namespace Norns.Destiny.UT.AOT.Generated {{ {code} }}", collector);
             return collector.Infos.ToDictionary(i => isUseShortName ? i.Name : i.FullName, i => i);
         }
@@ -122,12 +120,6 @@ namespace Norns.Destiny.UT.Skuld
     public class TypeSymbolInfoCollector : SourceGeneratorBase
     {
         public List<ITypeSymbolInfo> Infos = new List<ITypeSymbolInfo>();
-        private readonly Func<ITypeSymbolInfo, bool> filter;
-
-        public TypeSymbolInfoCollector(Func<ITypeSymbolInfo, bool> filter)
-        {
-            this.filter = filter;
-        }
 
         public class NothingNotationGenerator : INotationGenerator
         {
@@ -148,11 +140,6 @@ namespace Norns.Destiny.UT.Skuld
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
             yield return new NothingNotationGenerator(Infos);
-        }
-
-        protected override bool Filter(ITypeSymbolInfo type)
-        {
-            return filter(type);
         }
     }
 }

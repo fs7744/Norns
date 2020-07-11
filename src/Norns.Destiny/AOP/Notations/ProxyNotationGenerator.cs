@@ -1,6 +1,7 @@
 ﻿using Norns.Destiny.Notations;
 using Norns.Destiny.Structure;
 using Norns.Destiny.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,15 +10,17 @@ namespace Norns.Destiny.AOP.Notations
     public class ProxyNotationGenerator : AbstractNotationGenerator
     {
         private readonly IEnumerable<IInterceptorGenerator> interceptors;
+        private readonly Func<ITypeSymbolInfo, bool> filterProxy;
 
-        public ProxyNotationGenerator(IEnumerable<IInterceptorGenerator> interceptors)
+        public ProxyNotationGenerator(IEnumerable<IInterceptorGenerator> interceptors, Func<ITypeSymbolInfo, bool> filterProxy)
         {
+            this.filterProxy = filterProxy;
             this.interceptors = interceptors;
         }
 
         public override bool Filter(ITypeSymbolInfo type)
         {
-            return true;
+            return filterProxy(type);
         }
 
         public override INotation CreateImplement(ITypeSymbolInfo type)

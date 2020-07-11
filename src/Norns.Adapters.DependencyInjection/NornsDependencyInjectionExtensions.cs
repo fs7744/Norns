@@ -53,15 +53,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return sc.BuildAopServiceProvider(assembly);
         }
 
-
-        public static IServiceProvider BuildJitAopServiceProvider(this IServiceCollection sc, LoomOptions options, IInterceptorGenerator[] interceptors, params Assembly[] assemblies)
-        {
-            var op = options ?? LoomOptions.CreateDefault();
-            var generator = new AopSourceGenerator(op, interceptors ?? new IInterceptorGenerator[0]);
-            var assembly = generator.Generate(new AssembliesSymbolSource(assemblies, op.FilterProxy));
-            return sc.BuildAopServiceProvider(assemblies.Union(new Assembly[] { assembly }).ToArray());
-        }
-
         public static IServiceCollection AddDestinyInterface<T>(this IServiceCollection sc, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
             return sc.AddDestinyInterface(typeof(T), lifetime);

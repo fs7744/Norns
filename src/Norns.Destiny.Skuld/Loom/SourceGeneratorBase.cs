@@ -21,11 +21,9 @@ namespace Norns.Skuld.Loom
             return syntaxNode is TypeDeclarationSyntax;
         }
 
-        protected abstract bool Filter(ITypeSymbolInfo type);
-
         protected virtual ISymbolSource CreateGenerateSymbolSource(IEnumerable<SyntaxNode> syntaxNodes, SourceGeneratorContext context)
         {
-            return new SyntaxNodeSymbolSource(syntaxNodes, context, Filter);
+            return new SyntaxNodeSymbolSource(syntaxNodes, context);
         }
 
         protected virtual SourceText CreateSourceText(INotation notation)

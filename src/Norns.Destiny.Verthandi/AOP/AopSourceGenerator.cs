@@ -21,7 +21,7 @@ namespace Norns.Verthandi.AOP
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
             yield return new DefaultImplementNotationGenerator(options.FilterForDefaultImplement);
-            yield return new ProxyNotationGenerator(generators);
+            yield return new ProxyNotationGenerator(generators, options.FilterProxy);
         }
 
         protected override LoomOptions CreateOptions()

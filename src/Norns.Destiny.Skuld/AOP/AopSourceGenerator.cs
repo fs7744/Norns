@@ -20,10 +20,10 @@ namespace Norns.Skuld.AOP
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
         {
             yield return new DefaultImplementNotationGenerator(FilterForDefaultImplement);
-            yield return new ProxyNotationGenerator(GetInterceptorGenerators());
+            yield return new ProxyNotationGenerator(GetInterceptorGenerators(), FilterProxy);
         }
 
-        protected override bool Filter(ITypeSymbolInfo type)
+        protected virtual bool FilterProxy(ITypeSymbolInfo type)
         {
             return type.HasAttribute<CharonAttribute>() && AopUtils.CanAopType(type);
         }
