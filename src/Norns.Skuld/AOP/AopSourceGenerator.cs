@@ -1,6 +1,5 @@
 ﻿using Norns.Destiny.AOP;
 using Norns.Destiny.AOP.Notations;
-using Norns.Destiny.Attributes;
 using Norns.Destiny.Loom;
 using Norns.Destiny.Structure;
 using Norns.Skuld.Loom;
@@ -14,7 +13,7 @@ namespace Norns.Skuld.AOP
 
         protected virtual bool FilterForDefaultImplement(ITypeSymbolInfo type)
         {
-            return AopUtils.CanDoDefaultImplement(type) && type.HasAttribute<CharonAttribute>();
+            return AopUtils.CanDoDefaultImplement(type);
         }
 
         protected override IEnumerable<INotationGenerator> CreateNotationGenerators()
@@ -25,7 +24,7 @@ namespace Norns.Skuld.AOP
 
         protected virtual bool FilterProxy(ITypeSymbolInfo type)
         {
-            return type.HasAttribute<CharonAttribute>() && AopUtils.CanAopType(type);
+            return AopUtils.CanAopType(type);
         }
     }
 }

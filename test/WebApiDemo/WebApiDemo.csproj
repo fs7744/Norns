@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Norns.Verthandi.Adapters.DependencyInjection\Norns.Verthandi.Adapters.DependencyInjection.csproj" />
   </ItemGroup>
 
 

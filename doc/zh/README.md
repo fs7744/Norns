@@ -92,12 +92,10 @@ namespace Norns.Benchmark
 2. write interface 
 
 ```csharp
-using Norns.Destiny.Attributes;
 using System;
 
 namespace Norns.Benchmark
 {
-    [Charon]
     public interface IC
     {
         int AddOne(int v);

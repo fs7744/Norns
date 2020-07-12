@@ -98,12 +98,10 @@ namespace Norns.Benchmark
 2. write interface 
 
 ```csharp
-using Norns.Destiny.Attributes;
 using System;
 
 namespace Norns.Benchmark
 {
-    [Charon]
     public interface IC
     {
         int AddOne(int v);
@@ -198,12 +196,4 @@ waiting to start
 ## Plan 
 
 - [ ] [Norns-JIT-Imporve](https://github.com/fs7744/Norns/projects/1)
-
-## 取名缘由
-
-Norns == 诺伦三女神 （北欧神话中的命运女神）
-
-大女儿乌尔德（Urd）司掌“过去”，二女儿薇儿丹蒂（Verthandi）司掌“现在”，小女儿诗蔻蒂（Skuld）司掌“未来”。
-
-所以借用该名希望该项目可以帮助大家 `自我掌控` 项目的“命运”。
 

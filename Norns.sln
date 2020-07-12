@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Adapters.DependencyInjection", "src\Norns.Adapters.DependencyInjection\Norns.Adapters.DependencyInjection.csproj", "{7E777F31-EE0B-46E3-A943-414B3E536ED8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi.Adapters.DependencyInjection", "src\Norns.Verthandi.Adapters.DependencyInjection\Norns.Verthandi.Adapters.DependencyInjection.csproj", "{7E777F31-EE0B-46E3-A943-414B3E536ED8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}"
 EndProject
@@ -20,15 +20,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Skuld", "src\Norns.Destiny.Skuld\Norns.Skuld.csproj", "{47D0E2E8-09F4-4563-BE66-6B90DD555B9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Skuld", "src\Norns.Skuld\Norns.Skuld.csproj", "{47D0E2E8-09F4-4563-BE66-6B90DD555B9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi", "src\Norns.Destiny.Verthandi\Norns.Verthandi.csproj", "{FC7024ED-1C2F-4129-A4D2-37D706294D85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Verthandi", "src\Norns.Verthandi\Norns.Verthandi.csproj", "{FC7024ED-1C2F-4129-A4D2-37D706294D85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Destiny", "src\Norns.Destiny\Norns.Destiny.csproj", "{BF028967-93FC-4C13-AA6D-F0AE9C091F82}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Norns.Urd", "src\Norns.Urd\Norns.Urd.csproj", "{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiDemo", "test\WebApiDemo\WebApiDemo.csproj", "{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiDemo", "test\WebApiDemo\WebApiDemo.csproj", "{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Norns.Urd.Adapters.DependencyInjection", "src\Norns.Urd.Adapters.DependencyInjection\Norns.Urd.Adapters.DependencyInjection.csproj", "{485D2FF0-3252-4837-81F7-0C352B7EBDB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +74,10 @@ Global
 		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{485D2FF0-3252-4837-81F7-0C352B7EBDB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485D2FF0-3252-4837-81F7-0C352B7EBDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485D2FF0-3252-4837-81F7-0C352B7EBDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485D2FF0-3252-4837-81F7-0C352B7EBDB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +92,7 @@ Global
 		{BF028967-93FC-4C13-AA6D-F0AE9C091F82} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
 		{FC85F35E-EE81-4B8C-838E-96CE4C4EBB49} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
 		{62A2AB8D-7D28-4508-A6AA-2B235DD5D4DF} = {115CAC93-F1BB-40FA-A55E-D846ED028024}
+		{485D2FF0-3252-4837-81F7-0C352B7EBDB5} = {3FD69CA3-BAF7-4B7A-AAB2-B9853759F4D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2BFA03B-F071-472F-95AD-C2E127881EDE}

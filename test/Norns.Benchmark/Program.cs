@@ -1,14 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Norns.Destiny.AOP;
-using Norns.Destiny.Attributes;
-using Norns.Destiny.Utils;
 using System;
 using Norns.Destiny.RuntimeSymbol;
 using System.Linq;
 
 namespace Norns.Benchmark
 {
-    [Charon]
     public interface IC
     {
         int AddOne(int v);
