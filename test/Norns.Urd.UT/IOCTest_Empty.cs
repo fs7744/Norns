@@ -71,7 +71,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterfaceInternal>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterfaceInternal) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterfaceInternal", descriptor.ImplementationType.Name);
@@ -91,7 +91,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -106,7 +106,7 @@ namespace Baymax.Test.AOP.Norns
                         .AddSingleton<Test.IIocTestInterface>()
                         .AddSingleton<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Equal(2, services.Count);
+                    Assert.Equal(3, services.Count);
                     var descriptor = services.First();
                     Assert.True(typeof(Test.IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -123,7 +123,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddScoped<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -138,7 +138,7 @@ namespace Baymax.Test.AOP.Norns
                         .AddScoped<Test.IIocTestInterface>()
                         .AddScoped<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Equal(2, services.Count);
+                    Assert.Equal(3, services.Count);
                     var descriptor = services.First();
                     Assert.True(typeof(Test.IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -155,7 +155,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddTransient<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -170,7 +170,7 @@ namespace Baymax.Test.AOP.Norns
                         .AddTransient<Test.IIocTestInterface>()
                         .AddTransient<IIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Equal(2, services.Count);
+                    Assert.Equal(3, services.Count);
                     var descriptor = services.First();
                     Assert.True(typeof(Test.IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -190,7 +190,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface, IocTestClassInternal>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()
@@ -210,7 +210,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<NestedIocTestClass>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(NestedIocTestClass) == descriptor.ServiceType);
                     Assert.Equal("IocTest_Empty\\+NestedIocTestClass_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -230,7 +230,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<INestedIocTestInterface>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(INestedIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IocTest_Empty\\+INestedIocTestInterface_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -250,7 +250,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IocTestClassAbstract>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IocTestClassAbstract) == descriptor.ServiceType);
                     Assert.Equal("IocTestClassAbstract_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -270,7 +270,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IocTestClassPartial>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IocTestClassPartial) == descriptor.ServiceType);
                     Assert.Equal("IocTestClassPartial_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -290,7 +290,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IocTestClass>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IocTestClass) == descriptor.ServiceType);
                     Assert.Equal("IocTestClass_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -304,7 +304,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface, IocTestClass>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     Assert.Equal("IocTestClass_Proxy_Inherit", descriptor.ImplementationType.Name);
@@ -318,7 +318,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface>(i => new IocTestClass())
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()
@@ -332,7 +332,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface>(new IocTestClass())
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()
@@ -352,7 +352,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<SealedClass>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(SealedClass) == descriptor.ServiceType);
                     Assert.Equal("SealedClass", descriptor.ImplementationType.Name);
@@ -366,7 +366,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface, SealedClass>()
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()
@@ -380,7 +380,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface>(i => new SealedClass())
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()
@@ -394,7 +394,7 @@ namespace Baymax.Test.AOP.Norns
                     var services = new ServiceCollection()
                         .AddSingleton<IIocTestInterface>(new SealedClass())
                         .ConfigureAop(converter: Converter);
-                    Assert.Single(services);
+                    
                     var descriptor = services.First();
                     Assert.True(typeof(IIocTestInterface) == descriptor.ServiceType);
                     var instance = services.BuildServiceProvider()

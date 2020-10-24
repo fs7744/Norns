@@ -29,7 +29,12 @@ namespace Norns.Urd.Proxy
                 var name = generator.GetProxyTypeName(serviceType);
                 if (!definedTypes.TryGetValue(name, out Type type))
                 {
-                    type = generator.CreateProxyType(name, serviceType, moduleBuilder);
+                    type = generator.CreateProxyType(new ProxyGeneratorContext()
+                    {
+                        ProxyTypeName = name,
+                        ServiceType = serviceType,
+                        ModuleBuilder = moduleBuilder
+                    });
                     definedTypes[name] = type;
                 }
                 return type;

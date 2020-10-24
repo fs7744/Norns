@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Norns.Urd.IOC;
 using Norns.Urd.Proxy;
 using System;
@@ -21,6 +22,7 @@ namespace Norns.Urd
                     services.Insert(index, proxy);
                 }
             }
+            services.TryAddSingleton<IInterceptorFactory, InterceptorFactory>();
             return services;
         }
 

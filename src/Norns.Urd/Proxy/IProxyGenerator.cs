@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection.Emit;
 
 namespace Norns.Urd.Proxy
 {
@@ -9,6 +8,6 @@ namespace Norns.Urd.Proxy
 
         string GetProxyTypeName(Type serviceType);
 
-        Type CreateProxyType(string proxyTypeName, Type serviceType, ModuleBuilder moduleBuilder);
+        Type CreateProxyType(ProxyGeneratorContext context);
     }
 }
