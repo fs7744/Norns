@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Norns.Destiny.AOP;
+using Norns.Urd.Loom;
 using System;
 
 namespace Microsoft.Extensions.Hosting

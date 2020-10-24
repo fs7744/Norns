@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Norns.Urd.old</AssemblyName>
+    <RootNamespace>Norns.Urd.old</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Norns.Destiny\Norns.Destiny.csproj" />
+  </ItemGroup>
+
+</Project>

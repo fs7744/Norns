@@ -28,10 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Norns.Urd.old\Norns.Urd.old.csproj" />
     <ProjectReference Include="..\..\src\Norns.Verthandi.Adapters.DependencyInjection\Norns.Verthandi.Adapters.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\src\Norns.Skuld\Norns.Skuld.csproj" />
     <ProjectReference Include="..\..\src\Norns.Verthandi\Norns.Verthandi.csproj" />
-    <ProjectReference Include="..\..\src\Norns.Urd\Norns.Urd.csproj" />
   </ItemGroup>
 
 </Project>
