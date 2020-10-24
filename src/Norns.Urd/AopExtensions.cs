@@ -27,6 +27,8 @@ namespace Norns.Urd
         public static IProxyServiceDescriptorConverter InitProxyServiceDescriptorConverter()
         {
             return new ServiceCollection()
+                .AddSingleton<IProxyGenerator, FacadeProxyGenerator>()
+                .AddSingleton<IProxyGenerator, InheritProxyGenerator>()
                 .AddSingleton<IProxyCreator, ProxyCreator>()
                 .AddSingleton<IServiceDescriptorConvertHandler, IngoreServiceDescriptorConvertHandler>()
                 .AddSingleton<IServiceDescriptorConvertHandler, ImplementationFactoryServiceDescriptorConvertHandler>()
